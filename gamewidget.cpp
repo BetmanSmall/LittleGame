@@ -209,20 +209,16 @@ void GameWidget::keyPressEvent(QKeyEvent * event)
     int key = event->key();
 //    qDebug() << "GameWidget::keyPressEvent() -- key: " << key;
 
-    if(key == Qt::Key_0)
-    {
+    if(key == Qt::Key_0) {
 //        qDebug
-
 //        test = 1;
-    }
-    else if(key == Qt::Key_Left)
-    {
+    } else if (event->key() == QKeyEvent::Enter) {
+        signal_closeWidget();
+    } else if(key == Qt::Key_Left) {
         if(mainCoorMapX < 0) {
             mainCoorMapX += pixelsShiftMap;
         }
-    }
-    else if(key == Qt::Key_Up)
-    {
+    } else if(key == Qt::Key_Up) {
         if(mainCoorMapY < 0) {
             mainCoorMapY += pixelsShiftMap;
         }
@@ -917,9 +913,9 @@ void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, DefaultTower
 
 bool GameWidget::whichCell(int &mouseX, int &mouseY)
 {
-    qDebug() << "GameWidget::whichCell(1); -- Isometric!";
-    qDebug() << "GameWidget::whichCell(1); - mouseX:" << mouseX << ", mouseY:" << mouseY;
-    qDebug() << "GameWidget::whichCell(0); - sizeCellX:" << field.getSizeCell() << ", sizeCellY:" << field.getSizeCell()/2;
+//    qDebug() << "GameWidget::whichCell(1); -- Isometric!";
+//    qDebug() << "GameWidget::whichCell(1); - mouseX:" << mouseX << ", mouseY:" << mouseY;
+//    qDebug() << "GameWidget::whichCell(0); - sizeCellX:" << field.getSizeCell() << ", sizeCellY:" << field.getSizeCell()/2;
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int spaceWidget = field.getSpaceWidget();
@@ -929,7 +925,7 @@ bool GameWidget::whichCell(int &mouseX, int &mouseY)
     if(!field.getIsometric()) {
         gameX = ( (mouseX+sizeCell - spaceWidget - mainCoorMapX) / sizeCell);
         gameY = ( (mouseY+sizeCell - spaceWidget - mainCoorMapY) / sizeCell);
-        qDebug() << "GameWidget::whichCell(0); - gameX:" << gameX << ", gameY:" << gameY;
+//        qDebug() << "GameWidget::whichCell(0); - gameX:" << gameX << ", gameY:" << gameY;
     } else {
 //        qDebug() << "GameWidget::whichCell(1); -- Isometric!";
         int fieldX = field.getSizeX();
@@ -940,15 +936,15 @@ bool GameWidget::whichCell(int &mouseX, int &mouseY)
         int isometricCoorX = (sizeCell/2) * fieldY;
         int isometricCoorY = 0;
 
-        qDebug() << "GameWidget::whichCell(2); - isometricCoorX:" << isometricCoorX << ", isometricCoorY:" << isometricCoorY;
+//        qDebug() << "GameWidget::whichCell(2); - isometricCoorX:" << isometricCoorX << ", isometricCoorY:" << isometricCoorY;
 
         int localMouseX = -mainCoorMapX + mouseX - isometricCoorX;
         int localMouseY = -mainCoorMapY + mouseY + sizeCellY;
-        qDebug() << "GameWidget::whichCell(3); - localMouseX:" << localMouseX << ", localMouseY:" << localMouseY;
+//        qDebug() << "GameWidget::whichCell(3); - localMouseX:" << localMouseX << ", localMouseY:" << localMouseY;
 
         gameX = (localMouseX/2 + localMouseY) / (sizeCell/2);
         gameY = -(localMouseX/2 - localMouseY) / (sizeCell/2);
-        qDebug() << "GameWidget::whichCell(4); - gameX:" << gameX << ", gameY:" << gameY;
+//        qDebug() << "GameWidget::whichCell(4); - gameX:" << gameX << ", gameY:" << gameY;
 
         QString text = QString("%1/%2").arg(gameX).arg(gameY);
         global_text2 = text.toStdString().c_str();
@@ -959,6 +955,7 @@ bool GameWidget::whichCell(int &mouseX, int &mouseY)
         {
             mouseX = gameX-1;
             mouseY = gameY-1;
+//            qDebug() << "GameWidget::whichCell(5); - mouseX:" << mouseX << ", mouseY:" << mouseY;
             return true;
         }
 
@@ -1066,44 +1063,40 @@ void GameWidget::buildTower(int x, int y)
     }
 }
 
-void GameWidget::mousePressEvent(QMouseEvent * event)
-{
-    qDebug() << "GameWidget::mousePressEvent();";
+void GameWidget::mousePressEvent(QMouseEvent* event) {
+    qDebug() << "GameWidget::mousePressEvent() -- ;";
     int mouseX = event->x();
     int mouseY = event->y();
+//    prevMouseX = mouseX;
+//    prevMouseY = mouseY;
 
     QString text = QString("%1/%2").arg(mouseX).arg(mouseY);
     global_text = text.toStdString().c_str();
 
-//    whichCell(mouseX, mouseY);
-//    return;
-    if(whichCell(mouseX,mouseY))
-    {
+    if(whichCell(mouseX,mouseY)) {
         text = QString("%1/%2").arg(mouseX).arg(mouseY);
         global_text2 = text.toStdString().c_str();
-
 //        qDebug() << "Button:" << event->button();
-
-        if(event->button() == Qt::LeftButton)
-        {
-            if(field.containEmpty(mouseX, mouseY))
+        if(event->button() == Qt::LeftButton) {
+            pan = true;
+            prevMouseX = event->x();
+            prevMouseY = event->y();
+            setCursor(Qt::ClosedHandCursor);
+//            event->accept();
+            if(field.containEmpty(mouseX, mouseY)) {
                 buildTower(mouseX, mouseY);
-            else if(field.containTower(mouseX, mouseY))
+            } else if(field.containTower(mouseX, mouseY)) {
                 field.deleteTower(mouseX, mouseY);
-
+            }
 //            if(!field.containBusy(mouseX, mouseY))
 //                field.waveAlgorithm();
-        }
-        else if(event->button() == Qt::XButton1)
-        {
+        } else if(event->button() == Qt::XButton1) {
             QPixmap pixmap;
             if(!field.containBusy(mouseX,mouseY))
                 field.setBusy(mouseX,mouseY, pixmap);
             else
                 field.clearBusy(mouseX,mouseY);
-        }
-        else if(event->button() == Qt::RightButton)
-        {
+        } else if(event->button() == Qt::RightButton) {
 //            if(waveAlgorithm(mouseX, mouseY) == 1)
 //                global_text2 = "Yes!";
 //            else
@@ -1135,6 +1128,11 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
 //    qDebug() << "GameWidget::mouseReleaseEvent() -- x: " << event->x() << " y: " << event->y();
 
 //    qDebug() << "GameWidget::mouseReleaseEvent() -- underConstruction: " << underConstruction;
+    if (event->button() == Qt::LeftButton) {
+        pan = false;
+        setCursor(Qt::ArrowCursor);
+//        event->accept();
+    }
     if(underConstruction) {
         field.setTower(underConstruction->startX, underConstruction->startY, underConstruction->tower);
         for(int k = 0; k < underConstruction->coorsX.size(); k++) {
@@ -1145,8 +1143,41 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
     }
 }
 
-void GameWidget::wheelEvent(QWheelEvent * event)
-{
+void GameWidget::mouseMoveEvent(QMouseEvent * event) {
+//    static int maxX = 0;
+//    static int maxY = 0;
+
+    qDebug() << "GameWidget::mouseMoveEvent(); -- event->MouseButtonPress:" << event->MouseButtonPress;
+    if (pan) {
+//    if (event->MouseButtonPress == QEvent::MouseButtonPress) {
+        int mainCoorMapX = field.getMainCoorMapX();
+        int mainCoorMapY = field.getMainCoorMapY();
+        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapX: " << mainCoorMapX;
+        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapY: " << mainCoorMapY;
+        int x = event->x();
+        int y = event->y();
+        qDebug() << "GameWidget::mouseMoveEvent(); -- x: " << x;
+        qDebug() << "GameWidget::mouseMoveEvent(); -- y: " << y;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- prevMouseX: " << prevMouseX;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- prevMouseY: " << prevMouseY;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- (x-prevMouseX): " << (x-prevMouseX);
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- (y-prevMouseY): " << (y-prevMouseY);
+        mainCoorMapX = mainCoorMapX + ((x-prevMouseX)/1);
+        mainCoorMapY = mainCoorMapY + ((y-prevMouseY)/1);
+        field.setMainCoorMap(mainCoorMapX, mainCoorMapY);
+        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapX: " << mainCoorMapX;
+        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapY: " << mainCoorMapY;
+//        horizontalScrollBar()->setValue(horizontalScrollBar()->value() - (event->x() - _panStartX));
+//        verticalScrollBar()->setValue(verticalScrollBar()->value() - (event->y() - _panStartY));
+        prevMouseX = event->x();
+        prevMouseY = event->y();
+//        event->accept();
+        update();
+    }
+//    event->ignore();
+}
+
+void GameWidget::wheelEvent(QWheelEvent* event) {
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int sizeCell = field.getSizeCell();
@@ -1214,49 +1245,14 @@ void GameWidget::wheelEvent(QWheelEvent * event)
 //    event->accept();
 }
 
-//void GameWidget::mouseReleaseEvent(QMouseEvent * event);
-
-/*void GameWidget::mouseMoveEvent(QMouseEvent * event)
-{
-////    static int maxX = 0;
-////    static int maxY = 0;
-
-//    int x = event->x();
-//    int y = event->y();
-//    qDebug() << "x: " << x;
-//    qDebug() << "y: " << y;
-
-////    if (x > maxX)
-////        maxX = x;
-////    if (y > maxY)
-////        maxY = y;
-
-////    qDebug() << "maxX: " << maxX << ", SmaxY: " << maxY;
-
-//    int globalX = event->globalX();
-//    int globalY = event->globalY();
-//    qDebug() << "globalX: " << globalX;
-//    qDebug() << "globalY: " << globalY;
-
-//    if(x < 0)
-//        drawWidgetCurrX =- 10;
-//    if(y < 0)
-//        drawWidgetCurrY =- 10;
-//    if(x > width())
-//        drawWidgetCurrX =+ 10;
-//    if(y > height())
-//        drawWidgetCurrY =+ 10;
-
-////    test = test<100 ? test+1 : 0;
-////    qDebug() << "mouseMoveEvent()" << test;
-
-//    update();
-}*/
-
 /*void GameWidget::leaveEvent(QEvent *event)
 {
     qDebug() << "leaveEvent()";
 }*/
+
+
+//void GameWidget::keyReleaseEvent(QKeyEvent *event) {
+//}
 
 void GameWidget::loadMap(QString mapName)
 {
@@ -1408,7 +1404,7 @@ void GameWidget::loadMap(QString mapName)
                             {
                                 QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
                                 tileSet.subRects.push_back(rect);
-                                qDebug() << "QRect rect(tower) -- push_back:" << rect;
+//                                qDebug() << "QRect rect(tower) -- push_back:" << rect;
                             }
                     }
 
@@ -1621,13 +1617,13 @@ void GameWidget::loadMap(QString mapName)
                         qDebug() << "GameWidget::loadMap(); -- creep : columnsPixmap: " << columns;
                         qDebug() << "GameWidget::loadMap(); -- creep : rowsPixmap: " << rows;
 
-                        for(int y = 0; y < rows; y++)
-                            for(int x = 0; x < columns; x++)
-                            {
+                        for(int y = 0; y < rows; y++) {
+                            for(int x = 0; x < columns; x++) {
                                 QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
                                 tileSet.subRects.push_back(rect);
-                                qDebug() << "QRect rect(Unit) -- push_back:" << rect;
+//                                qDebug() << "QRect rect(Unit) -- push_back:" << rect;
                             }
+                        }
                     }
 
                     xmlReader.readNext(); // </image>
@@ -1642,7 +1638,7 @@ void GameWidget::loadMap(QString mapName)
                         int tileGID = xmlReader.attributes().value("tile").toInt();
                         QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
 
-                        qDebug() << "GameWidget::loadMap(); -- creepPixmaps: " << name << "tileGID: " << tileGID << " : " << !pixmap.isNull();
+//                        qDebug() << "GameWidget::loadMap(); -- creepPixmaps: " << name << "tileGID: " << tileGID << " : " << !pixmap.isNull();
 
                         if(name == "idle_up")
                             unit.idle_up = pixmap;

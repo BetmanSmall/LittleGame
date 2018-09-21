@@ -96,11 +96,11 @@ public:
     void buildTower(int x = -1, int y = -1);
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
-
-//    void mouseReleaseEvent(QMouseEvent* event);
-//    void mouseMoveEvent(QMouseEvent* event);
 //    void leaveEvent(QEvent* event);
+//    void keyPressEvent(QKeyEvent* event);
+//    void keyReleaseEvent(QKeyEvent* event);
 
     /**
      * @brief Загрузка карты
@@ -146,6 +146,9 @@ public:
     QPixmap global_pixmap;
     string global_text;
     string global_text2;
+
+    bool pan;
+    int prevMouseX, prevMouseY;
 
 private:
     Ui::GameWidget *ui;

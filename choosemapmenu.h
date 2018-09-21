@@ -34,6 +34,7 @@ private slots:
 
 signals:
     void signal_closeWidget();
+    void signal_quickPlay();
     void signal_loadMap1();
     void signal_loadMap2();
     void signal_loadMap3();

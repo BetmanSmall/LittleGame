@@ -47,3 +47,23 @@ void MainMenu::on_exitButton_clicked()
     qDebug() << "on_ExitButton_clicked";
     signal_exit();
 }
+
+void MainMenu::on_quickPlayButton_clicked() {
+    qDebug() << "on_quickPlayButton_clicked";
+    signal_quickPlay();
+}
+
+void MainMenu::on_killButton_clicked() {
+    ui->killButton->move(qrand()%width(), qrand()%height());
+//    QCursor c = cursor();
+//    c.setPos(mapToGlobal(QPoint(0, 0)));
+//    c.setShape(Qt::BlankCursor);
+//    setCursor(c);
+}
+
+void MainMenu::keyPressEvent(QKeyEvent* event){
+    qDebug() << "MainMenu::keyPressEvent(); -- ";
+    if (event->key() == Qt::Key_1) {
+        signal_quickPlay();
+    }
+}

@@ -466,6 +466,13 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QPushButton" name="killButton">
+       <property name="text">
+        <string>KillMe</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -483,6 +490,13 @@
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="quickPlayButton">
+       <property name="text">
+        <string>QuickPlay</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="playButton">
        <property name="palette">

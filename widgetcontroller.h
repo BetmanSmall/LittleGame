@@ -37,6 +37,7 @@ private slots:
     void showChooseMapMenu();
     void showOptionMenu();
 
+    void quickPlay();
     void loadMap1();
     void loadMap2();
     void loadMap3();

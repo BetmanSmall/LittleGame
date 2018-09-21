@@ -2,6 +2,7 @@
 #define MAINMENU_H
 
 #include <QWidget>
+#include <QKeyEvent>
 //#include <QGLWidget>
 //#include <QOpenGLWidget>
 
@@ -24,11 +25,17 @@ private:
     QString TOWER_DEFENCE_PATH;
 
 private slots:
+    void on_quickPlayButton_clicked();
     void on_playButton_clicked();
     void on_optionsButton_clicked();
     void on_exitButton_clicked();
+    void on_killButton_clicked();
+
+protected:
+    void keyPressEvent(QKeyEvent* event);
 
 signals:
+    void signal_quickPlay();
     void signal_openChooseMapMenu();
     void signal_openOptionMenu();
     void signal_exit();

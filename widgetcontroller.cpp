@@ -53,12 +53,10 @@ void WidgetController::paintEvent(QPaintEvent *)
     p.end();
 }
 
-void WidgetController::showMainMenu()
-{
-    qDebug() << "showMainMenu()";
-
+void WidgetController::showMainMenu() {
+    qDebug() << "WidgetController::showMainMenu(); -- ";
     MainMenu* mainMenu = new MainMenu();
-
+    connect(mainMenu, SIGNAL(signal_quickPlay()), this, SLOT(quickPlay()));
     connect(mainMenu, SIGNAL(signal_openChooseMapMenu()), this, SLOT(showChooseMapMenu()));
     connect(mainMenu, SIGNAL(signal_openOptionMenu()), this, SLOT(showOptionMenu()));
     connect(mainMenu, SIGNAL(signal_exit()), this, SLOT(closeWidget()));
@@ -67,9 +65,8 @@ void WidgetController::showMainMenu()
     stackedWidget->setCurrentWidget(mainMenu);
 }
 
-void WidgetController::showChooseMapMenu()
-{
-    qDebug() << "showChooseMapMenu()";
+void WidgetController::showChooseMapMenu() {
+    qDebug() << "WidgetController::showChooseMapMenu(); -- ";
 
     ChooseMapMenu* chooseMapMenu = new ChooseMapMenu();
 
@@ -98,14 +95,23 @@ void WidgetController::showOptionMenu()
     stackedWidget->setCurrentWidget(optionMenu);
 }
 
-void WidgetController::loadMap(GameWidget* gameWidget)
-{
-    qDebug() << "loadMap()";
-
+void WidgetController::loadMap(GameWidget* gameWidget) {
+    qDebug() << "WidgetController::loadMap(GameWidget* gameWidget)";
     connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
-
     stackedWidget->addWidget(gameWidget);
     stackedWidget->setCurrentWidget(gameWidget);
+}
+
+void WidgetController::quickPlay() {
+    qDebug() << "WidgetController::quickPlay(); -- ";
+    GameWidget* gameWidget = new GameWidget();
+    gameWidget->setMinimumWidth(1024);
+    gameWidget->setMinimumHeight(768);
+//    gameWidget->setMaximumWidth(1024);
+//    gameWidget->setMaximumHeight(768);
+    loadMap(gameWidget);
+    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/isom_workMap.tmx");
+    qDebug() << "WidgetController::quickPlay(); -- ";
 }
 
 void WidgetController::loadMap1()
@@ -118,7 +124,6 @@ void WidgetController::loadMap1()
 
     gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/arctic.tmx");
 }
-
 
 void WidgetController::loadMap2()
 {
@@ -181,9 +186,9 @@ void WidgetController::closeWidget()
 
     QWidget* currentWidget = stackedWidget->currentWidget();
 
-    if(stackedWidget->currentIndex() == 0)
+    if(stackedWidget->currentIndex() == 0) {
         this->close();
-    else// if((stackedWidget->currentWidget() == w) && (stackedWidget->currentIndex() != 0))
+    } else// if((stackedWidget->currentWidget() == w) && (stackedWidget->currentIndex() != 0))
     {
         stackedWidget->setCurrentIndex(stackedWidget->count() - 2);
         stackedWidget->removeWidget(currentWidget);
