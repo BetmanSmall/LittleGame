@@ -110,7 +110,7 @@ void WidgetController::quickPlay() {
 //    gameWidget->setMaximumWidth(1024);
 //    gameWidget->setMaximumHeight(768);
     loadMap(gameWidget);
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/isom_workMap.tmx");
+    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/randomMap.tmx");
     qDebug() << "WidgetController::quickPlay(); -- ";
 }
 

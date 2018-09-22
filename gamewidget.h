@@ -40,7 +40,8 @@ struct TileSet
     int tileWidth;
     int tileHeight;
     QPixmap img;
-    vector< QRect > subRects;
+    vector<QRect> subRects;
+    vector<QPixmap> tiles;
 };
 
 /**
@@ -77,7 +78,7 @@ public:
     void drawRelief();
     void drawTowersByField();
     void drawTowersByTowers();
-    void drawCreeps();
+    void drawUnits();
     void drawStepsAndMouse();
     void drawTowersUnderConstruction();
     void drawTowerUnderConstruction(int buildX, int buildY, DefaultTower* tower);
@@ -90,8 +91,8 @@ public:
      */
     bool whichCell(int &mouseX, int &mouseY);
 
-    void startTimer_CreepsMoveAndTowerAttack();
-    void stopTimer_CreepsMoveAndTowerAttack();
+    void startTimer_UnitsMoveAndTowerAttack();
+    void stopTimer_UnitsMoveAndTowerAttack();
 
     void buildTower(int x = -1, int y = -1);
     void mousePressEvent(QMouseEvent* event);
@@ -124,16 +125,16 @@ public:
     int zoomMaxSizeCell;
     int zoomMinSizeCell;
 
-    int defaultNumCreateCreeps;
+    int defaultNumCreateUnits;
 
 //    Timers
-    int creepsMove_TimerMilliSec;
+    int unitsMove_TimerMilliSec;
     int towersAttack_TimerMilliSec;
     int scanMouseMove_TimerMilliSec;
     int bulletsFly_TimerMilliSec;
 
     int bulletsFly_TimerId;
-    int creepsMove_TimerId;
+    int unitsMove_TimerId;
     int towersAttack_TimerId;
     int scanMouseMove_TimerId;
 
@@ -162,7 +163,7 @@ private slots:
 
     void on_closeWidget_clicked();
 
-    void on_goCreeps_clicked();
+    void on_goUnits_clicked();
 
 signals:
     void signal_closeWidget();

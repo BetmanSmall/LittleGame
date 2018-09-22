@@ -23,7 +23,7 @@ using namespace std;
 /**
  * @brief The Towers class
  */
-class Towers
+class TowersManager
 {
     Tower* towers;
 
@@ -44,13 +44,13 @@ public:
      * @brief Конструктор. Массив башен инициилизируется NULL, чтобы определить, что массив нужно создать.
      * Нужно определять создан ли массив башен или нет, чтобы не возникло проблем при игровой инициализации массива.
      */
-    Towers():towers(NULL) {}
+    TowersManager():towers(NULL) {}
 
     /**
      * @brief Деструктор. Вызывает функцию deleteField(). Она в свою очередь очищает память из под массива башен.
      *
      */
-    ~Towers() {deleteField();}
+    ~TowersManager() {deleteField();}
 
     /**
      * @brief createField - инициализирует массив башен

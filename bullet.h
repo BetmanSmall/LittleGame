@@ -3,7 +3,7 @@
 
 #include <QPixmap>
 
-#include "creep.h"
+#include "unit.h"
 
 class Bullet
 {
@@ -16,7 +16,7 @@ public:
 
     int currX, currY;
     int destX, destY;
-    Creep* creep;
+    Unit* unit;
 //    Direction direction;
 
     QPixmap pixmap;
@@ -28,7 +28,7 @@ public:
     void setCurrentCordinate(int currX, int currY);
 
 //    void setDestinationCordinate(int destX, int destY);
-    void setCreep(Creep* creep);
+    void setUnit(Unit* unit);
 
     void setPixmap(QPixmap pixmap);
 

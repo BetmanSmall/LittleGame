@@ -7,13 +7,13 @@ Tower::Tower()
 }
 
 //void Tower::createBulletAndShot(int attackX, int attackY) {
-void Tower::createBulletAndShot(Creep* creep, int bullet_grafCoorX, int bullet_grafCoorY) {
+void Tower::createBulletAndShot(Unit* unit, int bullet_grafCoorX, int bullet_grafCoorY) {
     Bullet bullet;
 
     bullet.setSpeed(10);
     bullet.setCurrentCordinate(bullet_grafCoorX, bullet_grafCoorY);
-//    bullet.setDestinationCordinate(creep->currX, creep->currY);
-    bullet.setCreep(creep);
+//    bullet.setDestinationCordinate(unit->currX, unit->currY);
+    bullet.setUnit(unit);
     bullet.setPixmap(defTower->bullet_fly_up);
 
     bullets.push_back(bullet);

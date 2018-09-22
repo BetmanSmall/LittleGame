@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>766</width>
+    <width>901</width>
     <height>480</height>
    </rect>
   </property>
@@ -59,6 +59,9 @@
        <property name="text">
         <string>drawStepsAndMouse</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -78,7 +81,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="drawCreeps_checkBox">
+      <widget class="QCheckBox" name="drawUnits_checkBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -86,7 +89,7 @@
         <string notr="true">background-color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>drawCreeps</string>
+        <string>drawUnits</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -175,7 +178,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="goCreeps">
+      <widget class="QPushButton" name="goUnits">
        <property name="text">
         <string>Пустить уродов</string>
        </property>

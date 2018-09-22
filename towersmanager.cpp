@@ -1,6 +1,6 @@
-#include "towers.h"
+#include "towersmanager.h"
 
-void Towers::createField(int size)
+void TowersManager::createField(int size)
 {
     if(towers == NULL)
     {
@@ -16,7 +16,7 @@ void Towers::createField(int size)
     }
 }
 
-void Towers::deleteField()
+void TowersManager::deleteField()
 {
     if(towers != NULL)
     {
@@ -25,22 +25,22 @@ void Towers::deleteField()
     }
 }
 
-int Towers::getSize()
+int TowersManager::getSize()
 {
     return size;
 }
 
-int Towers::getAmount()
+int TowersManager::getAmount()
 {
     return amount;
 }
 
-Tower* Towers::getTowerById(int number)
+Tower* TowersManager::getTowerById(int number)
 {
     return &towers[number];
 }
 
-Tower* Towers::getTower(int x, int y)
+Tower* TowersManager::getTower(int x, int y)
 {
     if(x == -1 && y == -1)
         return &towers[amount-1];
@@ -52,7 +52,7 @@ Tower* Towers::getTower(int x, int y)
     return NULL;
 }
 
-Tower* Towers::createTower(int x, int y, int type)
+Tower* TowersManager::createTower(int x, int y, int type)
 {
     if(amount < size)
     {
@@ -77,7 +77,7 @@ Tower* Towers::createTower(int x, int y, int type)
     return NULL;
 }
 
-Tower* Towers::createTower(int x, int y, DefaultTower* tower)
+Tower* TowersManager::createTower(int x, int y, DefaultTower* tower)
 {
     if(amount < size)
     {
@@ -98,7 +98,7 @@ Tower* Towers::createTower(int x, int y, DefaultTower* tower)
     return NULL;
 }
 
-bool Towers::deleteTower(int &x, int &y)
+bool TowersManager::deleteTower(int &x, int &y)
 {
     if(x == -1 && y == -1)
     {
@@ -121,12 +121,12 @@ bool Towers::deleteTower(int &x, int &y)
     return false;
 }
 
-void Towers::setDefaulPixmapForTower(QPixmap pixmap)
+void TowersManager::setDefaulPixmapForTower(QPixmap pixmap)
 {
     defaultPixmapForTower = pixmap;
 }
 
-QPixmap Towers::getTowerPixmap(int x, int y)
+QPixmap TowersManager::getTowerPixmap(int x, int y)
 {
     for(int k = 0; k < amount; k++)
     {

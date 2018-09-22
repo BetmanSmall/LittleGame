@@ -18,9 +18,9 @@ enum Direction
 };
 
 /**
- * @brief The Creep class - класс, описывающий общие характеристики крипа.
+ * @brief The Unit class - класс, описывающий общие характеристики юнита.
  */
-class Creep
+class Unit
 {
 public:
     int hp;
@@ -29,6 +29,7 @@ public:
     int number;
 //    int speed;
 //    int type;
+    std::vector<int> unitSteps;
 
     int coorByCellX, coorByCellY;
     int coorByMapX, coorByMapY;
@@ -45,7 +46,7 @@ public:
 
     DefaultUnit* defUnit;
 
-    Creep();
+    Unit();
 
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
     bool takeDamage(int damage);

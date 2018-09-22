@@ -1,10 +1,10 @@
-#include "creep.h"
+#include "unit.h"
 
-Creep::Creep()
+Unit::Unit()
 {
 }
 
-QPixmap Creep::getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter)
+QPixmap Unit::getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter)
 {
     *lastX = this->lastX;
     *lastY = this->lastY;
@@ -14,7 +14,7 @@ QPixmap Creep::getAnimationInformation(int *lastX, int *lastY, int *animationCur
     return this->pixmap;
 }
 
-bool Creep::takeDamage(int damage)
+bool Unit::takeDamage(int damage)
 {
     if(alive)
     {
@@ -71,7 +71,7 @@ bool Creep::takeDamage(int damage)
                 animationMaxIter = defUnit->death_down_right.size();
                 activePixmaps = defUnit->death_down_right;
             }
-//                qDebug() << "tmpCreep->animationMaxIter: " << tmpCreep << "->" << tmpCreep->animationMaxIter;
+//                qDebug() << "tmpUnit->animationMaxIter: " << tmpUnit << "->" << tmpUnit->animationMaxIter;
             pixmap = activePixmaps[0];
             // ЛАЖА !!!!!!
 

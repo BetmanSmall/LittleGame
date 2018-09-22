@@ -8,14 +8,14 @@ void Field::createField(int newSizeX, int newSizeY)
     if(field == NULL)
     {
         field = new Cell[newSizeX*newSizeY];
-        towers.createField(newSizeX*newSizeY);
-        creeps.createMass(30);
+        towersManager.createField(newSizeX*newSizeY);
+        unitsManager.createMass(30);
 
         isometric = false;
-        creepSet = true;
+        unitSet = true;
 
-        gameOverLimitCreeps = 10;
-        currentFinishedCreeps = 0;
+        gameOverLimitUnits = 10;
+        currentFinishedUnits = 0;
 
         sizeX = newSizeX;
         sizeY = newSizeY;
@@ -44,8 +44,8 @@ void Field::deleteField()
     {
         delete[] field;
         field = NULL;
-        towers.deleteField();
-        creeps.deleteMass();
+        towersManager.deleteField();
+        unitsManager.deleteMass();
     }
 }
 
@@ -56,12 +56,12 @@ void Field::setFaction(Faction* faction)
 
 bool Field::createSpawnPoint(int num, int x, int y)
 {
-    for(int k = 0; k < creeps.getAmount(); k++)
+    for(int k = 0; k < unitsManager.getAmount(); k++)
     {
-        Creep* creep = creeps.getCreep(k);
-        int creepX = creep->coorByCellX;
-        int creepY = creep->coorByCellY;
-        clearCreep(creepX, creepY);
+        Unit* unit = unitsManager.getUnit(k);
+        int unitX = unit->coorByCellX;
+        int unitY = unit->coorByCellY;
+        clearUnit(unitX, unitY);
     }
 
     if(x == -1 && y == -1)
@@ -77,9 +77,9 @@ bool Field::createSpawnPoint(int num, int x, int y)
 //        field[sizeX*y+x].empty = false; // BAGS!!!!!
         clearBusy(x,y); // BAGS!!!!!
     }
-    creeps.deleteMass();
-    creeps.createMass(num);
-    currentFinishedCreeps = 0;
+    unitsManager.deleteMass();
+    unitsManager.createMass(num);
+    currentFinishedUnits = 0;
     return true;
 }
 
@@ -151,9 +151,9 @@ int Field::getTileMapHeight() {
 
 bool Field::towersAttack()
 {
-    for(int k = 0; k < towers.getAmount(); k++)
+    for(int k = 0; k < towersManager.getAmount(); k++)
     {
-        Tower* tmpTower = towers.getTowerById(k);
+        Tower* tmpTower = towersManager.getTowerById(k);
 
         // DIBILOID CODE
 //        for(int iBullet = 0; iBullet < tmpTower->bullets.size(); iBullet++) {
@@ -171,7 +171,7 @@ bool Field::towersAttack()
         tmpTower->attackX = -1;
         tmpTower->attackY = -1;
 
-        Creep* creep = NULL;
+        Unit* unit = NULL;
         int defaultHp = 100;
 
         int attackX = x, attackY = y;
@@ -182,13 +182,13 @@ bool Field::towersAttack()
             {
                 if(!(tmpX == 0 && tmpY == 0))
                 {
-                    Creep* tmpCreep = getCreepWithLowHP(x + tmpX, y + tmpY);
-                    if(tmpCreep != NULL)
+                    Unit* tmpUnit = getUnitWithLowHP(x + tmpX, y + tmpY);
+                    if(tmpUnit != NULL)
                     {
-                        int hp = tmpCreep->hp;//getCreepHpInCell(x + tmpX, y + tmpY);
+                        int hp = tmpUnit->hp;//getUnitHpInCell(x + tmpX, y + tmpY);
                         if(hp <= defaultHp && hp != 0)
                         {
-                            creep = tmpCreep;
+                            unit = tmpUnit;
                             defaultHp = hp;
                             attackX = x + tmpX;
                             attackY = y + tmpY;
@@ -199,32 +199,32 @@ bool Field::towersAttack()
         }
 
 //        if(attackX != x || attackY != y)
-        if(creep != NULL)
+        if(unit != NULL)
         {
 //            if(type == 1)
-//            Creep* creep = NULL;
-//            qDebug() << "creep: " << creep;
-//            if(creeps.attackCreep(attackX, attackY, tmpTower->attack, creep))
+//            Unit* unit = NULL;
+//            qDebug() << "unit: " << unit;
+//            if(units.attackUnit(attackX, attackY, tmpTower->attack, unit))
 
             if(tmpTower->bullets.size() == 0) {
                 qDebug() << "createBulletAndShot(" << attackX << ", " << attackY << ");";
 
                 int bullet_grafCoorX = tmpTower->currX*sizeCell + (sizeCell/3) + abs(mainCoorMapX);
                 int bullet_grafCoorY = tmpTower->currY*sizeCell + (sizeCell/3) + abs(mainCoorMapY);
-                tmpTower->createBulletAndShot(creep, bullet_grafCoorX, bullet_grafCoorY);
+                tmpTower->createBulletAndShot(unit, bullet_grafCoorX, bullet_grafCoorY);
             } else {
                 if(!tmpTower->bullets[0].flying) {
                     tmpTower->bullets.clear();
                 }
             }
 
-            if(creep->takeDamage(tmpTower->attack))
+            if(unit->takeDamage(tmpTower->attack))
             {
-//                qDebug() << "creep: " << creep;
-//                if(creep != NULL)
-//                    qDebug() << "creep->hp: " << creep->hp;
+//                qDebug() << "unit: " << unit;
+//                if(unit != NULL)
+//                    qDebug() << "unit->hp: " << unit->hp;
 
-                if(clearCreep(attackX, attackY, creep))
+                if(clearUnit(attackX, attackY, unit))
                     qDebug() << "Dead!";
             }
             else
@@ -331,51 +331,62 @@ bool Field::isSetExitPoint(int x, int y)
     return false;
 }
 
-int Field::stepAllCreeps()
+int Field::stepAllUnits()
 {
+    qDebug() << "Field::stepAllUnits(); -- ";
     bool allDead = true;
-    for(int k = 0; k < creeps.getAmount(); k++)
+    for(int k = 0; k < unitsManager.getAmount(); k++)
     {
-        int result = stepOneCreep(k);
+        int result = stepOneUnit(k);
         if(result != -2)
             allDead = false;
 
         if(result == 1)
         {
-            currentFinishedCreeps++;
-            if(currentFinishedCreeps >= gameOverLimitCreeps)
+            currentFinishedUnits++;
+            if(currentFinishedUnits >= gameOverLimitUnits) {
+                qDebug() << "Field::stepAllUnits(); -- return 1";
                 return 1;
-        }
-        else if(result == -1)
+            }
+        } else if(result == -1) {
+            qDebug() << "Field::stepAllUnits(); -- return -1";
             return -1;
+        }
     }
 
-    if(allDead)
+    qDebug() << "Field::stepAllUnits(); -- allDead:" << allDead;
+    if(allDead) {
         return 2;
-    else
+    } else {
         return 0;
+    }
 }
 
-int Field::stepOneCreep(int num)
+int Field::stepOneUnit(int num)
 {
-//    qDebug() << "Field::stepOneCreep()";
-    Creep* tmpCreep = creeps.getCreep(num);
-    if(tmpCreep->alive)
+    qDebug() << "Field::stepOneUnit(); -- ";
+    Unit* tmpUnit = unitsManager.getUnit(num);
+    if(tmpUnit->alive)
     {
-        if(tmpCreep->animationCurrIter < tmpCreep->animationMaxIter)
+        qDebug() << "Field::stepOneUnit(); -- test1";
+        if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter)
         {
-//            qDebug() << "tmpCreep->animationCurrIter: " << tmpCreep << "->" << tmpCreep->animationCurrIter;
-            tmpCreep->pixmap = tmpCreep->activePixmaps[tmpCreep->animationCurrIter++];
-//            tmpCreep->animationCurrIter = tmpCreep->animationCurrIter+1;
+            qDebug() << "Field::stepOneUnit(); -- test2";
+//            qDebug() << "tmpUnit->animationCurrIter: " << tmpUnit << "->" << tmpUnit->animationCurrIter;
+            tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
+//            tmpUnit->animationCurrIter = tmpUnit->animationCurrIter+1;
         }
         else
         {
-            int currX = tmpCreep->coorByCellX;
-            int currY = tmpCreep->coorByCellY;
+            qDebug() << "Field::stepOneUnit(); -- test3";
+            int currX = tmpUnit->coorByCellX;
+            int currY = tmpUnit->coorByCellY;
 
             int exitX = currX, exitY = currY;
 
             int min = getNumStep(currX,currY);
+
+            qDebug() << "Field::stepOneUnit(); -- test4 min:" << min;
             if(min == 1)
                 return 1;
             if(min == 0)
@@ -408,115 +419,130 @@ int Field::stepOneCreep(int num)
                     }
             //-----------------------------------------------------------
 
+            qDebug() << "Field::stepOneUnit(); -- test5";
             if(exitX != currX || exitY != currY)
             {
-//                qDebug() << "exitX: " << exitX << " exitY: " << exitY;
-//                qDebug() << "currX: " << currX << " currY: " << currY;
-                clearCreep(currX, currY, tmpCreep);
-                tmpCreep->lastX = currX;
-                tmpCreep->lastY = currY;
-                tmpCreep->coorByCellX = exitX;
-                tmpCreep->coorByCellY = exitY;
-                tmpCreep->number = min;
-                tmpCreep->animationCurrIter = 0;
+                qDebug() << "exitX: " << exitX << " exitY: " << exitY;
+                qDebug() << "currX: " << currX << " currY: " << currY;
+                clearUnit(currX, currY, tmpUnit);
+                tmpUnit->lastX = currX;
+                tmpUnit->lastY = currY;
+                tmpUnit->coorByCellX = exitX;
+                tmpUnit->coorByCellY = exitY;
+                tmpUnit->number = min;
+                tmpUnit->animationCurrIter = 0;
 
+                qDebug() << "Field::stepOneUnit(); -- test6";
                 if(!getIsometric()) {
+                    qDebug() << "Field::stepOneUnit(); -- test7";
                     if(exitX < currX && exitY < currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up_left.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up_left;
-                        tmpCreep->direction = DirectionUpLeft;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_left;
+                        tmpUnit->direction = DirectionUpLeft;
                     } else if(exitX == currX && exitY < currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up;
-                        tmpCreep->direction = DirectionUp;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up;
+                        tmpUnit->direction = DirectionUp;
                     } else if(exitX > currX && exitY < currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up_right.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up_right;
-                        tmpCreep->direction = DirectionUpRight;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_right.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_right;
+                        tmpUnit->direction = DirectionUpRight;
                     } else if(exitX < currX && exitY == currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_left.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_left;
-                        tmpCreep->direction = DirectionLeft;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_left.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_left;
+                        tmpUnit->direction = DirectionLeft;
                     } else if(exitX > currX && exitY == currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_right.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_right;
-                        tmpCreep->direction = DirectionRight;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_right.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_right;
+                        tmpUnit->direction = DirectionRight;
                     } else if(exitX < currX && exitY > currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down_left.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down_left;
-                        tmpCreep->direction = DirectionDownLeft;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_left.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_left;
+                        tmpUnit->direction = DirectionDownLeft;
                     } else if(exitX == currX && exitY > currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down;
-                        tmpCreep->direction = DirectionDown;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down;
+                        tmpUnit->direction = DirectionDown;
                     } else if(exitX > currX && exitY > currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down_right.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down_right;
-                        tmpCreep->direction = DirectionDownRight;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_right.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_right;
+                        tmpUnit->direction = DirectionDownRight;
                     }
                 } else {
+                    qDebug() << "Field::stepOneUnit(); -- test8";
                     if(exitX < currX && exitY < currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up;
-                        tmpCreep->direction = DirectionUp;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up_left.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up_left;
-//                        tmpCreep->direction = DirectionUpLeft;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up;
+                        tmpUnit->direction = DirectionUp;
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_left;
+//                        tmpUnit->direction = DirectionUpLeft;
                     } else if(exitX == currX && exitY < currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up_right.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up_right;
-                        tmpCreep->direction = DirectionUpRight;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up;
-//                        tmpCreep->direction = DirectionUp;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_right.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_right;
+                        tmpUnit->direction = DirectionUpRight;
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up;
+//                        tmpUnit->direction = DirectionUp;
                     } else if(exitX > currX && exitY < currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_right.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_right;
-                        tmpCreep->direction = DirectionRight;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up_right.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up_right;
-//                        tmpCreep->direction = DirectionUpRight;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_right.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_right;
+                        tmpUnit->direction = DirectionRight;
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_right.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_right;
+//                        tmpUnit->direction = DirectionUpRight;
                     } else if(exitX < currX && exitY == currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_up_left.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_up_left;
-                        tmpCreep->direction = DirectionUpLeft;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_left.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_left;
-//                        tmpCreep->direction = DirectionLeft;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_left;
+                        tmpUnit->direction = DirectionUpLeft;
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_left.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_left;
+//                        tmpUnit->direction = DirectionLeft;
                     } else if(exitX > currX && exitY == currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down_right.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down_right;
-                        tmpCreep->direction = DirectionDownRight;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_right.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_right;
-//                        tmpCreep->direction = DirectionRight;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_right.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_right;
+                        tmpUnit->direction = DirectionDownRight;
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_right.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_right;
+//                        tmpUnit->direction = DirectionRight;
                     } else if(exitX < currX && exitY > currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_left.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_left;
-                        tmpCreep->direction = DirectionLeft;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down_left.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down_left;
-//                        tmpCreep->direction = DirectionDownLeft;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_left.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_left;
+                        tmpUnit->direction = DirectionLeft;
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_left.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_left;
+//                        tmpUnit->direction = DirectionDownLeft;
                     } else if(exitX == currX && exitY > currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down_left.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down_left;
-                        tmpCreep->direction = DirectionDownLeft;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down;
-//                        tmpCreep->direction = DirectionDown;
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_left.size();
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_left;
+                        tmpUnit->direction = DirectionDownLeft;
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down;
+//                        tmpUnit->direction = DirectionDown;
                     } else if(exitX > currX && exitY > currY) {
-                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down.size();
-                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down;
-                        tmpCreep->direction = DirectionDown;
-//                        tmpCreep->animationMaxIter = tmpCreep->defUnit->walk_down_right.size();
-//                        tmpCreep->activePixmaps = tmpCreep->defUnit->walk_down_right;
-//                        tmpCreep->direction = DirectionDownRight;
+                        qDebug() << "Field::stepOneUnit(); -- tmpUnit:" << tmpUnit;
+                        qDebug() << "Field::stepOneUnit(); -- tmpUnit->defUnit:" << tmpUnit->defUnit;
+//                        qDebug() << "Field::stepOneUnit(); -- tmpUnit->defUnit->walk_down:" << tmpUnit->defUnit->walk_down;
+                        qDebug() << "Field::stepOneUnit(); -- tmpUnit->defUnit->walk_down.size():" << tmpUnit->defUnit->walk_down.size();
+                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down.size();
+                        qDebug() << "Field::stepOneUnit(); -- test8.2";
+                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down;
+                        qDebug() << "Field::stepOneUnit(); -- test8.3";
+                        tmpUnit->direction = DirectionDown;
+                        qDebug() << "Field::stepOneUnit(); -- test8.4";
+//                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_right.size();
+//                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_right;
+//                        tmpUnit->direction = DirectionDownRight;
                     }
+                    qDebug() << "Field::stepOneUnit(); -- test8.5";
                 }
-//                qDebug() << "tmpCreep->animationMaxIter: " << tmpCreep << "->" << tmpCreep->animationMaxIter;
-                tmpCreep->pixmap = tmpCreep->activePixmaps[0];
+                qDebug() << "Field::stepOneUnit(); -- test9";
+//                qDebug() << "tmpUnit->animationMaxIter: " << tmpUnit << "->" << tmpUnit->animationMaxIter;
+                tmpUnit->pixmap = tmpUnit->activePixmaps[0];
 
-                setCreep(exitX, exitY, tmpCreep);
+                qDebug() << "Field::stepOneUnit(); -- test10";
+                setUnit(exitX, exitY, tmpUnit);
+                qDebug() << "Field::stepOneUnit(); -- test11";
             }
 //            else
 //            {
@@ -524,17 +550,19 @@ int Field::stepOneCreep(int num)
 //                return false;
 //            }
         }
+
+        qDebug() << "Field::stepOneUnit(); -- test12";
     }
-    else if(tmpCreep->preDeath)
+    else if(tmpUnit->preDeath)
     {
-        if(tmpCreep->animationCurrIter < tmpCreep->animationMaxIter)
+        if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter)
         {
-//            qDebug() << "tmpCreep->animationCurrIter: " << tmpCreep << "->" << tmpCreep->animationCurrIter;
-            tmpCreep->pixmap = tmpCreep->activePixmaps[tmpCreep->animationCurrIter++];
-//            tmpCreep->animationCurrIter = tmpCreep->animationCurrIter+1;
+//            qDebug() << "tmpUnit->animationCurrIter: " << tmpUnit << "->" << tmpUnit->animationCurrIter;
+            tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
+//            tmpUnit->animationCurrIter = tmpUnit->animationCurrIter+1;
         }
         else
-            tmpCreep->preDeath = false;
+            tmpUnit->preDeath = false;
     }
     else
         return -2;
@@ -555,7 +583,7 @@ int Field::getNumStep(int x, int y)
 
 int Field::getStepCell(int x, int y)
 {
-    return field[sizeX*y + x].step;
+    return field[sizeX*y + x].heroStep;
 }
 
 bool Field::setNumOfCell(int x, int y, int step)
@@ -574,60 +602,60 @@ bool Field::setNumOfCell(int x, int y, int step)
 
 void Field::setStepCell(int x, int y, int step)
 {
-    field[sizeX*y + x].step = step;
+    field[sizeX*y + x].heroStep = step;
 }
 
 void Field::clearStepCell(int x, int y)
 {
-    field[sizeX*y + x].step = 0;
+    field[sizeX*y + x].heroStep = 0;
 }
 
-Creep* Field::getCreep(int x, int y)
+Unit* Field::getUnit(int x, int y)
 {
-    if(!field[sizeX*y + x].creeps.empty())
-        return field[sizeX*y + x].creeps.front();
+    if(!field[sizeX*y + x].units.empty())
+        return field[sizeX*y + x].units.front();
     else
         return NULL;
-//    return field[sizeX*y + x].creep;
+//    return field[sizeX*y + x].unit;
 }
 
-std::vector<Creep*> Field::getCreeps(int x, int y)
+std::vector<Unit*> Field::getUnits(int x, int y)
 {
-//    if(!field[sizeX*y + x].creeps.empty())
-        return field[sizeX*y + x].creeps;
+//    if(!field[sizeX*y + x].units.empty())
+        return field[sizeX*y + x].units;
 //    else
 //        return NULL;
 }
 
-int Field::getCreepHpInCell(int x, int y)
+int Field::getUnitHpInCell(int x, int y)
 {
     if(x >= 0 && x < getSizeX())
         if(y >= 0 && y < getSizeY())
-            if(containCreep(x,y))
-                return creeps.getHP(x, y);
+            if(containUnit(x,y))
+                return unitsManager.getHP(x, y);
 
     return 0;
 }
 
-Creep* Field::getCreepWithLowHP(int x, int y)
+Unit* Field::getUnitWithLowHP(int x, int y)
 {
     if(x >= 0 && x < getSizeX())
         if(y >= 0 && y < getSizeY())
-            if(!field[sizeX*y + x].creeps.empty())
+            if(!field[sizeX*y + x].units.empty())
             {
-                Creep* creep = field[sizeX*y + x].creeps.front();
-                int localHp = creep->hp;
-                int size = field[sizeX*y + x].creeps.size();
+                Unit* unit = field[sizeX*y + x].units.front();
+                int localHp = unit->hp;
+                int size = field[sizeX*y + x].units.size();
                 for(int k = 1; k < size; k++)
                 {
-                    int hp = field[sizeX*y + x].creeps[k]->hp;
+                    int hp = field[sizeX*y + x].units[k]->hp;
                     if(hp < localHp)
                     {
-                        creep = field[sizeX*y + x].creeps[k];
-                        localHp = creep->hp;
+                        unit = field[sizeX*y + x].units[k];
+                        localHp = unit->hp;
                     }
                 }
-                return creep;
+                return unit;
             }
     return NULL;
 }
@@ -636,8 +664,8 @@ std::vector<Tower*> Field::getAllTowers()
 {
     std::vector<Tower*> exitTowers;
 
-    for(int k = 0; k < towers.getAmount(); k++)
-        exitTowers.push_back(towers.getTowerById(k));
+    for(int k = 0; k < towersManager.getAmount(); k++)
+        exitTowers.push_back(towersManager.getTowerById(k));
 
     return exitTowers;
 }
@@ -658,20 +686,20 @@ bool Field::containTower(int x, int y)
     return field[sizeX*y + x].tower;
 }
 
-int Field::containCreep(int x, int y, Creep *creep)
+int Field::containUnit(int x, int y, Unit *unit)
 {
-    if(!field[sizeX*y + x].creeps.empty())
+    if(!field[sizeX*y + x].units.empty())
     {
-        int size = field[sizeX*y + x].creeps.size();
-        if(creep == NULL)
+        int size = field[sizeX*y + x].units.size();
+        if(unit == NULL)
             return size;
         else
             for(int k = 0; k < size; k++)
-                if(field[sizeX*y + x].creeps[k] == creep)
+                if(field[sizeX*y + x].units[k] == unit)
                     return k+1;
     }
-//    if(field[sizeX*y + x].creep != NULL)
-//        if(field[sizeX*y + x].creep->alive)
+//    if(field[sizeX*y + x].unit != NULL)
+//        if(field[sizeX*y + x].unit->alive)
 //            return true;
     return 0;
 }
@@ -696,7 +724,7 @@ bool Field::setTower(int x, int y)//, int type)
     {
         if(!isSetExitPoint(x, y) && !isSetSpawnPoint(x, y))
         {
-            field[sizeX*y + x].tower = towers.createTower(x, y);
+            field[sizeX*y + x].tower = towersManager.createTower(x, y);
             field[sizeX*y + x].empty = false;
             return true;
         }
@@ -712,7 +740,7 @@ bool Field::setTower(int x, int y, DefaultTower* defTower)
             if(!containEmpty(tmpX+x, tmpY+y))
                 return false;
 
-    Tower* tower = towers.createTower(x, y, defTower);
+    Tower* tower = towersManager.createTower(x, y, defTower);
     if(tower != NULL)
     {
         for(int tmpX = 0; tmpX < size; tmpX++)
@@ -736,25 +764,31 @@ bool Field::setTower(int x, int y, DefaultTower* defTower)
     return false;
 }
 
-bool Field::setCreepInSpawnPoint()//Creep* creep)//, int type)
+bool Field::spawnHeroInSpawnPoint()//Unit* unit)//, int type)
 {
-    return setCreep(spawnPointX, spawnPointY);//, creep);//, type);
+    return setUnit(spawnPointX, spawnPointY);//, unit);//, type);
 }
 
-bool Field::setCreep(int x, int y, Creep* creep)//, int type)
+bool Field::setUnit(int x, int y, Unit* unit)//, int type)
 {
+    qDebug() << "Field::setUnit(" << x << ", " << y << ", " << unit << "); -- ";
 //    if(x == -1 && y == -1)
-//        return setCreep(spawnPointX, spawnPointY, creep);//, type);
+//        return setUnit(spawnPointX, spawnPointY, unit);//, type);
 
-    if(field[sizeX*y + x].empty || !field[sizeX*y + x].creeps.empty())
+//    field[sizeX*y + x].
+    if(field[sizeX*y + x].empty || !field[sizeX*y + x].units.empty())
     {
-        if(creep == NULL)
+        qDebug() << "Field::setUnit(); -- test1";
+        if(unit == NULL)
         {
+            qDebug() << "Field::setUnit(); -- test2";
             int coorByMapX, coorByMapY;
             if(!getIsometric()) {
+                qDebug() << "Field::setUnit(); -- test3";
                 coorByMapX = mainCoorMapX + spaceWidget + x*sizeCell;
                 coorByMapY = mainCoorMapY + spaceWidget + y*sizeCell;
             } else {
+                qDebug() << "Field::setUnit(); -- test4";
                 int halfSizeCellX = sizeCell/2;
                 int halfSizeCellY = halfSizeCellX/2;
                 int isometricCoorX = halfSizeCellX*getSizeY();
@@ -763,23 +797,25 @@ bool Field::setCreep(int x, int y, Creep* creep)//, int type)
                 coorByMapY = mainCoorMapY + isometricCoorY+spaceWidget - halfSizeCellY*2 + x*halfSizeCellY;
             }
 
-            Creep* creep;
-            if(creepSet)
-                creep = creeps.createCreep(x, y, coorByMapX, coorByMapY, faction1->getDefaultUnitById(0));
+            qDebug() << "Field::setUnit(); -- test5";
+            Unit* unit;
+            if(unitSet)
+                unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction1->getDefaultUnitById(0));
             else
-                creep = creeps.createCreep(x, y, coorByMapX, coorByMapY, faction1->getDefaultUnitById(1));
-            creepSet = !creepSet;
+                unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction1->getDefaultUnitById(1));
+            unitSet = !unitSet;
+            qDebug() << "Field::setUnit(); -- test6 unit:" << unit;
 
-            if(creep == NULL)
+            if(unit == NULL)
                 return false;
-            field[sizeX*y + x].creeps.push_back(creep);
-//            field[sizeX*y + x].creep = creeps.createCreep(x, y);
-//            if(field[sizeX*y + x].creep == NULL)
+            field[sizeX*y + x].units.push_back(unit);
+//            field[sizeX*y + x].unit = units.createUnit(x, y);
+//            if(field[sizeX*y + x].unit == NULL)
 //                return false;
         }
         else
-            field[sizeX*y + x].creeps.push_back(creep);
-//            field[sizeX*y + x].creep = creep;
+            field[sizeX*y + x].units.push_back(unit);
+//            field[sizeX*y + x].unit = unit;
 
         field[sizeX*y + x].empty = false;
         return true;
@@ -817,19 +853,19 @@ bool Field::clearTower(int x, int y)
     return false;
 }
 
-bool Field::clearCreep(int x, int y, Creep *creep)
+bool Field::clearUnit(int x, int y, Unit *unit)
 {
     if(!field[sizeX*y + x].empty)
     {
-        if(creep == NULL)
-            field[sizeX*y + x].creeps.clear();
-        else if(int num = containCreep(x, y, creep))
+        if(unit == NULL)
+            field[sizeX*y + x].units.clear();
+        else if(int num = containUnit(x, y, unit))
         {
-            field[sizeX*y + x].creeps.erase(field[sizeX*y + x].creeps.begin()+(num-1));
-//            field[sizeX*y + x].creep = NULL;
+            field[sizeX*y + x].units.erase(field[sizeX*y + x].units.begin()+(num-1));
+//            field[sizeX*y + x].unit = NULL;
         }
 
-        if(field[sizeX*y + x].creeps.empty())
+        if(field[sizeX*y + x].units.empty())
             field[sizeX*y + x].empty = true;
 
         return true;
@@ -839,14 +875,14 @@ bool Field::clearCreep(int x, int y, Creep *creep)
 
 bool Field::deleteTower(int x, int y)
 {
-    Tower* tower = towers.getTower(x, y);
+    Tower* tower = towersManager.getTower(x, y);
 
     if(tower != NULL)
     {
         int towerX = tower->currX;
         int towerY = tower->currY;
         int size = tower->defTower->size;
-        towers.deleteTower(towerX, towerY);
+        towersManager.deleteTower(towerX, towerY);
 
         for(int tmpX = 0; tmpX < size; tmpX++)
             for(int tmpY = 0; tmpY < size; tmpY++)
@@ -863,14 +899,14 @@ void Field::setPixmapInCell(int x, int y, QPixmap pixmap)
     field[sizeX*y + x].backgroundPixmap = pixmap;
 }
 
-void Field::setPixmapForCreep(QPixmap pixmap)
+void Field::setPixmapForUnit(QPixmap pixmap)
 {
-    creeps.setDefaulPixmapForCreep(pixmap);
+    unitsManager.setDefaulPixmapForUnit(pixmap);
 }
 
 void Field::setPixmapForTower(QPixmap pixmap)
 {
-    towers.setDefaulPixmapForTower(pixmap);
+    towersManager.setDefaulPixmapForTower(pixmap);
 }
 
 QPixmap Field::getBusyPixmapOfCell(int x, int y)
@@ -883,12 +919,12 @@ QPixmap Field::getPixmapOfCell(int x, int y)
     return field[sizeX*y + x].backgroundPixmap;
 }
 
-QPixmap Field::getCreepPixmap(int x, int y)
+QPixmap Field::getUnitPixmap(int x, int y)
 {
-    return creeps.getCreepPixmap(x, y);
+    return unitsManager.getUnitPixmap(x, y);
 }
 
 QPixmap Field::getTowerPixmap(int x, int y)
 {
-    return towers.getTowerPixmap(x, y);
+    return towersManager.getTowerPixmap(x, y);
 }

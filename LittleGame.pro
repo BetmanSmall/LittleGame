@@ -13,9 +13,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    towers.cpp \
     field.cpp \
-    creeps.cpp \
     mainmenu.cpp \
     widgetcontroller.cpp \
     optionmenu.cpp \
@@ -23,16 +21,16 @@ SOURCES += main.cpp\
     gamewidget.cpp \
     faction.cpp \
     tower.cpp \
-    creep.cpp \
     defaultunit.cpp \
     defaulttower.cpp \
     bullet.cpp \
-    underconstruction.cpp
+    underconstruction.cpp \
+    unit.cpp \
+    unitsmanager.cpp \
+    towersmanager.cpp
 
 HEADERS  += \
-    towers.h \
     field.h \
-    creeps.h \
     mainmenu.h \
     widgetcontroller.h \
     optionmenu.h \
@@ -40,11 +38,13 @@ HEADERS  += \
     gamewidget.h \
     faction.h \
     tower.h \
-    creep.h \
     defaultunit.h \
     defaulttower.h \
     bullet.h \
-    underconstruction.h
+    underconstruction.h \
+    unit.h \
+    unitsmanager.h \
+    towersmanager.h
 
 FORMS    += \
     mainmenu.ui \

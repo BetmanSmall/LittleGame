@@ -18,8 +18,8 @@ void Bullet::setCurrentCordinate(int currX, int currY) {
 //    this->destX = destX;
 //    this->destY = destY;
 //}
-void Bullet::setCreep(Creep* creep) {
-    this->creep = creep;
+void Bullet::setUnit(Unit* unit) {
+    this->unit = unit;
 }
 
 void Bullet::setPixmap(QPixmap pixmap) {
@@ -51,8 +51,8 @@ QPixmap Bullet::getPixmap() {
 }
 
 void Bullet::move() {
-    int destX = creep->coorByMapX;
-    int destY = creep->coorByMapY;
+    int destX = unit->coorByMapX;
+    int destY = unit->coorByMapY;
 
     if(currX != destX || currY != destY) {
         if(currX == destX) {

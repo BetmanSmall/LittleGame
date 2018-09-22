@@ -4,7 +4,7 @@
 #include <QPixmap>
 
 #include "defaulttower.h"
-#include "creep.h"
+#include "unit.h"
 #include "bullet.h"
 
 using namespace std;
@@ -33,7 +33,7 @@ public:
     Tower();
 
 //    void createBulletAndShot(int attackX, int attackY);
-    void createBulletAndShot(Creep* creep, int bullet_grafCoorX, int bullet_grafCoorY);
+    void createBulletAndShot(Unit* unit, int bullet_grafCoorX, int bullet_grafCoorY);
 
 //    Tower(int type, int radius, int attack, QPixmap pixmap);
 };

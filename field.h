@@ -6,8 +6,8 @@
 
 #include <QPixmap>
 
-#include "creeps.h"
-#include "towers.h"
+#include "unitsmanager.h"
+#include "towersmanager.h"
 #include "faction.h"
 
 /**
@@ -18,30 +18,32 @@ class Cell
 public:
     Cell()
     {
-        step = 0;
+        heroStep = 0;
         empty = true;
         busy = false;
         spawn = false;
         exit = false;
 
+        hero = false;
 //        tower = NULL;
         tower = false;
-//        creeps = NULL;
+//        units = NULL;
 
-//        pixmap = null;
+//        backgroundPixmap = null;
 //        busyPixmap = null;
     }
 
-    int step;
+    int heroStep;
     bool empty;
     bool busy;
 
     bool spawn; // NEED Check!!!!! ?????  Check
     bool exit; // NEED Check!!!!! ????? // NEED Check!!!!! ????? // NEED Check!!!!! ?????
 
+    bool hero;
 //    Tower* tower;
     bool tower;
-    vector<Creep*> creeps;
+    vector<Unit*> units;
 
     QPixmap backgroundPixmap;
     QPixmap busyPixmap;
@@ -49,19 +51,19 @@ public:
 
 /**
  * @brief Поле из ячеек
- * @details Класс так же отвечает за Башни, Криппы. И пока что одну фракцию
+ * @details Класс так же отвечает за Башни, Юнитов. И пока что одну фракцию
  */
 class Field
 {
     Cell* field;
-    Towers towers;
-    Creeps creeps;
+    TowersManager towersManager;
+    UnitsManager unitsManager;
     Faction* faction1;
 
-    bool creepSet;
+    bool unitSet;
 
-    int gameOverLimitCreeps;
-    int currentFinishedCreeps;
+    int gameOverLimitUnits;
+    int currentFinishedUnits;
 
 //    int sizeWidgetWidth;
 //    int sizeWidgetHeight;
@@ -242,17 +244,17 @@ public:
     /**
      * @brief Говорит всем криппам ходить
      * @return 2 - Все криппы мертвы
-     * @return 1 - Eсли колличество криппов в точке @exitPoint превышено $gameOverLimitCreeps
+     * @return 1 - Eсли колличество криппов в точке @exitPoint превышено $gameOverLimitUnits
      * @return 0 - Все криппы сходили успешно
      * @return -1 - Какому-либо криппу перекрыли путь до $exitPoint
      */
-    int stepAllCreeps();
+    int stepAllUnits();
     /**
      * @brief Должен сходить крипп под номером
      * @param num - Номер криппа
      * @return Какие-то ошибки, смотри выше!
      */
-    int stepOneCreep(int num);
+    int stepOneUnit(int num);
 
     /**
      * @brief Возращает номер шага для волнового алгоритма с проверками
@@ -296,28 +298,28 @@ public:
      * @param y
      * @return Указатель на объект класса "крипп"
      */
-    Creep* getCreep(int x, int y);
+    Unit* getUnit(int x, int y);
     /**
      * @brief Возвращает вектор криппов, находящихся в этой ячейке
      * @param x
      * @param y
      * @return Вектор указателей на обекты криппов
      */
-    std::vector<Creep *> getCreeps(int x, int y);
+    std::vector<Unit *> getUnits(int x, int y);
     /**
      * @brief Устарело
      * @param x
      * @param y
      * @return
      */
-    int getCreepHpInCell(int x, int y);
+    int getUnitHpInCell(int x, int y);
     /**
      * @brief Возвращает указатель на криппа, с наименьшим хп в данной ячейке
      * @param x
      * @param y
      * @return Указатель на криппа
      */
-    Creep* getCreepWithLowHP(int x, int y);
+    Unit* getUnitWithLowHP(int x, int y);
 
     /**
      * @brief Возвращает вектор указателей всех башен созданных в объекте класса $Towers
@@ -353,11 +355,11 @@ public:
      * @brief Возвращает индекс криппа в данной клетке (с учетом того что в данной клектке могут находится несколько криппов)
      * @param x
      * @param y
-     * @param creep - Указатель на криппа
+     * @param unit - Указатель на криппа
      * @return 0 - Нет крипов, либо нет данного криппа.
      * @return {int} - Индекс криппа, либо количество криппов
      */
-    int containCreep(int x, int y, Creep* creep = NULL);
+    int containUnit(int x, int y, Unit* unit = NULL);
 
     /**
      * @brief Устанавливает занятость клетки и соответсвующую картинку
@@ -389,16 +391,16 @@ public:
      * @return True - Создал; False - Не создал (True/False)
      * @return True/False создал/не создал
      */
-    bool setCreepInSpawnPoint();//Creep* creep = NULL);//, int type = 0);
+    bool spawnHeroInSpawnPoint();//Unit* unit = NULL);//, int type = 0);
     /**
      * @brief Устанавливает криппа в данную клетку
      * @param x
      * @param y
-     * @param creep - Указатель на криппа
+     * @param unit - Указатель на криппа
      * @return True - Установил; False - Не установил (True/False)
      * @return True/False установил/не установил
      */
-    bool setCreep(int x, int y, Creep* creep = NULL);//, int type = 0);
+    bool setUnit(int x, int y, Unit* unit = NULL);//, int type = 0);
 
     /**
      * @brief Очищяет 'занятость' / Убирает рельеф
@@ -418,10 +420,10 @@ public:
      * @brief Удаляет с клетки конкретного криппа (если он там есть есть) / если криппа не передали - удаляем последнего пришедшего?
      * @param x
      * @param y
-     * @param creep - Указатель на криппа
+     * @param unit - Указатель на криппа
      * @return True - Удалил; False - Не удалил (True/False)
      */
-    bool clearCreep(int x, int y, Creep* creep = NULL);
+    bool clearUnit(int x, int y, Unit* unit = NULL);
 
     /**
      * @brief Удаляет из $towerS по координатам
@@ -442,7 +444,7 @@ public:
      * @brief Устарело
      * @param pixmap
      */
-    void setPixmapForCreep(QPixmap pixmap);
+    void setPixmapForUnit(QPixmap pixmap);
     /**
      * @brief Устарело
      * @param pixmap
@@ -469,7 +471,7 @@ public:
      * @param y
      * @return
      */
-    QPixmap getCreepPixmap(int x, int y);
+    QPixmap getUnitPixmap(int x, int y);
     /**
      * @brief Устарело
      * @param x

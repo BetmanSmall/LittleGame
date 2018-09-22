@@ -23,15 +23,15 @@ GameWidget::GameWidget(QWidget *parent) :
     zoomMaxSizeCell = 256;
     zoomMinSizeCell = 48;
 
-    defaultNumCreateCreeps = 30;
+    defaultNumCreateUnits = 30;
 
-    creepsMove_TimerMilliSec = 100;
+    unitsMove_TimerMilliSec = 100;
     towersAttack_TimerMilliSec = 1000;
     scanMouseMove_TimerMilliSec = 100;
     bulletsFly_TimerMilliSec = 100;
 
     bulletsFly_TimerId = 0;
-    creepsMove_TimerId = 0;
+    unitsMove_TimerId = 0;
     towersAttack_TimerId = 0;
     scanMouseMove_TimerId = 0;
 
@@ -47,7 +47,7 @@ GameWidget::GameWidget(QWidget *parent) :
 
     ui->loadMaps->setHidden(true);
     ui->clearMap->setHidden(true);
-    ui->goCreeps->setHidden(true);
+    ui->goUnits->setHidden(true);
     ui->closeWidget->setHidden(true);
 
 //    qDebug() << "GameWidget: X: " << width() << " Y: " << height();
@@ -71,14 +71,14 @@ GameWidget::GameWidget(QWidget *parent) :
 //            if(rand()%101 <= 10)
 //                field.setTower(x, y);
 
-//    int numCreepsK = 0;
+//    int numUnitsK = 0;
 //    for(int x = 0; x < field.getSizeX(); x++)
 //        for(int y = 0; y < field.getSizeY(); y++)
 //            if(rand()%101 <= 5)
-//                if(numCreepsK++ < defaultNumCreateCreeps)
-//                    field.setCreep(x, y);
+//                if(numUnitsK++ < defaultNumCreateUnits)
+//                    field.setUnit(x, y);
 
-//    field.createSpawnPoint(defaultNumCreateCreeps, 0, 0);
+//    field.createSpawnPoint(defaultNumCreateUnits, 0, 0);
 //    field.createExitPoint(field.getSizeX()-1, field.getSizeY()-1);
 
 //    loadMap(TOWER_DEFENCE_PATH + "maps/swamp.tmx");
@@ -96,36 +96,40 @@ void GameWidget::timerEvent(QTimerEvent *event)
 //        qDebug() << "test";
     int timerId = event->timerId();
 
-    if(timerId == creepsMove_TimerId)
+    if(timerId == unitsMove_TimerId)
     {
-        if(test == 0)
-            field.setCreepInSpawnPoint();
-        test = test<8 ? test+1 : 0;
+//        if(test == 0)
+//            field.spawnHeroInSpawnPoint();
+//        test = test<8 ? test+1 : 0;
 
-        if(int result = field.stepAllCreeps())
+        qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
+
+        if(int result = field.stepAllUnits())
         {
             if(result == 2)
             {
-                QMessageBox msg;
-                msg.setText("You WIN!");
-                msg.exec();
-                qDebug() << "You Win!";
-                stopTimer_CreepsMoveAndTowerAttack();
+                global_text = "You WIN!";
+//                QMessageBox msg;
+//                msg.setText("You WIN!");
+//                msg.exec();
+//                qDebug() << "You Win!";
+//                stopTimer_UnitsMoveAndTowerAttack();
             }
             else if(result == 1)
             {
-                QMessageBox msg;
-                msg.setText("You LOSE!");
-                msg.exec();
-                qDebug() << "You Lose!";
-                stopTimer_CreepsMoveAndTowerAttack();
+                global_text = "You LOSE!";
+//                QMessageBox msg;
+//                msg.setText("You LOSE!");
+//                msg.exec();
+//                qDebug() << "You Lose!";
+//                stopTimer_UnitsMoveAndTowerAttack();
             }
             else if(result == -1)
             {
                 if(field.deleteTower())
                     field.waveAlgorithm();
                 else
-                    stopTimer_CreepsMoveAndTowerAttack();
+                    stopTimer_UnitsMoveAndTowerAttack();
             }
         }
         else {
@@ -256,8 +260,8 @@ void GameWidget::keyPressEvent(QKeyEvent * event)
 //    }
 //    else if(event->button() == Qt::XButton2)
 //    {
-//        field.createSpawnPoint(defaultNumCreateCreeps, mouseX, mouseY);
-//        field.setCreep(mouseX,mouseY);
+//        field.createSpawnPoint(defaultNumCreateUnits, mouseX, mouseY);
+//        field.setUnit(mouseX,mouseY);
 //    }
     update();
 }
@@ -280,8 +284,8 @@ void GameWidget::paintEvent(QPaintEvent *)
                 drawRelief();
 //            drawTowersByField();
 
-            if(ui->drawCreeps_checkBox->isChecked())
-                drawCreeps();
+            if(ui->drawUnits_checkBox->isChecked())
+                drawUnits();
 
             if(ui->drawTowersByTowers_checkBox->isChecked())
                 drawTowersByTowers();
@@ -621,7 +625,7 @@ void GameWidget::drawTowersByTowers()
     }
 }
 
-void GameWidget::drawCreeps()
+void GameWidget::drawUnits()
 {
     int fieldX = field.getSizeX();
     int fieldY = field.getSizeY();
@@ -641,17 +645,17 @@ void GameWidget::drawCreeps()
 
     for(int y = 0; y < fieldY; y++) {
         for(int x = 0; x < fieldX; x++) {
-            int num = field.containCreep(x, y);
+            int num = field.containUnit(x, y);
             if(num) {
-                std::vector<Creep*> creeps = field.getCreeps(x, y);
-                int size = creeps.size();
+                std::vector<Unit*> units = field.getUnits(x, y);
+                int size = units.size();
                 for(int k = 0; k < size; k++) {
-                    if(creeps[k]->alive || creeps[k]->preDeath) {// fixed!!!
+                    if(units[k]->alive || units[k]->preDeath) {// fixed!!!
                         int lastX, lastY;
                         int animationCurrIter, animationMaxIter;
-                        QPixmap pixmap = creeps[k]->getAnimationInformation(&lastX, &lastY, &animationCurrIter, &animationMaxIter);
+                        QPixmap pixmap = units[k]->getAnimationInformation(&lastX, &lastY, &animationCurrIter, &animationMaxIter);
                         if(!field.getIsometric()) {
-//                            qDebug() << "GameWidget::drawCreeps(); -- Not Isometric!";
+//                            qDebug() << "GameWidget::drawUnits(); -- Not Isometric!";
 
                             int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;//+1;
                             int pxlsY = mainCoorMapY + spaceWidget + y*sizeCell;// - sizeCell/2;//+1;
@@ -673,12 +677,12 @@ void GameWidget::drawCreeps()
                             if(lastY > y)
                                 pxlsY += (sizeCell/animationMaxIter)*(animationMaxIter-animationCurrIter);
 
-//                            qDebug() << "GameWidget::drawCreeps(); -- Pix: " << !pixmap.isNull();
+//                            qDebug() << "GameWidget::drawUnits(); -- Pix: " << !pixmap.isNull();
                             p.drawPixmap(pxlsX, pxlsY, localSizeCell + localSpaceCell*2, localSizeCell + localSpaceCell*2, pixmap);
 //                            p.drawRect(pxlsX, pxlsY, localSizeCell + localSpaceCell*2, localSizeCell + localSpaceCell*2);
 
                             int maxHP = 100;
-                            int hp = creeps[k]->hp;
+                            int hp = units[k]->hp;
                             float hpWidth = localSizeCell-5;
                             hpWidth = hpWidth/maxHP*hp;
 //                            qDebug() << "hpWidth: " << hpWidth;
@@ -687,11 +691,11 @@ void GameWidget::drawCreeps()
                             p.fillRect(pxlsX + localSpaceCell+3, pxlsY+1, hpWidth, 9, QColor(Qt::green));
 
                             // IT's NOT GOOD!!! Fixed!
-                            creeps[k]->coorByMapX = pxlsX;
-                            creeps[k]->coorByMapY = pxlsY;
+                            units[k]->coorByMapX = pxlsX;
+                            units[k]->coorByMapY = pxlsY;
                             // -----------------------
                         } else {
-//                            qDebug() << "GameWidget::drawCreeps(); -- Isometric!";
+//                            qDebug() << "GameWidget::drawUnits(); -- Isometric!";
 
                             int mainX = mainCoorMapX + isometricCoorX + x*(sizeCellX/2);
                             int mainY = mainCoorMapY + isometricCoorY + x*(sizeCellY/2);
@@ -962,25 +966,25 @@ bool GameWidget::whichCell(int &mouseX, int &mouseY)
     return false;
 }
 
-void GameWidget::startTimer_CreepsMoveAndTowerAttack()
+void GameWidget::startTimer_UnitsMoveAndTowerAttack()
 {
-    qDebug() << "GameWidget::startTimer_CreepsMoveAndTowerAttack();";
+    qDebug() << "GameWidget::startTimer_UnitsMoveAndTowerAttack();";
     if(field.isSetSpawnPoint())
     {
-        if(creepsMove_TimerId)
-            killTimer(creepsMove_TimerId);
+        if(unitsMove_TimerId)
+            killTimer(unitsMove_TimerId);
 
-        creepsMove_TimerId = startTimer(creepsMove_TimerMilliSec);
+        unitsMove_TimerId = startTimer(unitsMove_TimerMilliSec);
     }
 }
 
-void GameWidget::stopTimer_CreepsMoveAndTowerAttack()
+void GameWidget::stopTimer_UnitsMoveAndTowerAttack()
 {
-    qDebug() << "stopTimer_CreepsMoveAndTowerAttack()";
-    if(creepsMove_TimerId)
-        killTimer(creepsMove_TimerId);
+    qDebug() << "stopTimer_UnitsMoveAndTowerAttack()";
+    if(unitsMove_TimerId)
+        killTimer(unitsMove_TimerId);
 
-    creepsMove_TimerId = 0;
+    unitsMove_TimerId = 0;
 }
 
 void GameWidget::buildTower(int x, int y)
@@ -1104,21 +1108,21 @@ void GameWidget::mousePressEvent(QMouseEvent* event) {
 
             field.createExitPoint(mouseX,mouseY);
             if(field.isSetSpawnPoint())
-                startTimer_CreepsMoveAndTowerAttack();
+                startTimer_UnitsMoveAndTowerAttack();
 //            test = 1;
 
-//            field.setCreep(mouseX, mouseY);
+//            field.setUnit(mouseX, mouseY);
         }
         else if(event->button() == Qt::XButton2)
         {
             field.setMousePress(mouseX,mouseY);
-            field.createSpawnPoint(defaultNumCreateCreeps, mouseX, mouseY);
+            field.createSpawnPoint(defaultNumCreateUnits, mouseX, mouseY);
 
-            startTimer_CreepsMoveAndTowerAttack();
+            startTimer_UnitsMoveAndTowerAttack();
         }
         else if(event->button() == Qt::MidButton)
         {
-            field.setCreep(mouseX, mouseY);
+            field.setUnit(mouseX, mouseY);
         }
     }
     update();
@@ -1256,10 +1260,10 @@ void GameWidget::wheelEvent(QWheelEvent* event) {
 
 void GameWidget::loadMap(QString mapName)
 {
-    if(creepsMove_TimerId)
+    if(unitsMove_TimerId)
     {
-        killTimer(creepsMove_TimerId);
-        creepsMove_TimerId = 0;
+        killTimer(unitsMove_TimerId);
+        unitsMove_TimerId = 0;
     }
 
     if(mapLoad)
@@ -1337,7 +1341,7 @@ void GameWidget::loadMap(QString mapName)
 
                 if(tileSet.name.contains("tower"))
                 {
-//                    qDebug() << "tileSet.name.contains('creep')";
+//                    qDebug() << "tileSet.name.contains('unit')";
 
                     DefaultTower tower;
 
@@ -1561,9 +1565,9 @@ void GameWidget::loadMap(QString mapName)
                     qDebug() << "faction.creatyNewTower(tower);";
                     faction.creatyNewTower(tower);
                 }
-                else if(tileSet.name.contains("creep"))
+                else if(tileSet.name.contains("unit"))
                 {
-//                    qDebug() << "tileSet.name.contains('creep')";
+//                    qDebug() << "tileSet.name.contains('unit')";
 
                     DefaultUnit unit;
 //                    loadUnit = true;
@@ -1614,8 +1618,8 @@ void GameWidget::loadMap(QString mapName)
                         int columns = tileSet.img.width() / tileSet.tileWidth;
                         int rows = tileSet.img.height() / tileSet.tileHeight;
 
-                        qDebug() << "GameWidget::loadMap(); -- creep : columnsPixmap: " << columns;
-                        qDebug() << "GameWidget::loadMap(); -- creep : rowsPixmap: " << rows;
+                        qDebug() << "GameWidget::loadMap(); -- unit : columnsPixmap: " << columns;
+                        qDebug() << "GameWidget::loadMap(); -- unit : rowsPixmap: " << rows;
 
                         for(int y = 0; y < rows; y++) {
                             for(int x = 0; x < columns; x++) {
@@ -1638,7 +1642,7 @@ void GameWidget::loadMap(QString mapName)
                         int tileGID = xmlReader.attributes().value("tile").toInt();
                         QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
 
-//                        qDebug() << "GameWidget::loadMap(); -- creepPixmaps: " << name << "tileGID: " << tileGID << " : " << !pixmap.isNull();
+//                        qDebug() << "GameWidget::loadMap(); -- unitPixmaps: " << name << "tileGID: " << tileGID << " : " << !pixmap.isNull();
 
                         if(name == "idle_up")
                             unit.idle_up = pixmap;
@@ -1792,6 +1796,7 @@ void GameWidget::loadMap(QString mapName)
 //                        qDebug() << "tileHeight: " << tileHeight;
                         QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
                         tileSet.subRects.push_back(rect);
+                        tileSet.tiles.push_back(tileSet.img.copy(rect));
 //                        qDebug() << "QRect rect(terrain) -- push_back:" << rect;
                     }
             }
@@ -1804,13 +1809,13 @@ void GameWidget::loadMap(QString mapName)
                 QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
 //                QPixmap pixmapMirrored = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
 
-                if(name == "Creep")
+                if(name == "Unit")
                 {
                     global_pixmap = pixmap;
-                    field.setPixmapForCreep(pixmap);
-                    qDebug() << "GameWidget::loadMap(); -- Set default Pixmap for Creep!";
+                    field.setPixmapForUnit(pixmap);
+                    qDebug() << "GameWidget::loadMap(); -- Set default Pixmap for Unit!";
                 }
-                if(tileSet.name.contains("creep"))
+                if(tileSet.name.contains("unit"))
                 {
                     // GAVNO!!
                 }
@@ -1915,7 +1920,6 @@ void GameWidget::loadMap(QString mapName)
     //                qDebug() << "y: " << y;
                     x = x / tileMapWidth; // В файле кординаты графические. Поэтому преобразуем в игровые.
                     y = (y - tileMapWidth) / tileMapWidth;
-
                 }
 
                 QPixmap pixmap = tileSets[num].img;
@@ -1923,17 +1927,17 @@ void GameWidget::loadMap(QString mapName)
 
                 if(name == "spawnPoint")
                 {
-                    qDebug() << "GameWidget::loadMap(); -- createSpawnPoint(" << defaultNumCreateCreeps << ", " << x << ", " << y << ");";
+                    qDebug() << "GameWidget::loadMap(); -- createSpawnPoint(" << defaultNumCreateUnits << ", " << x << ", " << y << ");";
                     field.setPixmapInCell(x, y, pixmap);
                     field.setMousePress(x, y);
-                    field.createSpawnPoint(defaultNumCreateCreeps, x, y);
+                    field.createSpawnPoint(defaultNumCreateUnits, x, y);
                 }
                 else if(name == "exitPoint")
                 {
                     qDebug() << "GameWidget::loadMap(); -- createExitPoint(" << x << ", " << y << ");";
                     field.setPixmapInCell(x, y, pixmap);
                     field.createExitPoint(x, y);
-//                    startCreepTimer();
+//                    startUnitTimer();
                 }
             }
         }
@@ -1968,12 +1972,24 @@ void GameWidget::loadMap(QString mapName)
         qDebug() << "Completed load map.";
 
     field.setFaction(&faction);
+    field.spawnHeroInSpawnPoint();
 
+    if (mapName.contains("randomMap")) {
+        for (int x = 0; x < mapSizeX; x++) {
+            for (int y = 0; y < mapSizeY; y++) {
+                if( (rand()%100) < 40 ) {
+                    field.setBusy(x, y, tileSet.tiles[55]);
+                }
+            }
+        }
+    }
     mapLoad = true;
     tileSet.subRects.clear();
+    tileSet.tiles.clear();
     tileSets.clear();
     file->close();
 //    update();
+    startTimer_UnitsMoveAndTowerAttack();
 }
 
 void GameWidget::on_loadMaps_clicked()
@@ -2080,7 +2096,7 @@ void GameWidget::on_clearMap_clicked()
         }
     }
 
-//    int numCreepsK = 0;
+//    int numUnitsK = 0;
 //    for(int x = 0; x < field.getSizeX(); x++)
 //    {
 //        for(int y = 0; y < field.getSizeY(); y++)
@@ -2091,10 +2107,10 @@ void GameWidget::on_clearMap_clicked()
 //            if(rand()%101 <= procent)
 //            {
     //            {
-    //                if(numCreepsK++ < 30)
+    //                if(numUnitsK++ < 30)
     //                {
 //                {
-//                    field.setCreep(x, y);
+//                    field.setUnit(x, y);
 //                }
 //            }
 //        }
@@ -2108,9 +2124,9 @@ void GameWidget::on_closeWidget_clicked()
     signal_closeWidget();
 }
 
-void GameWidget::on_goCreeps_clicked()
+void GameWidget::on_goUnits_clicked()
 {
     field.waveAlgorithm();
-    field.createSpawnPoint(defaultNumCreateCreeps);
-    startTimer_CreepsMoveAndTowerAttack();
+    field.createSpawnPoint(defaultNumCreateUnits);
+    startTimer_UnitsMoveAndTowerAttack();
 }
