@@ -6,48 +6,18 @@
 
 #include <QPixmap>
 
+#include "astar.h"
 #include "unitsmanager.h"
 #include "towersmanager.h"
 #include "faction.h"
+#include "bullet.h"
+#include "cell.h"
 
-/**
- * @brief Ячейка
- */
-class Cell
-{
-public:
-    Cell()
-    {
-        heroStep = 0;
-        empty = true;
-        busy = false;
-        spawn = false;
-        exit = false;
+//struct FieldCells {
 
-        hero = false;
-//        tower = NULL;
-        tower = false;
-//        units = NULL;
+//};
 
-//        backgroundPixmap = null;
-//        busyPixmap = null;
-    }
-
-    int heroStep;
-    bool empty;
-    bool busy;
-
-    bool spawn; // NEED Check!!!!! ?????  Check
-    bool exit; // NEED Check!!!!! ????? // NEED Check!!!!! ????? // NEED Check!!!!! ?????
-
-    bool hero;
-//    Tower* tower;
-    bool tower;
-    vector<Unit*> units;
-
-    QPixmap backgroundPixmap;
-    QPixmap busyPixmap;
-};
+using FieldCells = Cell*;
 
 /**
  * @brief Поле из ячеек
@@ -55,12 +25,15 @@ public:
  */
 class Field
 {
-    Cell* field;
+public: // we are freindly!
+    AStar::PathFinder pathFinder;
+//private:
+    FieldCells field;
     TowersManager towersManager;
     UnitsManager unitsManager;
     Faction* faction1;
 
-    bool unitSet;
+//    bool unitSet;
 
     int gameOverLimitUnits;
     int currentFinishedUnits;
@@ -87,8 +60,8 @@ public:
      * @brief Конструктор. Сразу же в .h устанавливает указатель на массив из ячеек как NULL
      */
     Field():field(NULL) {}
-
     ~Field() {deleteField();}
+    Cell* getCell(int x, int y);
 
     /**
      * @brief Создает поле, размерностью (newSizeX, newSizeY)
@@ -121,6 +94,11 @@ public:
      * @param y - Координаты по Y
      */
     void createExitPoint(int x, int y);
+
+    void updateHeroDestinationPoint();
+    void updateHeroDestinationPoint(int x, int y);
+
+    void updatePathFinderWalls();
 
     /**
      * @brief Возвращает размер поля по X
@@ -243,6 +221,8 @@ public:
 
     /**
      * @brief Говорит всем криппам ходить
+     * @return 4 - Герой contact с врагом
+     * @return 3 - Герой в точке @exitPoint
      * @return 2 - Все криппы мертвы
      * @return 1 - Eсли колличество криппов в точке @exitPoint превышено $gameOverLimitUnits
      * @return 0 - Все криппы сходили успешно
@@ -251,7 +231,7 @@ public:
     int stepAllUnits();
     /**
      * @brief Должен сходить крипп под номером
-     * @param num - Номер криппа
+     * @param num - номер криппа
      * @return Какие-то ошибки, смотри выше!
      */
     int stepOneUnit(int num);
@@ -342,7 +322,7 @@ public:
      * @return True - Занята; False - Свободна (True/False)
      * @return True/False занята/свободна
      */
-    bool containBusy(int x, int y);
+    bool isTerrain(int x, int y);
     /**
      * @brief Проверяет занята ли клетка башней
      * @param x
@@ -393,14 +373,23 @@ public:
      */
     bool spawnHeroInSpawnPoint();//Unit* unit = NULL);//, int type = 0);
     /**
-     * @brief Устанавливает криппа в данную клетку
+     * @brief Создаёт криппа в данную клетку
      * @param x
      * @param y
-     * @param unit - Указатель на криппа
-     * @return True - Установил; False - Не установил (True/False)
-     * @return True/False установил/не установил
+     * @param type - тип юнита 0 = hero, 1 = guardian
+     * @return Unit* - указатель на созданого юнита
      */
-    bool setUnit(int x, int y, Unit* unit = NULL);//, int type = 0);
+    Unit* createUnit(int x, int y, int type = -1);
+//    /**
+//     * @brief Устанавливает криппа в данную клетку
+//     * @param x
+//     * @param y
+//     * @param unit - указатель на юнита
+//     * @param type - тип юнита 0 = hero, 1 = guardian
+//     * @return True - Установил; False - Не установил (True/False)
+//     * @return True/False установил/не установил
+//     */
+//    bool setUnit(int x, int y, Unit* unit = NULL);//, int type = -1);
 
     /**
      * @brief Очищяет 'занятость' / Убирает рельеф
@@ -433,52 +422,52 @@ public:
      */
     bool deleteTower(int x = -1, int y = -1);
 
-    /**
-     * @brief Устарело
-     * @param x
-     * @param y
-     * @param pixmap
-     */
-    void setPixmapInCell(int x, int y, QPixmap pixmap);
-    /**
-     * @brief Устарело
-     * @param pixmap
-     */
-    void setPixmapForUnit(QPixmap pixmap);
-    /**
-     * @brief Устарело
-     * @param pixmap
-     */
-    void setPixmapForTower(QPixmap pixmap);
+//    /**
+//     * @brief Устарело
+//     * @param x
+//     * @param y
+//     * @param pixmap
+//     */
+//    void setPixmapInCell(int x, int y, QPixmap pixmap);
+//    /**
+//     * @brief Устарело
+//     * @param pixmap
+//     */
+//    void setPixmapForUnit(QPixmap pixmap);
+//    /**
+//     * @brief Устарело
+//     * @param pixmap
+//     */
+//    void setPixmapForTower(QPixmap pixmap);
 
-    /**
-     * @brief Устарело
-     * @param x
-     * @param y
-     * @return
-     */
-    QPixmap getBusyPixmapOfCell(int x, int y);
-    /**
-     * @brief Устарело
-     * @param x
-     * @param y
-     * @return
-     */
-    QPixmap getPixmapOfCell(int x, int y);
-    /**
-     * @brief Устарело
-     * @param x
-     * @param y
-     * @return
-     */
-    QPixmap getUnitPixmap(int x, int y);
-    /**
-     * @brief Устарело
-     * @param x
-     * @param y
-     * @return
-     */
-    QPixmap getTowerPixmap(int x, int y);
+//    /**
+//     * @brief Устарело
+//     * @param x
+//     * @param y
+//     * @return
+//     */
+//    QPixmap getBusyPixmapOfCell(int x, int y);
+//    /**
+//     * @brief Устарело
+//     * @param x
+//     * @param y
+//     * @return
+//     */
+//    QPixmap getPixmapOfCell(int x, int y);
+//    /**
+//     * @brief Устарело
+//     * @param x
+//     * @param y
+//     * @return
+//     */
+//    QPixmap getUnitPixmap(int x, int y);
+//    /**
+//     * @brief Устарело
+//     * @param x
+//     * @param y
+//     * @return
+//     */
+//    QPixmap getTowerPixmap(int x, int y);
 };
 
 #endif // FIELD_H

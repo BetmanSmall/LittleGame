@@ -7,7 +7,7 @@ GameWidget::GameWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    TOWER_DEFENCE_PATH = "../../LittleGame/";
+    ASSETS_PATH = "./assets/";
 
     srand(time(0));
 
@@ -81,7 +81,7 @@ GameWidget::GameWidget(QWidget *parent) :
 //    field.createSpawnPoint(defaultNumCreateUnits, 0, 0);
 //    field.createExitPoint(field.getSizeX()-1, field.getSizeY()-1);
 
-//    loadMap(TOWER_DEFENCE_PATH + "maps/swamp.tmx");
+//    loadMap(ASSETS_PATH + "maps/swamp.tmx");
 }
 
 GameWidget::~GameWidget()
@@ -90,55 +90,49 @@ GameWidget::~GameWidget()
     delete ui;
 }
 
-void GameWidget::timerEvent(QTimerEvent *event)
-{
+void GameWidget::timerEvent(QTimerEvent *event) {
 //    if(test == 1)
 //        qDebug() << "test";
     int timerId = event->timerId();
 
-    if(timerId == unitsMove_TimerId)
-    {
+    if(timerId == unitsMove_TimerId) {
 //        if(test == 0)
 //            field.spawnHeroInSpawnPoint();
 //        test = test<8 ? test+1 : 0;
-
-        qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
-
-        if(int result = field.stepAllUnits())
-        {
-            if(result == 2)
-            {
+//        qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
+        if(int result = field.stepAllUnits()) {
+            if(result == 4) {
+                global_text = "Hero contact With Enemy!";
+                signal_closeWidgetGameFinished(false);
+            } else if(result == 3) {
+                global_text = "Hero in ExitPoint!";
+                signal_closeWidgetGameFinished(true);
+            } else if(result == 2) {
                 global_text = "You WIN!";
 //                QMessageBox msg;
 //                msg.setText("You WIN!");
 //                msg.exec();
 //                qDebug() << "You Win!";
 //                stopTimer_UnitsMoveAndTowerAttack();
-            }
-            else if(result == 1)
-            {
+            } else if(result == 1) {
                 global_text = "You LOSE!";
 //                QMessageBox msg;
 //                msg.setText("You LOSE!");
 //                msg.exec();
 //                qDebug() << "You Lose!";
 //                stopTimer_UnitsMoveAndTowerAttack();
-            }
-            else if(result == -1)
-            {
-                if(field.deleteTower())
+            } else if(result == -1) {
+                if(field.deleteTower()) {
                     field.waveAlgorithm();
-                else
+                } else {
                     stopTimer_UnitsMoveAndTowerAttack();
+                }
             }
-        }
-        else {
+        } else {
 //            field.setMainCoorMapAndSizeCell(mainCoorMapX, mainCoorMapY, sizeCell);
             field.towersAttack();
         }
-    }
-    else if(timerId == scanMouseMove_TimerId)
-    {
+    } else if(timerId == scanMouseMove_TimerId) {
         int curX = cursor().pos().x();
         int curY = cursor().pos().y();
 
@@ -177,8 +171,8 @@ void GameWidget::timerEvent(QTimerEvent *event)
 
             field.setMainCoorMap(mainCoorMapX, mainCoorMapY);
         }
-        if(whichCell(curX, curY)) {
-            if(underConstruction) {
+        if (whichCell(curX, curY)) {
+            if (underConstruction) {
                 underConstruction->setEndCoors(curX, curY);
             }
         }
@@ -197,7 +191,6 @@ void GameWidget::timerEvent(QTimerEvent *event)
         }
         // --------------------
     }
-
     update();
 }
 
@@ -216,8 +209,8 @@ void GameWidget::keyPressEvent(QKeyEvent * event)
     if(key == Qt::Key_0) {
 //        qDebug
 //        test = 1;
-    } else if (event->key() == QKeyEvent::Enter) {
-        signal_closeWidget();
+    } else if (event->key() == Qt::Key_Enter) {
+        signal_closeWidgetGameFinished(true);
     } else if(key == Qt::Key_Left) {
         if(mainCoorMapX < 0) {
             mainCoorMapX += pixelsShiftMap;
@@ -390,7 +383,7 @@ void GameWidget::drawField()
         {
 //            qDebug() << "GameWidget::drawField(); -- x: (" << x << "/" << fieldX << ") -- y: (" << y << "/" << fieldY << ")";
             if(mapLoad) {
-                QPixmap pix = field.getPixmapOfCell(x, y);
+                QPixmap pix = field.getCell(x, y)->backgroundPixmap;//getPixmapOfCell(x, y);
                 if(!field.getIsometric()) {
 //                    qDebug() << "GameWidget::drawField(); -- NO Isometric!";
                     int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;
@@ -430,7 +423,7 @@ void GameWidget::drawField()
 void GameWidget::drawFullField()
 {
     if(field.getIsometric()) {
-        QPixmap pix = field.getPixmapOfCell(0, 0);
+        QPixmap pix = field.getCell(0, 0)->backgroundPixmap;//.getPixmapOfCell(0, 0);
 
         int sizeCellX = field.getSizeCell();
         int sizeCellY = sizeCellX/2;
@@ -474,11 +467,11 @@ void GameWidget::drawRelief()
     {
         for(int x = 0; x < fieldX; x++)
         {
-            if(field.containBusy(x, y))
+            if(field.getCell(x, y)->isTerrain())
             {
 //            qDebug() << "GameWidget::drawRelief(); -- x: (" << x << "/" << fieldX << ") -- y: (" << y << "/" << fieldY << ")";
 //            if(mapLoad) {
-                    QPixmap pix = field.getBusyPixmapOfCell(x, y);
+                    QPixmap pix = field.getCell(x, y)->busyPixmap;//getBusyPixmapOfCell(x, y);
                     if(!field.getIsometric()) {
 //                        qDebug() << "GameWidget::drawRelief(); -- NO Isometric!";
                         int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;//+1;
@@ -531,7 +524,7 @@ void GameWidget::drawTowersByField()
                 if(!mapLoad)
                     p.fillRect(pxlsX+1, pxlsY+1, localSizeCell-1, localSizeCell-1, QColor(127, 255, 0));
                 else
-                    p.drawPixmap(pxlsX, pxlsY, localSizeCell/* + sizeCell*/, localSizeCell/* + sizeCell*/, field.getTowerPixmap(x, y));
+                    p.drawPixmap(pxlsX, pxlsY, localSizeCell/* + sizeCell*/, localSizeCell/* + sizeCell*/, field.towersManager.getTowerPixmap(x, y));//->getTowerPixmap(x, y));
             }
         }
     }
@@ -647,7 +640,7 @@ void GameWidget::drawUnits()
         for(int x = 0; x < fieldX; x++) {
             int num = field.containUnit(x, y);
             if(num) {
-                std::vector<Unit*> units = field.getUnits(x, y);
+                std::vector<Unit*> units = field.getCell(x, y)->getUnits();
                 int size = units.size();
                 for(int k = 0; k < size; k++) {
                     if(units[k]->alive || units[k]->preDeath) {// fixed!!!
@@ -732,7 +725,7 @@ void GameWidget::drawUnits()
 //                            };
 //                            p.drawPolygon(points, 4);
 
-                            p.drawPixmap(pxlsX, pxlsY, sizeCellX, sizeCellY*2, pixmap);
+                            p.drawPixmap(pxlsX, pxlsY+sizeCellY/2, sizeCellX, sizeCellY*2, pixmap);
                         }
                     }
                 }
@@ -743,17 +736,14 @@ void GameWidget::drawUnits()
     }
 }
 
-void GameWidget::drawStepsAndMouse()
-{
+void GameWidget::drawStepsAndMouse() {
 //    qDebug() << "GameWidget::drawStepsAndMouse();";
     int fieldX = field.getSizeX();
     int fieldY = field.getSizeY();
-
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int spaceWidget = field.getSpaceWidget();
     int sizeCell = field.getSizeCell();
-
     int isometricCoorX = (sizeCell/2) * fieldY;
     int isometricCoorY = 0;
 
@@ -763,12 +753,9 @@ void GameWidget::drawStepsAndMouse()
     int sizeCellY = sizeCellX/2;
 
     p.setPen(QColor(255,0,0));
-
-    for(int y = 0; y < fieldY; y++)
-    {
-        for(int x = 0; x < fieldX; x++)
-        {
-            if(!field.getIsometric()) {
+    for (int y = 0; y < fieldY; y++) {
+        for (int x = 0; x < fieldX; x++) {
+            if (!field.getIsometric()) {
 //                qDebug() << "GameWidget::drawStepsAndMouse(); -- NOT Isometric!";
                 int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell+1;
                 int pxlsY = mainCoorMapY + spaceWidget + y*sizeCell+1;
@@ -788,15 +775,59 @@ void GameWidget::drawStepsAndMouse()
             } else {
 //                qDebug() << "GameWidget::drawStepsAndMouse(); -- Isometric!";
 //                p.drawPixmap(sizeCell, 0, global_pixmap.width(), global_pixmap.height(), global_pixmap);
-                int x1 = mainCoorMapX + isometricCoorX + x*(sizeCellX/2);
-                int y1 = mainCoorMapY + isometricCoorY + (sizeCellY/2) + x*(sizeCellY/2);
 
-                if(field.getStepCell(x, y))
-                    p.drawText(x1 - 5, y1 + 5, QString("%1").arg(field.getStepCell(x, y)));
+                int x2 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + x*(sizeCellX/2);
+                int y2 = mainCoorMapY + isometricCoorY - (sizeCellY) + x*(sizeCellY/2);
+                if (field.pathFinder.detectCollision({x, y})) {
+                    p.drawPixmap(x2, y2, sizeCellX, sizeCellY*2, global_pixmap);
+//                    p.drawEllipse(x1-sizeCell/4+7, y1-sizeCell/4+7, sizeCell/4, sizeCell/4);
+//                    p.fillRect(x1, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(255, 162, 0));
+                } else {
+//                    p.fillRect(pxlsX + localSpaceCell, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(0, 255, 0));
+                }
+//                int x1 = mainCoorMapX + isometricCoorX + x*(sizeCellX/2);
+//                int y1 = mainCoorMapY + isometricCoorY + (sizeCellY/2) + x*(sizeCellY/2);
+//                if(field.getStepCell(x, y)) {
+//                    p.drawText(x1 - 5, y1 + 5, QString("%1").arg(field.getStepCell(x, y)));
+//                }
             }
         }
         isometricCoorX = (field.getSizeCell()/2) * (fieldY - (y+1));
         isometricCoorY = (field.getSizeCell()/4) * (y+1);
+    }
+
+//    p.setPen(QColor(255,255,255));
+//    p.setBrush(Qt::red);
+//    AStar::Vec2i heroPoint = heroPath.back();
+//    isometricCoorX = (field.getSizeCell()/2) * (fieldY - (heroPoint.y+0));
+//    isometricCoorY = (field.getSizeCell()/4) * (heroPoint.y+0);
+//    int x3 = mainCoorMapX + isometricCoorX + heroPoint.x*(sizeCellX/2);
+//    int y3 = mainCoorMapY + isometricCoorY + (sizeCellY/2) + heroPoint.x*(sizeCellY/2);
+//    int x4 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + heroPoint.x*(sizeCellX/2);
+//    int y4 = mainCoorMapY + isometricCoorY - (sizeCellY) + heroPoint.x*(sizeCellY/2);
+//    p.drawPixmap(x4, y4, sizeCellX, sizeCellY*2, global_pixmap_HeroPoint);
+
+    for (int u = 0; u < field.unitsManager.getAmount(); u++) {
+        Unit* tmpUnit = field.unitsManager.getUnit(u);
+        if (tmpUnit->type == 0) {
+            AStar::CoordinateList heroPath = tmpUnit->path;
+            if (!heroPath.empty()) {
+                for (int k = 1; k < heroPath.size(); k++) {
+                    AStar::Vec2i point = heroPath[k];
+                    isometricCoorX = (field.getSizeCell()/2) * (fieldY - (point.y+0));
+                    isometricCoorY = (field.getSizeCell()/4) * (point.y+0);
+                    int pPx = mainCoorMapX + isometricCoorX - (sizeCellX/2) + point.x*(sizeCellX/2);
+                    int pPy = mainCoorMapY + isometricCoorY - (sizeCellY) + point.x*(sizeCellY/2);
+                    p.drawPixmap(pPx, pPy, sizeCellX, sizeCellY*2, global_pixmap_PathPoint);
+                }
+                AStar::Vec2i destinationPoint = heroPath.front();
+                isometricCoorX = (field.getSizeCell()/2) * (fieldY - (destinationPoint.y+0));
+                isometricCoorY = (field.getSizeCell()/4) * (destinationPoint.y+0);
+                int destinationPointX = mainCoorMapX + isometricCoorX - (sizeCellX/2) + destinationPoint.x*(sizeCellX/2);
+                int destinationPointY = mainCoorMapY + isometricCoorY - (sizeCellY) + destinationPoint.x*(sizeCellY/2);
+                p.drawPixmap(destinationPointX, destinationPointY, sizeCellX, sizeCellY*2, global_pixmap_DestinationPoint);
+            }
+        }
     }
 }
 
@@ -874,10 +905,11 @@ void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, DefaultTower
 
                 p.drawPixmap(pxlsX, pxlsY, sizeCell, sizeCell, pix);
 
-                if(field.containEmpty(buildX+x, buildY+y))
+                if(field.getCell(buildX+x, buildY+y)->isEmpty()) {
                     p.fillRect(pxlsX, pxlsY, sizeCell, sizeCell, cGreen);
-                else
+                } else {
                     p.fillRect(pxlsX, pxlsY, sizeCell, sizeCell, cRed);
+                }
             } else {
                 qDebug() << "GameWidget::drawTowerUnderConstruction(); -- Isometric!";
 
@@ -896,7 +928,7 @@ void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, DefaultTower
 
                 QPixmap pix = tower->pixmap;
 
-                if(field.containEmpty(buildX+x, buildY+y)) {
+                if(field.getCell(buildX+x, buildY+y)->isEmpty()) {
                     p.setOpacity(0.5);
                     p.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, pix);
 //                    p.setOpacity(1);
@@ -950,8 +982,8 @@ bool GameWidget::whichCell(int &mouseX, int &mouseY)
         gameY = -(localMouseX/2 - localMouseY) / (sizeCell/2);
 //        qDebug() << "GameWidget::whichCell(4); - gameX:" << gameX << ", gameY:" << gameY;
 
-        QString text = QString("%1/%2").arg(gameX).arg(gameY);
-        global_text2 = text.toStdString().c_str();
+//        QString text = QString("%1/%2").arg(gameX).arg(gameY);
+//        global_text2 = text.toStdString().c_str();
     }
 
     if(gameX > 0 && gameX < field.getSizeX()+1)
@@ -1068,100 +1100,115 @@ void GameWidget::buildTower(int x, int y)
 }
 
 void GameWidget::mousePressEvent(QMouseEvent* event) {
-    qDebug() << "GameWidget::mousePressEvent() -- ;";
+    Qt::MouseButton button = event->button();
     int mouseX = event->x();
     int mouseY = event->y();
-//    prevMouseX = mouseX;
-//    prevMouseY = mouseY;
-
-    QString text = QString("%1/%2").arg(mouseX).arg(mouseY);
+    QString text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
     global_text = text.toStdString().c_str();
-
+    qDebug() << "GameWidget::mousePressEvent(); -- " << text;
     if(whichCell(mouseX,mouseY)) {
-        text = QString("%1/%2").arg(mouseX).arg(mouseY);
+        text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
         global_text2 = text.toStdString().c_str();
-//        qDebug() << "Button:" << event->button();
         if(event->button() == Qt::LeftButton) {
             pan = true;
             prevMouseX = event->x();
             prevMouseY = event->y();
+            prevMouseCellX = mouseX;
+            prevMouseCellY = mouseY;
+            prevGlobalMouseX = event->globalX();
+            prevGlobalMouseY = event->globalY();
             setCursor(Qt::ClosedHandCursor);
-//            event->accept();
-            if(field.containEmpty(mouseX, mouseY)) {
-                buildTower(mouseX, mouseY);
-            } else if(field.containTower(mouseX, mouseY)) {
-                field.deleteTower(mouseX, mouseY);
-            }
-//            if(!field.containBusy(mouseX, mouseY))
-//                field.waveAlgorithm();
-        } else if(event->button() == Qt::XButton1) {
-            QPixmap pixmap;
-            if(!field.containBusy(mouseX,mouseY))
-                field.setBusy(mouseX,mouseY, pixmap);
-            else
-                field.clearBusy(mouseX,mouseY);
         } else if(event->button() == Qt::RightButton) {
-//            if(waveAlgorithm(mouseX, mouseY) == 1)
-//                global_text2 = "Yes!";
-//            else
-//                global_text2 = "No!";
-
-            field.createExitPoint(mouseX,mouseY);
-            if(field.isSetSpawnPoint())
-                startTimer_UnitsMoveAndTowerAttack();
-//            test = 1;
-
-//            field.setUnit(mouseX, mouseY);
-        }
-        else if(event->button() == Qt::XButton2)
-        {
-            field.setMousePress(mouseX,mouseY);
-            field.createSpawnPoint(defaultNumCreateUnits, mouseX, mouseY);
-
-            startTimer_UnitsMoveAndTowerAttack();
-        }
-        else if(event->button() == Qt::MidButton)
-        {
-            field.setUnit(mouseX, mouseY);
         }
     }
     update();
 }
 
 void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
-//    qDebug() << "GameWidget::mouseReleaseEvent() -- x: " << event->x() << " y: " << event->y();
-
-//    qDebug() << "GameWidget::mouseReleaseEvent() -- underConstruction: " << underConstruction;
-    if (event->button() == Qt::LeftButton) {
-        pan = false;
-        setCursor(Qt::ArrowCursor);
-//        event->accept();
-    }
-    if(underConstruction) {
-        field.setTower(underConstruction->startX, underConstruction->startY, underConstruction->tower);
-        for(int k = 0; k < underConstruction->coorsX.size(); k++) {
-            field.setTower(underConstruction->coorsX[k], underConstruction->coorsY[k], underConstruction->tower);
+    Qt::MouseButton button = event->button();
+    int mouseX = event->x();
+    int mouseY = event->y();
+    QString text = QString("Release(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
+    global_text = text.toStdString().c_str();
+    qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
+    if(whichCell(mouseX, mouseY)) {
+        text = QString("Release(%1/%2)-(%3/%4) -- %3").arg(mouseX).arg(mouseY).arg(prevMouseCellX).arg(prevMouseCellY).arg(button);
+        global_text2 = text.toStdString().c_str();
+        qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
+        if(button == Qt::LeftButton) {
+            pan = false;
+            setCursor(Qt::ArrowCursor);
+            if ( (prevMouseCellX == mouseX && prevMouseCellY == mouseY) ) {
+                if ( (prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
+                    field.updateHeroDestinationPoint(mouseX, mouseY);
+                    if(field.isSetSpawnPoint()) {
+                        startTimer_UnitsMoveAndTowerAttack();
+                    }
+                }
+            }
+//            event->accept();
+//            if(field.containEmpty(mouseX, mouseY)) {
+//                buildTower(mouseX, mouseY);
+//            } else if(field.containTower(mouseX, mouseY)) {
+//                field.deleteTower(mouseX, mouseY);
+//            }
+//            if(!field.containBusy(mouseX, mouseY))
+//                field.waveAlgorithm();
+        } else if (button == Qt::RightButton) {
+            QPixmap pixmap;
+            if(!field.getCell(mouseX, mouseY)->isTerrain()) {
+                field.getCell(mouseX, mouseY)->setTerrain(pixmap);
+            } else {
+                field.getCell(mouseX,mouseY)->removeTerrain();
+            }
+            field.updateHeroDestinationPoint();
+//            field.updatePathFinderWalls();
+        } else if(event->button() == Qt::XButton1) {
+            field.updateHeroDestinationPoint(mouseX,mouseY);
+            if(field.isSetSpawnPoint()) {
+                startTimer_UnitsMoveAndTowerAttack();
+            }
+//            if(waveAlgorithm(mouseX, mouseY) == 1)
+//                global_text2 = "Yes!";
+//            else
+//                global_text2 = "No!";
+//            test = 1;
+//            field.setUnit(mouseX, mouseY);
+        } else if(event->button() == Qt::XButton2) {
+            field.setMousePress(mouseX,mouseY);
+            field.createSpawnPoint(defaultNumCreateUnits, mouseX, mouseY);
+            startTimer_UnitsMoveAndTowerAttack();
+        } else if(event->button() == Qt::MidButton) {
+            field.createUnit(mouseX, mouseY);
         }
-        underConstruction->clearStartCoors();
-        field.waveAlgorithm();
     }
+//    qDebug() << "GameWidget::mouseReleaseEvent() -- underConstruction: " << underConstruction;
+//    if(underConstruction) {
+//        field.setTower(underConstruction->startX, underConstruction->startY, underConstruction->tower);
+//        for(int k = 0; k < underConstruction->coorsX.size(); k++) {
+//            field.setTower(underConstruction->coorsX[k], underConstruction->coorsY[k], underConstruction->tower);
+//        }
+//        underConstruction->clearStartCoors();
+//        field.waveAlgorithm();
+//    }
+    update();
 }
 
 void GameWidget::mouseMoveEvent(QMouseEvent * event) {
 //    static int maxX = 0;
 //    static int maxY = 0;
 
-    qDebug() << "GameWidget::mouseMoveEvent(); -- event->MouseButtonPress:" << event->MouseButtonPress;
+//    qDebug() << "GameWidget::mouseMoveEvent(); -- event->MouseButtonPress:" << event->MouseButtonPress;
     if (pan) {
 //    if (event->MouseButtonPress == QEvent::MouseButtonPress) {
         int mainCoorMapX = field.getMainCoorMapX();
         int mainCoorMapY = field.getMainCoorMapY();
-        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapX: " << mainCoorMapX;
-        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapY: " << mainCoorMapY;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapX: " << mainCoorMapX;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapY: " << mainCoorMapY;
         int x = event->x();
         int y = event->y();
-        qDebug() << "GameWidget::mouseMoveEvent(); -- x: " << x;
-        qDebug() << "GameWidget::mouseMoveEvent(); -- y: " << y;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- x: " << x;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- y: " << y;
 //        qDebug() << "GameWidget::mouseMoveEvent(); -- prevMouseX: " << prevMouseX;
 //        qDebug() << "GameWidget::mouseMoveEvent(); -- prevMouseY: " << prevMouseY;
 //        qDebug() << "GameWidget::mouseMoveEvent(); -- (x-prevMouseX): " << (x-prevMouseX);
@@ -1169,8 +1216,8 @@ void GameWidget::mouseMoveEvent(QMouseEvent * event) {
         mainCoorMapX = mainCoorMapX + ((x-prevMouseX)/1);
         mainCoorMapY = mainCoorMapY + ((y-prevMouseY)/1);
         field.setMainCoorMap(mainCoorMapX, mainCoorMapY);
-        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapX: " << mainCoorMapX;
-        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapY: " << mainCoorMapY;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapX: " << mainCoorMapX;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -- mainCoorMapY: " << mainCoorMapY;
 //        horizontalScrollBar()->setValue(horizontalScrollBar()->value() - (event->x() - _panStartX));
 //        verticalScrollBar()->setValue(verticalScrollBar()->value() - (event->y() - _panStartY));
         prevMouseX = event->x();
@@ -1389,7 +1436,7 @@ void GameWidget::loadMap(QString mapName)
                         QString imagePath = xmlReader.attributes().value("source").toString();
 //                        qDebug() << "imagepath: " << imagePath;
 
-                        imagePath.prepend(TOWER_DEFENCE_PATH + "maps/");
+                        imagePath.prepend(ASSETS_PATH + "maps/");
                         //qDebug() << imagePath;
                         if(!tileSet.img.load(imagePath))
                         {
@@ -1563,7 +1610,7 @@ void GameWidget::loadMap(QString mapName)
 
 //                    qDebug() << "tower.walk_down.size(): " << &tower << "->" << tower.walk_down.size();
                     qDebug() << "faction.creatyNewTower(tower);";
-                    faction.creatyNewTower(tower);
+                    faction.createNewTower(tower);
                 }
                 else if(tileSet.name.contains("unit"))
                 {
@@ -1607,7 +1654,7 @@ void GameWidget::loadMap(QString mapName)
                         QString imagePath = xmlReader.attributes().value("source").toString();
 //                        qDebug() << "imagepath: " << imagePath;
 
-                        imagePath.prepend(TOWER_DEFENCE_PATH + "maps/");
+                        imagePath.prepend(ASSETS_PATH + "maps/");
                         //qDebug() << imagePath;
                         if(!tileSet.img.load(imagePath))
                         {
@@ -1636,41 +1683,39 @@ void GameWidget::loadMap(QString mapName)
                     xmlReader.readNext(); // <terraintypes "empty">
                     xmlReader.readNext(); // <terrain>
 
-                    while(xmlReader.name().toString() == "terrain")
-                    {
+                    while(xmlReader.name().toString() == "terrain") {
                         QString name = xmlReader.attributes().value("name").toString();
                         int tileGID = xmlReader.attributes().value("tile").toInt();
                         QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
 
 //                        qDebug() << "GameWidget::loadMap(); -- unitPixmaps: " << name << "tileGID: " << tileGID << " : " << !pixmap.isNull();
 
-                        if(name == "idle_up")
+                        if(name == "idle_up") {
                             unit.idle_up = pixmap;
-                        else if(name == "idle_up_right")
-                        {
+                            unit.idle.push_back(pixmap);
+                        } else if(name == "idle_up_right") {
                             unit.idle_up_right = pixmap;
+                            unit.idle.push_back(pixmap);
                             unit.idle_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "idle_right")
-                        {
+                            unit.idle.push_back(unit.idle_up_left);
+                        } else if(name == "idle_right") {
                             unit.idle_right = pixmap;
+                            unit.idle.push_back(pixmap);
                             unit.idle_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "idle_down_right")
-                        {
+                            unit.idle.push_back(unit.idle_left);
+                        } else if(name == "idle_down_right") {
                             unit.idle_down_right = pixmap;
+                            unit.idle.push_back(pixmap);
                             unit.idle_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "idle_down")
+                            unit.idle.push_back(unit.idle_down_left);
+                        } else if(name == "idle_down") {
                             unit.idle_down = pixmap;
-                        else if(name.contains("walk"))
-                        {
-                            if(name.contains("up"))
-                            {
-                                if(!name.contains("right"))
+                            unit.idle.push_back(pixmap);
+                        } else if(name.contains("walk")) {
+                            if(name.contains("up")) {
+                                if(!name.contains("right")) {
                                     unit.walk_up.push_back(pixmap);
-                                else
-                                {
+                                } else {
                                     unit.walk_up_right.push_back(pixmap);
                                     unit.walk_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
@@ -1764,7 +1809,7 @@ void GameWidget::loadMap(QString mapName)
 //                    qDebug() << "unit.walk" << unit.walk_down.size();
                     qDebug() << "unit.walk_down.size(): " << &unit << "->" << unit.walk_down.size();
                     qDebug() << "faction.creatyNewUnit(unit);";
-                    faction.creatyNewUnit(unit);
+                    faction.createNewUnit(unit);
 //                    unit.clearVectors();
                 }
             }
@@ -1773,7 +1818,7 @@ void GameWidget::loadMap(QString mapName)
                 QString imagePath = xmlReader.attributes().value("source").toString();
                 //qDebug() << "imagepath: " << imagePath;
 
-                imagePath.prepend(TOWER_DEFENCE_PATH + "maps/");
+                imagePath.prepend(ASSETS_PATH + "maps/");
                 //qDebug() << imagePath;
                 if(!tileSet.img.load(imagePath))
                 {
@@ -1812,7 +1857,7 @@ void GameWidget::loadMap(QString mapName)
                 if(name == "Unit")
                 {
                     global_pixmap = pixmap;
-                    field.setPixmapForUnit(pixmap);
+                    field.unitsManager.setDefaulPixmapForUnit(pixmap);//setPixmapForUnit(pixmap);
                     qDebug() << "GameWidget::loadMap(); -- Set default Pixmap for Unit!";
                 }
                 if(tileSet.name.contains("unit"))
@@ -1877,9 +1922,9 @@ void GameWidget::loadMap(QString mapName)
                         QPixmap pixmap = tileSets[num].img;
                         pixmap = pixmap.copy(tileSets[num].subRects[subRectToUse]);
                         if(ground)
-                            field.setBusy(x, y, pixmap);
+                            field.getCell(x, y)->setTerrain(pixmap);
                         else
-                            field.setPixmapInCell(x, y, pixmap);
+                            field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap);
                     }
                     else
                     {
@@ -1925,17 +1970,14 @@ void GameWidget::loadMap(QString mapName)
                 QPixmap pixmap = tileSets[num].img;
                 pixmap = pixmap.copy(tileSets[num].subRects[tileObjectID]);
 
-                if(name == "spawnPoint")
-                {
+                if(name == "spawnPoint") {
                     qDebug() << "GameWidget::loadMap(); -- createSpawnPoint(" << defaultNumCreateUnits << ", " << x << ", " << y << ");";
-                    field.setPixmapInCell(x, y, pixmap);
+                    field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap); // need fix
                     field.setMousePress(x, y);
                     field.createSpawnPoint(defaultNumCreateUnits, x, y);
-                }
-                else if(name == "exitPoint")
-                {
+                } else if(name == "exitPoint") {
                     qDebug() << "GameWidget::loadMap(); -- createExitPoint(" << x << ", " << y << ");";
-                    field.setPixmapInCell(x, y, pixmap);
+                    field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap); // need fix
                     field.createExitPoint(x, y);
 //                    startUnitTimer();
                 }
@@ -1946,8 +1988,7 @@ void GameWidget::loadMap(QString mapName)
             QString nameElement = xmlReader.name().toString();
             //qDebug() << "EndElement: " << nameElement;
 
-            if(nameElement == "tileset")
-            {
+            if(nameElement == "tileset") {
                 tileSets.push_back(tileSet);
                 tileSet.subRects.clear();
 //                if(loadUnit)
@@ -1957,38 +1998,56 @@ void GameWidget::loadMap(QString mapName)
 ////                    unit.clearVectors();
 //                    loadUnit = false;
 //                }
-            }
-            else if(nameElement == "layer")
+            } else if(nameElement == "layer") {
                 layer = false;
+            }
         }
-
         xmlReader.readNext();
     }
-    if(xmlReader.hasError())
-    {
+    if(xmlReader.hasError()) {
         qDebug() << "Error: " << xmlReader.errorString();
+    } else {
+        qDebug() << "GameWidget::loadMap(); -- Completed load map.";
     }
-    else
-        qDebug() << "Completed load map.";
 
     field.setFaction(&faction);
-    field.spawnHeroInSpawnPoint();
+//    field.spawnHeroInSpawnPoint();
 
+    int terrainType = rand()%2;
     if (mapName.contains("randomMap")) {
         for (int x = 0; x < mapSizeX; x++) {
             for (int y = 0; y < mapSizeY; y++) {
-                if( (rand()%100) < 40 ) {
-                    field.setBusy(x, y, tileSet.tiles[55]);
+                if( (rand()%100) < 35 ) {
+                    int randNumber = ( ( ((terrainType)?30:50) ) + (rand()%20) );
+//                    qDebug() << "GameWidget::loadMap(); -- randNumber:" << randNumber;
+                    field.getCell(x, y)->setTerrain(tileSet.tiles[randNumber]);
                 }
             }
         }
     }
+    field.pathFinder.setWorldSize({mapSizeX, mapSizeY});
+    field.pathFinder.setHeuristic(AStar::Heuristic::euclidean);
+    field.pathFinder.setDiagonalMovement(false);
+    field.updatePathFinderWalls();
+    global_pixmap = tileSet.tiles[7];
+    global_pixmap_PathPoint = tileSet.tiles[8];
+    global_pixmap_HeroPoint = tileSet.tiles[9];
+    global_pixmap_ExitPoint = tileSet.tiles[18];
+    global_pixmap_DestinationPoint = tileSet.tiles[19];
+
     mapLoad = true;
     tileSet.subRects.clear();
     tileSet.tiles.clear();
     tileSets.clear();
     file->close();
 //    update();
+    field.spawnHeroInSpawnPoint();
+    int randomEnemyCount = 5+rand()%10;
+    for (int k = 0; k < randomEnemyCount; k++) {
+        int randomX = rand()%mapSizeX;
+        int randomY = rand()%mapSizeY;
+        field.createUnit(randomX, randomY); // magic numbers need fix
+    }
     startTimer_UnitsMoveAndTowerAttack();
 }
 
@@ -2091,7 +2150,7 @@ void GameWidget::on_clearMap_clicked()
         for(int y = 0; y < field.getSizeY(); y++)
         {
             field.deleteTower(x, y);
-            field.clearBusy(x, y);
+            field.getCell(x, y)->removeTerrain();
 //            field.clearStepCell(x, y);
         }
     }
@@ -2121,7 +2180,7 @@ void GameWidget::on_clearMap_clicked()
 
 void GameWidget::on_closeWidget_clicked()
 {
-    signal_closeWidget();
+    signal_closeWidgetGameFinished(false);
 }
 
 void GameWidget::on_goUnits_clicked()

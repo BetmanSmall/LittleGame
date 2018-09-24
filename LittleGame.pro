@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = LittleGame
 TEMPLATE = app
+CONFIG += c++11
 
 
 SOURCES += main.cpp\
@@ -27,7 +28,10 @@ SOURCES += main.cpp\
     underconstruction.cpp \
     unit.cpp \
     unitsmanager.cpp \
-    towersmanager.cpp
+    towersmanager.cpp \
+    astar.cpp \
+    cell.cpp \
+    gamescreen.cpp
 
 HEADERS  += \
     field.h \
@@ -44,7 +48,10 @@ HEADERS  += \
     underconstruction.h \
     unit.h \
     unitsmanager.h \
-    towersmanager.h
+    towersmanager.h \
+    astar.h \
+    cell.h \
+    gamescreen.h
 
 FORMS    += \
     mainmenu.ui \

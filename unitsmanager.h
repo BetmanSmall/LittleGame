@@ -6,21 +6,7 @@
 #include <QPixmap>
 #include <qdebug.h>
 
-//#include "defaultunit.h"
 #include "unit.h"
-
-//class Unit
-//{
-//public:
-//    int type;
-//    int number;
-////    int speed;
-//    int currX, currY;
-
-//    int hp;
-//    bool alive;
-//    QPixmap pixmap;
-//};
 
 /**
  * @brief The UnitsManager class
@@ -117,7 +103,7 @@ public:
      * @param unit - реализация крипа по-умолчанию (уровень модификации, тип, и т. д.)
      * @return - возвращает указатель на созданного крипа [и увеличивает количесвто созданных крипов на 1].
      */
-    Unit* createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit);
+    Unit* createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type);
 
     /**
      * @brief setDefaulPixmapForUnit - устанавливает картинку крипа по-умолчанию.

@@ -25,16 +25,19 @@ private:
     QMediaPlayer* mediaPlayer;
     QStackedWidget* stackedWidget;
 
+    MainMenu* mainMenu;
+
     void paintEvent(QPaintEvent* );
 
     void loadMap(GameWidget *gameWidget);
 
-    QString TOWER_DEFENCE_PATH;
+    QString ASSETS_PATH;
 
 private slots:
     void showMainMenu();
 
     void showChooseMapMenu();
+    void actionMainMenuSoundRadionButton();
     void showOptionMenu();
 
     void quickPlay();
@@ -45,6 +48,7 @@ private slots:
     void loadMap5();
     void loadMap6();
     void closeWidget();
+    void closeWidgetGameFinished(bool win);
 };
 
 #endif // WIDGETCONTROLLER_H

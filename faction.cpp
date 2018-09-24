@@ -13,13 +13,13 @@ Faction::Faction()
 //    towers.push_back(tower);
 //}
 
-void Faction::creatyNewTower(DefaultTower tower)
+void Faction::createNewTower(DefaultTower tower)
 {
     DefaultTower tmp_tower = tower; // problem with memory too......
     towers.push_back(tmp_tower);
 }
 
-void Faction::creatyNewUnit(DefaultUnit unit)
+void Faction::createNewUnit(DefaultUnit unit)
 {
     DefaultUnit tmp_unit = unit; // problem with memory
     units.push_back(tmp_unit);
@@ -42,5 +42,10 @@ vector<DefaultTower *> Faction::getFirstTowers()
 
 DefaultUnit* Faction::getDefaultUnitById(int id)
 {
-    return &units[id];
+    if(id < units.size()) {
+        return &units[id];
+    } else {
+        qDebug() << "Faction::getDefaultUnitById(" << id << "); -- bad id. units.size:" << units.size();
+        return NULL;
+    }
 }

@@ -5,7 +5,7 @@
 WidgetController::WidgetController(QWidget *parent) :
     QWidget(parent)
 {
-    TOWER_DEFENCE_PATH = "../../LittleGame/";
+    ASSETS_PATH = "./assets/";
 
 //    this->setMaximumWidth(640);
 //    this->setMaximumHeight(480);
@@ -14,14 +14,14 @@ WidgetController::WidgetController(QWidget *parent) :
 
 //    this->setWindowTitle("xyu");
 //    QPalette palette;
-//    palette.setBrush(this->backgroundRole(), QBrush(QImage(TOWER_DEFENCE_PATH + "images/mainmenu.jpg")));
+//    palette.setBrush(this->backgroundRole(), QBrush(QImage(ASSETS_PATH + "images/mainmenu.jpg")));
 //    palette.setBrush(this->backgroundRole(), QBrush(QColor(0, 0, 0)));
 //    this->setPalette(palette);
 
 //    qDebug() << "WidgetController: X: " << width() << " Y: " << height();
 
     mediaPlayer = new QMediaPlayer();
-    mediaPlayer->setMedia(QUrl::fromLocalFile(TOWER_DEFENCE_PATH + "music/mainmenu2.mp3"));
+    mediaPlayer->setMedia(QUrl::fromLocalFile(ASSETS_PATH + "music/mainmenu2.mp3"));
     mediaPlayer->setVolume(0);
     mediaPlayer->play();
 
@@ -44,7 +44,7 @@ void WidgetController::paintEvent(QPaintEvent *)
 {
     QPainter p(this);
 
-    QPixmap pix = QPixmap(TOWER_DEFENCE_PATH + "images/mainmenu.jpg");
+    QPixmap pix = QPixmap(ASSETS_PATH + "images/mainmenu.jpg");
 //    qDebug() << pix;
 
     p.drawPixmap(0, 0, width(), height(), pix);
@@ -55,11 +55,12 @@ void WidgetController::paintEvent(QPaintEvent *)
 
 void WidgetController::showMainMenu() {
     qDebug() << "WidgetController::showMainMenu(); -- ";
-    MainMenu* mainMenu = new MainMenu();
+    mainMenu = new MainMenu();
     connect(mainMenu, SIGNAL(signal_quickPlay()), this, SLOT(quickPlay()));
     connect(mainMenu, SIGNAL(signal_openChooseMapMenu()), this, SLOT(showChooseMapMenu()));
     connect(mainMenu, SIGNAL(signal_openOptionMenu()), this, SLOT(showOptionMenu()));
     connect(mainMenu, SIGNAL(signal_exit()), this, SLOT(closeWidget()));
+    connect(mainMenu, SIGNAL(signal_actionSoundRadioButton()), this, SLOT(actionMainMenuSoundRadionButton()));
 
     stackedWidget->addWidget(mainMenu);
     stackedWidget->setCurrentWidget(mainMenu);
@@ -82,9 +83,19 @@ void WidgetController::showChooseMapMenu() {
     stackedWidget->setCurrentWidget(chooseMapMenu);
 }
 
-void WidgetController::showOptionMenu()
-{
-    qDebug() << "showOptionMenu()";
+void WidgetController::actionMainMenuSoundRadionButton() {
+//    if (mediaPlayer->volume()) {
+//        mediaPlayer->setVolume();
+//    } else {
+//        mediaPlayer->set
+//    }
+//    mediaPlayer->mutedChanged( true );
+    qDebug() << "WidgetController::actionMainMenuSoundRadionButton(); -- volume:" << mediaPlayer->volume();
+    mediaPlayer->setVolume( (mediaPlayer->volume()>0) ? 0 : 100); // (OptionMenu)(stackedWidget->currentWidget()).ui. );
+}
+
+void WidgetController::showOptionMenu() {
+    qDebug() << "WidgetController::showChooseMapMenu(); -- ";
 
     OptionMenu* optionMenu = new OptionMenu();
     optionMenu->setMediaPlayer(mediaPlayer);
@@ -98,6 +109,7 @@ void WidgetController::showOptionMenu()
 void WidgetController::loadMap(GameWidget* gameWidget) {
     qDebug() << "WidgetController::loadMap(GameWidget* gameWidget)";
     connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
+    connect(gameWidget, SIGNAL(signal_closeWidgetGameFinished(bool)), this, SLOT(closeWidgetGameFinished(bool)));
     stackedWidget->addWidget(gameWidget);
     stackedWidget->setCurrentWidget(gameWidget);
 }
@@ -110,7 +122,7 @@ void WidgetController::quickPlay() {
 //    gameWidget->setMaximumWidth(1024);
 //    gameWidget->setMaximumHeight(768);
     loadMap(gameWidget);
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/randomMap.tmx");
+    gameWidget->loadMap(ASSETS_PATH + "maps/randomMap.tmx");
     qDebug() << "WidgetController::quickPlay(); -- ";
 }
 
@@ -122,7 +134,7 @@ void WidgetController::loadMap1()
 
     loadMap(gameWidget);
 
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/arctic.tmx");
+    gameWidget->loadMap(ASSETS_PATH + "maps/arctic.tmx");
 }
 
 void WidgetController::loadMap2()
@@ -133,7 +145,7 @@ void WidgetController::loadMap2()
 
     loadMap(gameWidget);
 
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/forest.tmx");
+    gameWidget->loadMap(ASSETS_PATH + "maps/forest.tmx");
 }
 
 void WidgetController::loadMap3()
@@ -144,7 +156,7 @@ void WidgetController::loadMap3()
 
     loadMap(gameWidget);
 
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/desert.tmx");
+    gameWidget->loadMap(ASSETS_PATH + "maps/desert.tmx");
 }
 
 void WidgetController::loadMap4()
@@ -155,7 +167,7 @@ void WidgetController::loadMap4()
 
     loadMap(gameWidget);
 
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/boloto.tmx");
+    gameWidget->loadMap(ASSETS_PATH + "maps/boloto.tmx");
 }
 
 void WidgetController::loadMap5()
@@ -166,7 +178,7 @@ void WidgetController::loadMap5()
 
     loadMap(gameWidget);
 
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/isom_workMap.tmx");
+    gameWidget->loadMap(ASSETS_PATH + "maps/isom_workMap.tmx");
 }
 
 void WidgetController::loadMap6()
@@ -177,22 +189,26 @@ void WidgetController::loadMap6()
 
     loadMap(gameWidget);
 
-    gameWidget->loadMap(TOWER_DEFENCE_PATH + "maps/isometric_testMap.tmx");
+    gameWidget->loadMap(ASSETS_PATH + "maps/isometric_testMap.tmx");
 }
 
-void WidgetController::closeWidget()
-{
-    qDebug() << "close";
+void WidgetController::closeWidget() {
+    qDebug() << "WidgetController::closeWidget(); -- ";
 
     QWidget* currentWidget = stackedWidget->currentWidget();
 
     if(stackedWidget->currentIndex() == 0) {
         this->close();
-    } else// if((stackedWidget->currentWidget() == w) && (stackedWidget->currentIndex() != 0))
-    {
+    } else {// if((stackedWidget->currentWidget() == w) && (stackedWidget->currentIndex() != 0))
         stackedWidget->setCurrentIndex(stackedWidget->count() - 2);
         stackedWidget->removeWidget(currentWidget);
         disconnect(currentWidget);
         delete currentWidget;
     }
+}
+
+void WidgetController::closeWidgetGameFinished(bool win) {
+    qDebug() << "WidgetController::closeWidgetGameFinished(); -- win:" << win;
+    mainMenu->updateGameStatus(win);
+    closeWidget();
 }

@@ -25,6 +25,8 @@ public:
     QPixmap idle_left;
     QPixmap idle_up_left;
 
+    std::vector<QPixmap> idle;
+
     std::vector<QPixmap> walk_up;
     std::vector<QPixmap> walk_up_right;
     std::vector<QPixmap> walk_right;

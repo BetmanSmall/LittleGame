@@ -7,8 +7,8 @@
 
 using namespace std;
 
-class Faction
-{
+class Faction {
+public:
     vector<DefaultTower> towers;
     vector<DefaultUnit> units;
 
@@ -16,8 +16,8 @@ public:
     Faction();
 
 //    void creatyNewTower(int type, int radius, int attack, QPixmap pixmap);
-    void creatyNewTower(DefaultTower tower);
-    void creatyNewUnit(DefaultUnit unit);
+    void createNewTower(DefaultTower tower);
+    void createNewUnit(DefaultUnit unit);
 
     vector<DefaultTower*> getFirstTowers();
     DefaultUnit* getDefaultUnitById(int id);

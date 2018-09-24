@@ -1,12 +1,14 @@
-#ifndef CREEP_H
-#define CREEP_H
+#ifndef UNIT_H
+#define UNIT_H
 
 #include <QPixmap>
 
 #include "defaultunit.h"
+#include "astar.h"
 
 enum Direction
 {
+    DirectionIdle,
     DirectionUp,
     DirectionUpRight,
     DirectionRight,
@@ -28,14 +30,13 @@ public:
     bool preDeath;
     int number;
 //    int speed;
-//    int type;
-    std::vector<int> unitSteps;
-
-    int coorByCellX, coorByCellY;
-    int coorByMapX, coorByMapY;
+    int type;
+    AStar::CoordinateList path;
+//    std::vector<int> unitSteps;
 
     int lastX, lastY;
-
+    int coorByCellX, coorByCellY;
+    int coorByMapX, coorByMapY;
     Direction direction;
 
     int animationCurrIter;
@@ -52,4 +53,4 @@ public:
     bool takeDamage(int damage);
 };
 
-#endif // CREEP_H
+#endif // UNIT_H

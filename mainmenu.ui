@@ -491,6 +491,27 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
+      <widget class="QLabel" name="gameStatus">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+         <kerning>false</kerning>
+        </font>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>GameStatus</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="quickPlayButton">
        <property name="text">
         <string>QuickPlay</string>
@@ -499,6 +520,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="playButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="palette">
         <palette>
          <active>
@@ -1029,6 +1053,9 @@
       <widget class="QRadioButton" name="sound">
        <property name="text">
         <string>Sound on/off</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

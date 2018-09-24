@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset name="creep1_grunt" tilewidth="72" tileheight="72">
+<tileset name="unit2_troll_axethrower" tilewidth="72" tileheight="72">
  <properties>
   <property name="health_point" value="100"/>
-  <property name="name" value="Grunt"/>
+  <property name="name" value="Troll"/>
  </properties>
- <image source="textures/warcraft2/orc/units/grunt.png" trans="ff00ff" width="360" height="864"/>
+ <image source="textures/warcraft2/orc/units/troll_axethrower.png" trans="ff00ff" width="360" height="864"/>
  <terraintypes>
   <terrain name="idle_up" tile="0"/>
   <terrain name="idle_up_right" tile="1"/>

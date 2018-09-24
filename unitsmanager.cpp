@@ -150,7 +150,7 @@ Unit* UnitsManager::getUnit(int x, int y)
     return NULL;
 }
 
-Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit)
+Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type)
 {
     qDebug() << "UnitsManager::createUnit(); -- unit:" << unit;
 //    if(amount == size)
@@ -181,7 +181,7 @@ Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX,
         units[amount].lastY = coorByCellY;
 
 //        units[amount].speed = speed;
-//        units[amount].type = type;
+        units[amount].type = type;
 
         units[amount].animationCurrIter = 0;
         units[amount].animationMaxIter = 0;

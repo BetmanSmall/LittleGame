@@ -1,11 +1,11 @@
 #include "defaultunit.h"
 
-DefaultUnit::DefaultUnit()
-{
+DefaultUnit::DefaultUnit() {
 }
 
-void DefaultUnit::clearVectors()
-{
+void DefaultUnit::clearVectors() {
+    idle.clear();
+
     walk_up.clear();
     walk_up_right.clear();
     walk_right.clear();

@@ -10,11 +10,11 @@ MainMenu::MainMenu(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    TOWER_DEFENCE_PATH = "../../LittleGame/";
+    ASSETS_PATH = "./assets/";
 
-    ui->playButton->setIcon(QIcon(TOWER_DEFENCE_PATH + "images/Play.png"));
-    ui->optionsButton->setIcon(QIcon(TOWER_DEFENCE_PATH + "images/Options.png"));
-    ui->exitButton->setIcon(QIcon(TOWER_DEFENCE_PATH + "images/Exit.png"));
+    ui->playButton->setIcon(QIcon(ASSETS_PATH + "images/Play.png"));
+    ui->optionsButton->setIcon(QIcon(ASSETS_PATH + "images/Options.png"));
+    ui->exitButton->setIcon(QIcon(ASSETS_PATH + "images/Exit.png"));
 
 //    qDebug() << "MainMenu: X: " << width() << " Y: " << height();
 }
@@ -29,6 +29,17 @@ MainMenu::~MainMenu()
 //    QPainter p(this);
 //    p.fillRect(0, 0, width(), height(), QColor(255, 0, 0));
 //}
+
+void MainMenu::updateGameStatus(bool win) {
+//    ui->gameStatus->setBackgroundRole(QColor::red());
+    if (win) {
+        ui->gameStatus->setStyleSheet("QLabel { color : green; }");
+        ui->gameStatus->setText( "You WiN!" );
+    } else {
+        ui->gameStatus->setStyleSheet("QLabel { color : red; }");
+        ui->gameStatus->setText( "You Lose!" );
+    }
+}
 
 void MainMenu::on_playButton_clicked()
 {
@@ -55,15 +66,16 @@ void MainMenu::on_quickPlayButton_clicked() {
 
 void MainMenu::on_killButton_clicked() {
     ui->killButton->move(qrand()%width(), qrand()%height());
-//    QCursor c = cursor();
-//    c.setPos(mapToGlobal(QPoint(0, 0)));
-//    c.setShape(Qt::BlankCursor);
-//    setCursor(c);
 }
 
-void MainMenu::keyPressEvent(QKeyEvent* event){
+void MainMenu::keyPressEvent(QKeyEvent* event) {
     qDebug() << "MainMenu::keyPressEvent(); -- ";
     if (event->key() == Qt::Key_1) {
         signal_quickPlay();
     }
+}
+
+void MainMenu::on_sound_clicked() {
+    ui->sound->move(qrand()%width(), qrand()%height());
+    signal_actionSoundRadioButton();
 }

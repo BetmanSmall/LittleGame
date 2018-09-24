@@ -18,11 +18,12 @@ public:
     explicit MainMenu(QWidget *parent = 0);
     ~MainMenu();
 //    void paintEvent(QPaintEvent *);
+    void updateGameStatus(bool win);
 
 private:
     Ui::MainMenu *ui;
 
-    QString TOWER_DEFENCE_PATH;
+    QString ASSETS_PATH;
 
 private slots:
     void on_quickPlayButton_clicked();
@@ -30,6 +31,7 @@ private slots:
     void on_optionsButton_clicked();
     void on_exitButton_clicked();
     void on_killButton_clicked();
+    void on_sound_clicked();
 
 protected:
     void keyPressEvent(QKeyEvent* event);
@@ -39,6 +41,7 @@ signals:
     void signal_openChooseMapMenu();
     void signal_openOptionMenu();
     void signal_exit();
+    void signal_actionSoundRadioButton();
 };
 
 #endif // MAINMENU_H

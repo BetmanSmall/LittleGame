@@ -18,6 +18,7 @@
 #include <QXmlStreamReader>
 #include <QBitmap>
 
+#include "astar.h"
 #include "field.h"
 #include "faction.h"
 #include "underconstruction.h"
@@ -145,16 +146,22 @@ public:
 
 //    Test Zone!
     QPixmap global_pixmap;
+    QPixmap global_pixmap_PathPoint;
+    QPixmap global_pixmap_HeroPoint;
+    QPixmap global_pixmap_DestinationPoint;
+    QPixmap global_pixmap_ExitPoint;
     string global_text;
     string global_text2;
 
     bool pan;
     int prevMouseX, prevMouseY;
+    int prevMouseCellX, prevMouseCellY;
+    int prevGlobalMouseX, prevGlobalMouseY;
 
 private:
     Ui::GameWidget *ui;
 
-    QString TOWER_DEFENCE_PATH;
+    QString ASSETS_PATH;
 
 private slots:
     void on_loadMaps_clicked();
@@ -166,7 +173,7 @@ private slots:
     void on_goUnits_clicked();
 
 signals:
-    void signal_closeWidget();
+    void signal_closeWidgetGameFinished(bool win);
 };
 
 #endif // GAMEWIDGET_H
