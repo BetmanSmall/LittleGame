@@ -9,7 +9,7 @@ ChooseMapMenu::ChooseMapMenu(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ASSETS_PATH = "./assets/";
+    ASSETS_PATH = "../../LittleGame/assets/";
 
     ui->loadMap1Button->setIcon(QIcon(ASSETS_PATH + "images/button1v2.png"));
     ui->loadMap2Button->setIcon(QIcon(ASSETS_PATH + "images/button2v2.png"));

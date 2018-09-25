@@ -84,13 +84,13 @@ bool Cell::removeTower() {
     return false;
 }
 
-bool Cell::getHero() {
+Unit *Cell::getHero() {
     foreach (Unit* unit, units) {
         if (unit->type == 0) { // type 0 = Hero
-            return true;
+            return unit;
         }
     }
-    return false;
+    return NULL;
 }
 
 std::vector<Unit*> Cell::getUnits() {

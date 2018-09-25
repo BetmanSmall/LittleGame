@@ -3,6 +3,7 @@
 
 //#include <iostream>
 //#include <fstream>
+//#include <unistd.h>
 #include <time.h>
 
 #include <QDebug>
@@ -32,8 +33,7 @@ namespace Ui {
 /**
  * @brief Данная структура отвечает за набор Tilов
  */
-struct TileSet
-{
+struct TileSet {
     int firstTileID; /// jdfklsdjfsdjf
     QString name;
     int spacing;
@@ -49,8 +49,7 @@ struct TileSet
  * @brief Класс отвечает за игровую сессию
  * Вся игра проходит, полностью в этом классе
  */
-class GameWidget : public QWidget
-{
+class GameWidget : public QWidget {
     Q_OBJECT
 
 public:
@@ -132,22 +131,22 @@ public:
     int unitsMove_TimerMilliSec;
     int towersAttack_TimerMilliSec;
     int scanMouseMove_TimerMilliSec;
-    int bulletsFly_TimerMilliSec;
+//    int bulletsFly_TimerMilliSec;
 
-    int bulletsFly_TimerId;
     int unitsMove_TimerId;
     int towersAttack_TimerId;
     int scanMouseMove_TimerId;
+//    int bulletsFly_TimerId;
 
     int test;
-
     Field field;
     Faction faction;
+    vector<TileSet> tileSets;
 
 //    Test Zone!
     QPixmap global_pixmap;
     QPixmap global_pixmap_PathPoint;
-    QPixmap global_pixmap_HeroPoint;
+    QPixmap global_pixmap_EnemyPathPoint;
     QPixmap global_pixmap_DestinationPoint;
     QPixmap global_pixmap_ExitPoint;
     string global_text;
@@ -160,16 +159,12 @@ public:
 
 private:
     Ui::GameWidget *ui;
-
     QString ASSETS_PATH;
 
 private slots:
     void on_loadMaps_clicked();
-
     void on_clearMap_clicked();
-
     void on_closeWidget_clicked();
-
     void on_goUnits_clicked();
 
 signals:

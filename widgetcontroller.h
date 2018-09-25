@@ -1,6 +1,7 @@
 #ifndef WIDGETCONTROLLER_H
 #define WIDGETCONTROLLER_H
 
+#include <QDesktopWidget>
 #include <QWidget>
 //#include <QGLWidget>
 //#include <QOpenGLWidget>
@@ -8,6 +9,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 #include <QPaintEvent>
+#include <QString>
 
 #include "mainmenu.h"
 #include "choosemapmenu.h"
@@ -22,16 +24,15 @@ public:
     explicit WidgetController(QWidget *parent = 0);
 
 private:
+    QString ASSETS_PATH;
     QMediaPlayer* mediaPlayer;
     QStackedWidget* stackedWidget;
 
+    std::vector<QString> campaingMaps;
     MainMenu* mainMenu;
 
     void paintEvent(QPaintEvent* );
-
     void loadMap(GameWidget *gameWidget);
-
-    QString ASSETS_PATH;
 
 private slots:
     void showMainMenu();
@@ -39,8 +40,9 @@ private slots:
     void showChooseMapMenu();
     void actionMainMenuSoundRadionButton();
     void showOptionMenu();
+    void loadNextCampaingMaps();
+    void showGameWidget(QString mapPath);
 
-    void quickPlay();
     void loadMap1();
     void loadMap2();
     void loadMap3();

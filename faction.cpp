@@ -25,18 +25,14 @@ void Faction::createNewUnit(DefaultUnit unit)
     units.push_back(tmp_unit);
 }
 
-vector<DefaultTower *> Faction::getFirstTowers()
-{
+vector<DefaultTower *> Faction::getFirstTowers() {
     vector<DefaultTower*> exitTowers;
-
 //    exitTowers = towers;
-    qDebug() << "towers.size(): " << towers.size();
-
-    for(int k = 0; k < towers.size(); k++)
+//    qDebug() << "towers.size(): " << towers.size();
+    for(int k = 0; k < towers.size(); k++) {
         exitTowers.push_back(&towers[k]);
-
-    qDebug() << "exitTowers.size(): " << exitTowers.size();
-
+    }
+//    qDebug() << "exitTowers.size(): " << exitTowers.size();
     return exitTowers;
 }
 

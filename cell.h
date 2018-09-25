@@ -37,8 +37,8 @@ public:
 
     QPixmap backgroundPixmap;
     QPixmap busyPixmap;
-//        Array<TiledMapTile> backgroundTiles;
-//        Array<TiledMapTile> foregroundTiles;
+    std::vector<QPixmap> backgroundTiles;
+    std::vector<QPixmap> foregroundiles;
 //        Array<Tree> trees;
 //        private bool empty;
 // //        private bool terrain;
@@ -62,7 +62,7 @@ public:
     Tower* getTower();
     bool setTower(Tower* tower);
     bool removeTower();
-    bool getHero();
+    Unit* getHero();
     std::vector<Unit*> getUnits();
     Unit* getUnit();
     bool setUnit(Unit* unit);

@@ -350,13 +350,13 @@ public:
      * @return True/False установил/не установил
      */
     bool setBusy(int x, int y, QPixmap pixmap);
-    /**
-     * @brief Устаревшая
-     * @param x
-     * @param y
-     * @return Шнягу какую-то...
-     */
-    bool setTower(int x, int y);//, int type = 0);
+//    /**
+//     * @brief Устаревшая
+//     * @param x
+//     * @param y
+//     * @return Шнягу какую-то...
+//     */
+//    bool setTower(int x, int y);//, int type = 0);
     /**
      * @brief Устанавливает башню на основе Стандартной Башни из фракции
      * @param x

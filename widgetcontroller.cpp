@@ -5,20 +5,24 @@
 WidgetController::WidgetController(QWidget *parent) :
     QWidget(parent)
 {
-    ASSETS_PATH = "./assets/";
+    ASSETS_PATH = "../../LittleGame/assets/";
 
 //    this->setMaximumWidth(640);
 //    this->setMaximumHeight(480);
 //    this->setMinimumWidth(640);
 //    this->setMinimumHeight(480);
-
 //    this->setWindowTitle("xyu");
 //    QPalette palette;
 //    palette.setBrush(this->backgroundRole(), QBrush(QImage(ASSETS_PATH + "images/mainmenu.jpg")));
 //    palette.setBrush(this->backgroundRole(), QBrush(QColor(0, 0, 0)));
 //    this->setPalette(palette);
-
 //    qDebug() << "WidgetController: X: " << width() << " Y: " << height();
+//    show();
+//    QRect rec = QApplication::desktop()->screenGeometry();
+//    width = rec.width();
+//    height = rec.height();
+//    move(width()/2, 0);
+//    setWindowState(Qt::WindowFullScreen);
 
     mediaPlayer = new QMediaPlayer();
     mediaPlayer->setMedia(QUrl::fromLocalFile(ASSETS_PATH + "music/mainmenu2.mp3"));
@@ -32,11 +36,9 @@ WidgetController::WidgetController(QWidget *parent) :
     layout->addWidget(stackedWidget);
     setLayout(layout);
 
-//    show();
-//    move(100,100);
-
-//    setWindowState(Qt::WindowFullScreen);
-
+    if (campaingMaps.empty()) {
+        loadNextCampaingMaps(); // pre-load
+    }
     showMainMenu();
 }
 
@@ -56,7 +58,7 @@ void WidgetController::paintEvent(QPaintEvent *)
 void WidgetController::showMainMenu() {
     qDebug() << "WidgetController::showMainMenu(); -- ";
     mainMenu = new MainMenu();
-    connect(mainMenu, SIGNAL(signal_quickPlay()), this, SLOT(quickPlay()));
+    connect(mainMenu, SIGNAL(signal_quickPlay()), this, SLOT(loadNextCampaingMaps()));
     connect(mainMenu, SIGNAL(signal_openChooseMapMenu()), this, SLOT(showChooseMapMenu()));
     connect(mainMenu, SIGNAL(signal_openOptionMenu()), this, SLOT(showOptionMenu()));
     connect(mainMenu, SIGNAL(signal_exit()), this, SLOT(closeWidget()));
@@ -108,95 +110,70 @@ void WidgetController::showOptionMenu() {
 
 void WidgetController::loadMap(GameWidget* gameWidget) {
     qDebug() << "WidgetController::loadMap(GameWidget* gameWidget)";
-    connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
+//    connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
     connect(gameWidget, SIGNAL(signal_closeWidgetGameFinished(bool)), this, SLOT(closeWidgetGameFinished(bool)));
     stackedWidget->addWidget(gameWidget);
     stackedWidget->setCurrentWidget(gameWidget);
+    qDebug() << "WidgetController::loadMap(); -- end";
 }
 
-void WidgetController::quickPlay() {
-    qDebug() << "WidgetController::quickPlay(); -- ";
+void WidgetController::showGameWidget(QString mapPath) {
+    qDebug() << "WidgetController::showGameWidget(); -- mapPath:" << mapPath;
     GameWidget* gameWidget = new GameWidget();
     gameWidget->setMinimumWidth(1024);
     gameWidget->setMinimumHeight(768);
 //    gameWidget->setMaximumWidth(1024);
 //    gameWidget->setMaximumHeight(768);
     loadMap(gameWidget);
-    gameWidget->loadMap(ASSETS_PATH + "maps/randomMap.tmx");
-    qDebug() << "WidgetController::quickPlay(); -- ";
+    gameWidget->loadMap(ASSETS_PATH + mapPath);
+    qDebug() << "WidgetController::showGameWidget(); -- end";
 }
 
-void WidgetController::loadMap1()
-{
+void WidgetController::loadMap1() {
     qDebug() << "loadMap1()";
-
     GameWidget* gameWidget = new GameWidget();
-
     loadMap(gameWidget);
-
     gameWidget->loadMap(ASSETS_PATH + "maps/arctic.tmx");
 }
 
-void WidgetController::loadMap2()
-{
+void WidgetController::loadMap2() {
     qDebug() << "loadMap2()";
-
     GameWidget* gameWidget = new GameWidget();
-
     loadMap(gameWidget);
-
     gameWidget->loadMap(ASSETS_PATH + "maps/forest.tmx");
 }
 
-void WidgetController::loadMap3()
-{
+void WidgetController::loadMap3() {
     qDebug() << "loadMap3()";
-
     GameWidget* gameWidget = new GameWidget();
-
     loadMap(gameWidget);
-
     gameWidget->loadMap(ASSETS_PATH + "maps/desert.tmx");
 }
 
-void WidgetController::loadMap4()
-{
+void WidgetController::loadMap4() {
     qDebug() << "loadMap4()";
-
     GameWidget* gameWidget = new GameWidget();
-
     loadMap(gameWidget);
-
     gameWidget->loadMap(ASSETS_PATH + "maps/boloto.tmx");
 }
 
-void WidgetController::loadMap5()
-{
+void WidgetController::loadMap5() {
     qDebug() << "loadMap5()";
-
     GameWidget* gameWidget = new GameWidget();
-
     loadMap(gameWidget);
-
     gameWidget->loadMap(ASSETS_PATH + "maps/isom_workMap.tmx");
 }
 
-void WidgetController::loadMap6()
-{
+void WidgetController::loadMap6() {
     qDebug() << "loadMap6()";
-
     GameWidget* gameWidget = new GameWidget();
-
     loadMap(gameWidget);
-
     gameWidget->loadMap(ASSETS_PATH + "maps/isometric_testMap.tmx");
 }
 
 void WidgetController::closeWidget() {
     qDebug() << "WidgetController::closeWidget(); -- ";
-
     QWidget* currentWidget = stackedWidget->currentWidget();
-
     if(stackedWidget->currentIndex() == 0) {
         this->close();
     } else {// if((stackedWidget->currentWidget() == w) && (stackedWidget->currentIndex() != 0))
@@ -208,7 +185,20 @@ void WidgetController::closeWidget() {
 }
 
 void WidgetController::closeWidgetGameFinished(bool win) {
-    qDebug() << "WidgetController::closeWidgetGameFinished(); -- win:" << win;
     mainMenu->updateGameStatus(win);
     closeWidget();
+    loadNextCampaingMaps();
+}
+
+void WidgetController::loadNextCampaingMaps() {
+    if (!campaingMaps.empty()) {
+        QString mapPath = campaingMaps.back();
+        campaingMaps.pop_back();
+        showGameWidget(mapPath);
+//        campaingMaps.pop_back();
+    } else {
+        campaingMaps.push_back("maps/island.tmx");
+        campaingMaps.push_back("maps/randomMap.tmx");
+    }
+    qDebug() << "WidgetController::loadNextCampaingMaps(); -- campaingMaps.size():" << campaingMaps.size();
 }

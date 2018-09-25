@@ -10,7 +10,7 @@ MainMenu::MainMenu(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ASSETS_PATH = "./assets/";
+    ASSETS_PATH = "../../LittleGame/assets/";
 
     ui->playButton->setIcon(QIcon(ASSETS_PATH + "images/Play.png"));
     ui->optionsButton->setIcon(QIcon(ASSETS_PATH + "images/Options.png"));
