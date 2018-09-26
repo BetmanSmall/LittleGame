@@ -34,7 +34,7 @@ public:
 //    Tower(int type, int radius, int attack, QPixmap pixmap);
     bool recharge(float delta);
 
-    void createBullets();
+    void createBullets(int difficultyLevel);
 //    void createBulletAndShot(int attackX, int attackY);
 //    void createBulletAndShot(Unit* unit, int bullet_grafCoorX, int bullet_grafCoorY);
 

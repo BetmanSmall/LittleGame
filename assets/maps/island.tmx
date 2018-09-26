@@ -3,7 +3,7 @@
  <tileset firstgid="1" name="Iso-64x64-outside" tilewidth="64" tileheight="64" tilecount="160" columns="10">
   <image source="textures/Iso-64x64-outside.png" width="640" height="1024"/>
  </tileset>
- <tileset firstgid="161" name="tower1_winter_scout" tilewidth="64" tileheight="64" tilecount="6" columns="2">
+ <tileset firstgid="161" name="tower1_winter_scout" tilewidth="64" tileheight="64" tilecount="9" columns="3">
   <properties>
    <property name="attack" value="1"/>
    <property name="height" value="1"/>
@@ -12,7 +12,7 @@
    <property name="size" value="1"/>
    <property name="type" value="1"/>
   </properties>
-  <image source="textures/warcraft2/tilesets/winter/human/buildings/scout_tower_3.png" trans="ff00ff" width="128" height="192"/>
+  <image source="textures/warcraft2/tilesets/winter/human/buildings/scout_tower_3.png" trans="ff00ff" width="192" height="192"/>
   <terraintypes>
    <terrain name="idle_up" tile="0"/>
    <terrain name="bullet_fly_up" tile="1"/>
@@ -31,7 +31,7 @@
    </animation>
   </tile>
  </tileset>
- <tileset firstgid="167" name="tower2_summer_scout" tilewidth="64" tileheight="64" tilecount="2" columns="1">
+ <tileset firstgid="170" name="tower2_summer_scout" tilewidth="64" tileheight="64" tilecount="2" columns="1">
   <properties>
    <property name="attack" value="1"/>
    <property name="height" value="1"/>
@@ -45,7 +45,7 @@
    <terrain name="idle_up" tile="0"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="169" name="tower3_duckTower" tilewidth="64" tileheight="128" tilecount="1" columns="1">
+ <tileset firstgid="172" name="tower3_duckTower" tilewidth="64" tileheight="128" tilecount="1" columns="1">
   <properties>
    <property name="attack" value="5"/>
    <property name="height" value="2"/>
@@ -59,7 +59,7 @@
    <terrain name="idle_up" tile="0"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="170" name="tower4_mystic" tilewidth="64" tileheight="64" tilecount="12" columns="3">
+ <tileset firstgid="173" name="tower4_mystic" tilewidth="64" tileheight="64" tilecount="12" columns="3">
   <properties>
    <property name="attack" value="1"/>
    <property name="height" value="1"/>
@@ -73,7 +73,7 @@
    <terrain name="idle_up" tile="0"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="182" name="unit" tilewidth="128" tileheight="128" tilecount="48" columns="6">
+ <tileset firstgid="185" name="unit" tilewidth="128" tileheight="128" tilecount="48" columns="6">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Warrior"/>
@@ -224,7 +224,7 @@
    </animation>
   </tile>
  </tileset>
- <tileset firstgid="230" name="unit3_footman" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="233" name="unit3_footman" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Footman"/>
@@ -303,7 +303,7 @@
    <terrain name="death3_down" tile="59"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="290" name="unit1_grunt" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="293" name="unit1_grunt" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Grunt"/>
@@ -382,7 +382,7 @@
    <terrain name="death3_down" tile="59"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="350" name="unit2_troll_axethrower" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="353" name="unit2_troll_axethrower" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Troll"/>

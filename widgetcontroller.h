@@ -30,7 +30,7 @@ private:
 
     std::vector<QString> campaingMaps;
     MainMenu* mainMenu;
-    int enemyCount, towersCount;
+    int enemyCount, difficultyLevel, towersCount;
 
     void paintEvent(QPaintEvent* );
     void loadMap(GameWidget *gameWidget);
@@ -52,6 +52,7 @@ private slots:
 //    void loadMap5();
 //    void loadMap6();
     void enemyCountChanged(int value);
+    void difficultyLevelChanged(int value);
     void towersCountChanged(int value);
     void closeWidget();
     void closeWidgetGameFinished(bool win);

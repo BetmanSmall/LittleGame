@@ -94,12 +94,14 @@ void Field::createExitPoint(int x, int y) {
 
 void Field::updateHeroDestinationPoint() {
     qDebug() << "Field::updateHeroDestinationPoint(); -- ";
-    updateHeroDestinationPoint(exitPointX, exitPointY);
-//    Unit* hero = unitsManager.hero;
-//    qDebug() << "Field::updateHeroDestinationPoint(); -- hero:" << hero;
-//    if (hero != NULL && !hero->path.empty()) {
-//        updateHeroDestinationPoint(hero->path.front().x, hero->path.front().y);
-//    }
+//    updateHeroDestinationPoint(exitPointX, exitPointY);
+    Unit* hero = unitsManager.hero;
+    qDebug() << "Field::updateHeroDestinationPoint(); -- hero:" << hero;
+    if (hero != NULL && !hero->path.empty()) {
+        updateHeroDestinationPoint(hero->path.front().x, hero->path.front().y);
+    } else {
+        updatePathFinderWalls();
+    }
 }
 
 void Field::updateHeroDestinationPoint(int x, int y) {
@@ -108,8 +110,11 @@ void Field::updateHeroDestinationPoint(int x, int y) {
         Unit* tmpUnit = unitsManager.getUnit(k);
         if (tmpUnit->type == 0) {
             qDebug() << "Field::updateHeroDestionPoint(" << x << ", " << y << "); -- ";
-            tmpUnit->path = pathFinder.findPath({tmpUnit->coorByCellX, tmpUnit->coorByCellY}, {x, y});
-            tmpUnit->path.pop_back();
+            AStar::CoordinateList newPath = pathFinder.findPath({tmpUnit->coorByCellX, tmpUnit->coorByCellY}, {x, y});
+            if (newPath.front().operator==({x, y})) {
+                newPath.pop_back();
+                tmpUnit->path = newPath;
+            }
 //            for(auto& coordinate : tmpUnit->path) {
 //                qDebug() << "Field::updateHeroDestionPoint(); -- x:" << coordinate.x << " y:" << coordinate.y;
 //            }
@@ -189,7 +194,7 @@ bool Field::towersAttack(int deltaTime) {
     for(int k = 0; k < towersManager.getAmount(); k++) {
         Tower* tmpTower = towersManager.getTowerById(k);
         if (tmpTower->recharge(deltaTime)) {
-            tmpTower->createBullets();
+            tmpTower->createBullets(towersManager.difficultyLevel);
         }
 
         for (int b = 0; b < tmpTower->bullets.size(); b++) {
@@ -522,6 +527,7 @@ int Field::stepOneUnit(int num) {
 //                }
                 if (getCell(currX, currY)->isTerrain()) {
                     getCell(currX, currY)->removeTerrain();
+                    updatePathFinderWalls();
                 }
                 if (tmpUnit->path.empty() || getCell(exitX, exitY)->isTerrain()) {
                     int randomX = rand()%sizeX;
@@ -862,8 +868,8 @@ Unit* Field::createUnit(int x, int y, int type) {
     }
     Unit* unit;
     if (type == 0) {
-//        unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(1)); //, type);
-        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(1), type);
+        unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(1)); //, type);
+//        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(1), type);
         updateHeroDestinationPoint(exitPointX, exitPointY);
     } else /*if (type == 1)*/ {
         unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById((2+(rand()%(faction->units.size()-2)))), type);

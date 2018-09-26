@@ -1,6 +1,13 @@
 #include "unit.h"
 
 Unit::Unit() {
+//    qDebug() << "Unit::Unit(); -- ";
+}
+
+Unit::~Unit() {
+//    qDebug() << "Unit::~Unit(); -- ";
+    path.clear();
+    activePixmaps.clear();
 }
 
 QPixmap Unit::getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter) {

@@ -110,47 +110,51 @@ GameWidget::~GameWidget()
 void GameWidget::timerEvent(QTimerEvent *event) {
 //    qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
 //    test = test<8 ? test+1 : 0;
+//    if(test == 0)
+//        field.spawnHeroInSpawnPoint();
 //    if(test == 1)
 //        qDebug() << "test";
     int timerId = event->timerId();
     if (timerId == unitsMove_TimerId) {
-//        if(test == 0)
-//            field.spawnHeroInSpawnPoint();
-//        qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
-        if (int result = field.stepAllUnits()) {
-            if(result == 4) {
-                global_text = "Hero contact With Enemy!";
-                signal_closeWidgetGameFinished(false);
-                return;
-            } else if(result == 3) {
-                global_text = "Hero in ExitPoint!";
-                signal_closeWidgetGameFinished(true);
-                return;
-            } else if(result == 2) {
-                global_text = "You WIN!";
-//                QMessageBox msg;
-//                msg.setText("You WIN!");
-//                msg.exec();
-//                qDebug() << "You Win!";
-//                stopTimer_UnitsMoveAndTowerAttack();
-            } else if(result == 1) {
-                global_text = "You LOSE!";
-//                QMessageBox msg;
-//                msg.setText("You LOSE!");
-//                msg.exec();
-//                qDebug() << "You Lose!";
-//                stopTimer_UnitsMoveAndTowerAttack();
-            } else if(result == -1) {
-                if(field.deleteTower()) {
-                    field.waveAlgorithm();
-                } else {
-                    stopTimer_UnitsMoveAndTowerAttack();
+        if (!gamePause) {
+    //        qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
+            if (int result = field.stepAllUnits()) {
+                if(result == 4) {
+                    global_text = "Hero contact With Enemy!";
+                    signal_closeWidgetGameFinished(false);
+                    return;
+                } else if(result == 3) {
+                    global_text = "Hero in ExitPoint!";
+                    signal_closeWidgetGameFinished(true);
+                    return;
+                } else if(result == 2) {
+                    global_text = "You WIN!";
+    //                QMessageBox msg;
+    //                msg.setText("You WIN!");
+    //                msg.exec();
+    //                qDebug() << "You Win!";
+    //                stopTimer_UnitsMoveAndTowerAttack();
+                } else if(result == 1) {
+                    global_text = "You LOSE!";
+    //                QMessageBox msg;
+    //                msg.setText("You LOSE!");
+    //                msg.exec();
+    //                qDebug() << "You Lose!";
+    //                stopTimer_UnitsMoveAndTowerAttack();
+                } else if(result == -1) {
+                    if(field.deleteTower()) {
+                        field.waveAlgorithm();
+                    } else {
+                        stopTimer_UnitsMoveAndTowerAttack();
+                    }
                 }
             }
         }
     } else if (timerId == towersAttack_TimerId) {
 //      field.setMainCoorMapAndSizeCell(mainCoorMapX, mainCoorMapY, sizeCell);
-        field.towersAttack(towersAttack_TimerMilliSec);
+        if (!gamePause) {
+            field.towersAttack(towersAttack_TimerMilliSec);
+        }
 //        std::vector<Tower*> towers = field.getAllTowers();
 //        for(int k = 0; k < towers.size(); k++) {
 //            Tower* tmpTower = towers[k];
@@ -284,7 +288,8 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
     } else if(key == Qt::Key_7) {
         ui->drawTowerUnderConstruction_checkBox->toggle();
     } else if(key == Qt::Key_Space) {
-        gamePause != gamePause;
+        gamePause = !gamePause;
+        qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
     } else if (event->key() == Qt::Key_Enter) {
         signal_closeWidgetGameFinished(true);
         return;
@@ -304,13 +309,13 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
         if(mainCoorMapY+sizeY*sizeCell > height()) {
             mainCoorMapY -= pixelsShiftMap;
         }
-    } else if(key == Qt::Key_B) {
-        buildTower();
-    } else if(key == Qt::Key_N) {
-        if(underConstruction) {
-            delete underConstruction;
-            underConstruction = NULL;
-        }
+//    } else if(key == Qt::Key_B) {
+//        buildTower();
+//    } else if(key == Qt::Key_N) {
+//        if(underConstruction) {
+//            delete underConstruction;
+//            underConstruction = NULL;
+//        }
     }
     field.setMainCoorMap(mainCoorMapX, mainCoorMapY);
 //    if(key == Qt::Key_0)
@@ -1222,10 +1227,12 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         global_text2 = text.toStdString().c_str();
         qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
         if(button == Qt::LeftButton) {
-            field.updateHeroDestinationPoint(mouseX, mouseY);
-            if(field.isSetSpawnPoint()) {
-                startTimer_UnitsMoveAndTowerAttack();
+            if (field.getCell(mouseX, mouseY)->isEmpty()) {
+                field.updateHeroDestinationPoint(mouseX, mouseY);
             }
+//            if(field.isSetSpawnPoint()) {
+//                startTimer_UnitsMoveAndTowerAttack();
+//            }
 //            event->accept();
 //            if(!field.containBusy(mouseX, mouseY))
 //                field.waveAlgorithm();
@@ -1253,21 +1260,21 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         //            field.updatePathFinderWalls();
                 }
             }
-        } else if(event->button() == Qt::XButton1) {
-            field.updateHeroDestinationPoint(mouseX,mouseY);
-            if(field.isSetSpawnPoint()) {
-                startTimer_UnitsMoveAndTowerAttack();
-            }
-//            if(waveAlgorithm(mouseX, mouseY) == 1)
-//                global_text2 = "Yes!";
-//            else
-//                global_text2 = "No!";
-//            test = 1;
-//            field.setUnit(mouseX, mouseY);
-        } else if(event->button() == Qt::XButton2) {
-            field.setMousePress(mouseX,mouseY);
-            field.createSpawnPoint(defaultNumCreateUnits, mouseX, mouseY);
-            startTimer_UnitsMoveAndTowerAttack();
+//        } else if(event->button() == Qt::XButton1) {
+//            field.updateHeroDestinationPoint(mouseX, mouseY);
+//            if(field.isSetSpawnPoint()) {
+//                startTimer_UnitsMoveAndTowerAttack();
+//            }
+////            if(waveAlgorithm(mouseX, mouseY) == 1)
+////                global_text2 = "Yes!";
+////            else
+////                global_text2 = "No!";
+////            test = 1;
+////            field.setUnit(mouseX, mouseY);
+//        } else if(event->button() == Qt::XButton2) {
+//            field.setMousePress(mouseX,mouseY);
+//            field.createSpawnPoint(defaultNumCreateUnits, mouseX, mouseY);
+//            startTimer_UnitsMoveAndTowerAttack();
 //        } else if(event->button() == Qt::MidButton) {
 ////            field.createUnit(mouseX, mouseY);
 //            if(cell->isEmpty()) {
@@ -1277,15 +1284,15 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
 //            }
         }
     }
-    qDebug() << "GameWidget::mouseReleaseEvent() -- underConstruction: " << underConstruction;
-    if(underConstruction) {
-        field.setTower(underConstruction->startX, underConstruction->startY, underConstruction->tower);
-        for(int k = 0; k < underConstruction->coorsX.size(); k++) {
-            field.setTower(underConstruction->coorsX[k], underConstruction->coorsY[k], underConstruction->tower);
-        }
-        underConstruction->clearStartCoors();
-        field.waveAlgorithm();
-    }
+//    qDebug() << "GameWidget::mouseReleaseEvent() -- underConstruction: " << underConstruction;
+//    if(underConstruction) {
+//        field.setTower(underConstruction->startX, underConstruction->startY, underConstruction->tower);
+//        for(int k = 0; k < underConstruction->coorsX.size(); k++) {
+//            field.setTower(underConstruction->coorsX[k], underConstruction->coorsY[k], underConstruction->tower);
+//        }
+//        underConstruction->clearStartCoors();
+//        field.waveAlgorithm();
+//    }
     update();
 }
 
@@ -1911,8 +1918,10 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
                             qDebug() << "GameWidget::loadMap(); -- faction:" << faction->getFirstTowers()[0];
                             field.setTower(x, y, faction->getFirstTowers()[0]);
 //                            field.setTower()
-                        } else {
+                        } else if (layerName == "background"){
                             field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap);
+                        } else {
+                            field.getCell(x, y)->foregroundTiles.push_back(pixmap);
                         }
                     } else {
                         //qDebug() << "subRectToUse: " << subRectToUse;

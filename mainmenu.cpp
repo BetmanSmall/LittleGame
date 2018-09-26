@@ -43,8 +43,9 @@ void MainMenu::updateGameStatus(bool win) {
     }
 }
 
-void MainMenu::updateEnemyAndTowersCount() {
+void MainMenu::updateSlidersValues() {
     signal_enemyCountChanged(ui->enemyCount->value());
+    signal_difficultyLevelChanged(ui->difficultyLevel->value());
     signal_towersCountChanged(ui->towersCount->value());
 }
 
@@ -88,16 +89,35 @@ void MainMenu::keyPressEvent(QKeyEvent* event) {
 
 void MainMenu::on_sound_clicked() {
     qDebug() << "MainMenu::on_sound_clicked(); -- ";
-    ui->sound->move(qrand()%width(), qrand()%height());
+//    ui->sound->move(qrand()%width(), qrand()%height());
     signal_actionSoundRadioButton();
 }
 
 void MainMenu::on_enemyCount_valueChanged(int value) {
     qDebug() << "MainMenu::on_enemyCount_valueChanged(); -- value:" << value;
+    ui->labelEnemyCount->setText( QString("EnemyCount:%1").arg(value) );
     signal_enemyCountChanged(value);
+}
+
+void MainMenu::on_difficultyLevel_valueChanged(int value) {
+    qDebug() << "MainMenu::on_difficultyLevel_valueChanged(); -- value:" << value;
+    QString difficultyLevel = ( (value==0) ? "Easy" : ( (value==1) ? "Normal" : "Hard" ) );
+    ui->labelDifficultyLevel->setText( QString("DifficultyLevel:%1").arg(difficultyLevel) );
+    if (value == 0) {
+        ui->towersCount->setValue(0);
+        ui->towersCount->setEnabled(false);
+    } else if (value == 1) {
+        ui->towersCount->setValue(ui->towersCount->maximum()/2);
+        ui->towersCount->setEnabled(true);
+    } else if (value == 2) {
+        ui->towersCount->setValue(ui->towersCount->maximum());
+        ui->towersCount->setEnabled(true);
+    }
+    signal_difficultyLevelChanged(value);
 }
 
 void MainMenu::on_towersCount_valueChanged(int value) {
     qDebug() << "MainMenu::on_towersCount_valueChanged(); -- value:" << value;
+    ui->labelTowerCount->setText( QString("TowersCount <= %1").arg(value) );
     signal_towersCountChanged(value);
 }

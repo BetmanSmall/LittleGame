@@ -60,10 +60,11 @@ void WidgetController::showMainMenu() {
     connect(mainMenu, SIGNAL(signal_openOptionMenu()), this, SLOT(showOptionMenu()));
     connect(mainMenu, SIGNAL(signal_exit()), this, SLOT(closeWidget()));
     connect(mainMenu, SIGNAL(signal_enemyCountChanged(int)), this, SLOT(enemyCountChanged(int)));
+    connect(mainMenu, SIGNAL(signal_difficultyLevelChanged(int)), this, SLOT(difficultyLevelChanged(int)));
     connect(mainMenu, SIGNAL(signal_towersCountChanged(int)), this, SLOT(towersCountChanged(int)));
     connect(mainMenu, SIGNAL(signal_actionSoundRadioButton()), this, SLOT(actionMainMenuSoundRadionButton()));
 
-    mainMenu->updateEnemyAndTowersCount();
+    mainMenu->updateSlidersValues();
     stackedWidget->addWidget(mainMenu);
     stackedWidget->setCurrentWidget(mainMenu);
 }
@@ -127,6 +128,7 @@ void WidgetController::showGameWidget(QString mapPath) {
 //    gameWidget->resize();
     loadMap(gameWidget);
     gameWidget->loadMap(ASSETS_PATH + mapPath, enemyCount, towersCount);
+    gameWidget->field.towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
     qDebug() << "WidgetController::showGameWidget(); -- END";
 }
 
@@ -180,6 +182,11 @@ void WidgetController::changeWindowState() {
 void WidgetController::enemyCountChanged(int value) {
     qDebug() << "WidgetController::enemyCountChanged(); -- value:" << value;
     enemyCount = value;
+}
+
+void WidgetController::difficultyLevelChanged(int value) {
+    qDebug() << "WidgetController::difficultyLevelChanged(); -- value:" << value;
+    difficultyLevel = value;
 }
 
 void WidgetController::towersCountChanged(int value) {

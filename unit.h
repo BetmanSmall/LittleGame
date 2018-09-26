@@ -1,6 +1,7 @@
 #ifndef UNIT_H
 #define UNIT_H
 
+#include <QDebug>
 #include <QPixmap>
 
 #include "defaultunit.h"
@@ -44,6 +45,7 @@ public:
     DefaultUnit* defUnit;
 
     Unit();
+    ~Unit();
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
     bool takeDamage(int damage);
 };

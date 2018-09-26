@@ -37,8 +37,8 @@ public:
 
     QPixmap backgroundPixmap;
     QPixmap busyPixmap;
-    std::vector<QPixmap> backgroundTiles;
-    std::vector<QPixmap> foregroundiles;
+//    std::vector<QPixmap> backgroundTiles;
+    std::vector<QPixmap> foregroundTiles;
 //        Array<Tree> trees;
 //        private bool empty;
 // //        private bool terrain;

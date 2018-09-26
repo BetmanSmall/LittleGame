@@ -23,11 +23,12 @@ using namespace std;
 /**
  * @brief The Towers class
  */
-class TowersManager
-{
+class TowersManager {
+public: // we are friendly to all!
     Tower* towers;
 
     QPixmap defaultPixmapForTower;
+    int difficultyLevel;
 
     /**
      * @brief size - Количество башен, которое может быть создано;

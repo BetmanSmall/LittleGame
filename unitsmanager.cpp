@@ -1,48 +1,43 @@
 #include "unitsmanager.h"
 
-void UnitsManager::createMass(int newSize)
-{
-    if(units == NULL)
-    {
+void UnitsManager::createMass(int newSize) {
+    if(units == NULL) {
+        hero = NULL;
         units = new Unit[newSize];
         size = newSize;
         amount = 0;
-    }
-    else
-    {
+    } else {
         deleteMass();
         createMass(newSize);
     }
 }
 
-void UnitsManager::deleteMass()
-{
-    if(units != NULL)
-    {
+void UnitsManager::deleteMass() {
+    if (hero != NULL) {
+        delete hero;
+        hero = NULL;
+    }
+    if(units != NULL) {
         delete[] units;
         units = NULL;
     }
 }
 
-int UnitsManager::getSize()
-{
+int UnitsManager::getSize() {
     return size;
 }
 
-int UnitsManager::getAmount()
-{
+int UnitsManager::getAmount() {
     return amount;
 }
 
-int UnitsManager::getHP(int x, int y)
-{
-    for(int k = 0; k < amount; k++)
-    {
+int UnitsManager::getHP(int x, int y) {
+    for(int k = 0; k < amount; k++) {
         int localX = units[k].coorByCellX;
         int localY = units[k].coorByCellY;
-
-        if(localX == x && localY == y)
+        if(localX == x && localY == y) {
             return units[k].hp;
+        }
     }
     return 0;
 }
@@ -130,20 +125,15 @@ bool UnitsManager::attackUnit(int x, int y, int damage, Unit *unit)
     return false;
 }
 
-Unit* UnitsManager::getUnit(int number)
-{
+Unit* UnitsManager::getUnit(int number) {
     return &units[number];
 }
 
-Unit* UnitsManager::getUnit(int x, int y)
-{
-    for(int k = 0; k < amount; k++)
-    {
+Unit* UnitsManager::getUnit(int x, int y) {
+    for (int k = 0; k < amount; k++) {
         int localX = units[k].coorByCellX;
         int localY = units[k].coorByCellY;
-
-        if(localX == x && localY == y)
-        {
+        if (localX == x && localY == y) {
             return &units[k];
         }
     }
@@ -151,33 +141,17 @@ Unit* UnitsManager::getUnit(int x, int y)
 }
 
 Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit) {
+    qDebug() << "UnitsManager::createHero(); -- " << coorByCellX << ", " << coorByCellY << ", " << coorByMapX << ", " << coorByMapY;
+    qDebug() << "UnitsManager::createHero(); -- unit:" << unit << " hero:" << hero;
     if (hero == NULL) {
         hero = createUnit(coorByCellX, coorByCellY, coorByMapX, coorByMapY, unit, 0);
     }
-    qDebug() << "UnitsManager::createHero(); -- " << coorByCellX << ", " << coorByCellY << ", " << coorByMapX << ", " << coorByMapY;
-    qDebug() << "UnitsManager::createHero(); -- unit:" << unit << " hero:" << hero;
     return hero;
 }
 
-Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type)
-{
+Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type){
     qDebug() << "UnitsManager::createUnit(); -- unit:" << unit;
-//    if(amount == size)
-//    {
-//        Unit* tmpUnits;
-//        tmpUnits = new Unit[size+1];
-
-//        for(int k = 0; k < size; k++)
-//            tmpUnits[k] = units[k];
-
-//        size++;
-
-//        delete[] units;
-//        units = tmpUnits;
-//    }
-
-    if(amount < size)
-    {
+    if(amount < size) {
         units[amount].hp = 100;
         units[amount].alive = true;
         units[amount].preDeath = false;
@@ -197,27 +171,20 @@ Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX,
 
         units[amount].pixmap = defaultPixmapForUnit;
         units[amount].defUnit = unit;
-
         return &units[amount++];
     }
-
     return NULL;
 }
 
-void UnitsManager::setDefaulPixmapForUnit(QPixmap pixmap)
-{
+void UnitsManager::setDefaulPixmapForUnit(QPixmap pixmap) {
     defaultPixmapForUnit = pixmap;
 }
 
-QPixmap UnitsManager::getUnitPixmap(int x, int y)
-{
-    for(int k = 0; k < amount; k++)
-    {
+QPixmap UnitsManager::getUnitPixmap(int x, int y) {
+    for(int k = 0; k < amount; k++) {
         int localX = units[k].coorByCellX;
         int localY = units[k].coorByCellY;
-
-        if(localX == x && localY == y)
-        {
+        if(localX == x && localY == y) {
             return units[k].pixmap;
         }
     }
