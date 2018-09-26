@@ -32,23 +32,18 @@ public:
 //    int speed;
     int type;
     AStar::CoordinateList path;
-//    std::vector<int> unitSteps;
 
     int lastX, lastY;
     int coorByCellX, coorByCellY;
     int coorByMapX, coorByMapY;
     Direction direction;
-
     int animationCurrIter;
     int animationMaxIter;
-
     QPixmap pixmap;
     std::vector<QPixmap> activePixmaps;
-
     DefaultUnit* defUnit;
 
     Unit();
-
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
     bool takeDamage(int damage);
 };

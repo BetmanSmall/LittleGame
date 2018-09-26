@@ -30,6 +30,7 @@ private:
 
     std::vector<QString> campaingMaps;
     MainMenu* mainMenu;
+    int enemyCount, towersCount;
 
     void paintEvent(QPaintEvent* );
     void loadMap(GameWidget *gameWidget);
@@ -42,13 +43,16 @@ private slots:
     void showOptionMenu();
     void loadNextCampaingMaps();
     void showGameWidget(QString mapPath);
+    void changeWindowState();
 
-    void loadMap1();
-    void loadMap2();
-    void loadMap3();
-    void loadMap4();
-    void loadMap5();
-    void loadMap6();
+//    void loadMap1();
+//    void loadMap2();
+//    void loadMap3();
+//    void loadMap4();
+//    void loadMap5();
+//    void loadMap6();
+    void enemyCountChanged(int value);
+    void towersCountChanged(int value);
     void closeWidget();
     void closeWidgetGameFinished(bool win);
 };

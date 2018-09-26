@@ -1,6 +1,7 @@
 #ifndef DEFAULTUNIT_H
 #define DEFAULTUNIT_H
 
+#include <QDebug>
 #include <QPixmap>
 
 /**
@@ -55,6 +56,7 @@ public:
     std::vector<QPixmap> death_up_left;
 
     DefaultUnit();
+    ~DefaultUnit();
     void clearVectors();
 };
 

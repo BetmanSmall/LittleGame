@@ -33,14 +33,13 @@ private slots:
     void on_loadMap6Button_clicked();
 
 signals:
+//    void signal_loadMap1();
+//    void signal_loadMap2();
+//    void signal_loadMap3();
+//    void signal_loadMap4();
+//    void signal_loadMap5();
+//    void signal_loadMap6();
     void signal_closeWidget();
-    void signal_quickPlay();
-    void signal_loadMap1();
-    void signal_loadMap2();
-    void signal_loadMap3();
-    void signal_loadMap4();
-    void signal_loadMap5();
-    void signal_loadMap6();
 };
 
 #endif // CHOOSEMAPMENU_H

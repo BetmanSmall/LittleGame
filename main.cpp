@@ -13,9 +13,9 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    QRect rec = QApplication::desktop()->screenGeometry();
+//    QRect rec = QApplication::desktop()->screenGeometry();
     WidgetController w;
-    w.move(rec.width()/3, 0);
+    w.move(0, 0);
     w.show();
 
     return a.exec();

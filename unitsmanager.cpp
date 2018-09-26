@@ -150,6 +150,15 @@ Unit* UnitsManager::getUnit(int x, int y)
     return NULL;
 }
 
+Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit) {
+    if (hero == NULL) {
+        hero = createUnit(coorByCellX, coorByCellY, coorByMapX, coorByMapY, unit, 0);
+    }
+    qDebug() << "UnitsManager::createHero(); -- " << coorByCellX << ", " << coorByCellY << ", " << coorByMapX << ", " << coorByMapY;
+    qDebug() << "UnitsManager::createHero(); -- unit:" << unit << " hero:" << hero;
+    return hero;
+}
+
 Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type)
 {
     qDebug() << "UnitsManager::createUnit(); -- unit:" << unit;

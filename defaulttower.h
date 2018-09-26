@@ -1,6 +1,7 @@
 #ifndef DEFAULTTOWER_H
 #define DEFAULTTOWER_H
 
+#include <QDebug>
 #include <QPixmap>
 
 /**
@@ -13,10 +14,12 @@ public:
     int attack;
     int radius;
     int size;
+    int reloadTime;
     int height;
     int type;
 
     QPixmap pixmap;
+    std::vector<QPixmap> bullet;
 
     QPixmap bullet_fly_up;
     QPixmap bullet_fly_up_right;
@@ -46,6 +49,7 @@ public:
 //    std::vector<QPixmap> attack_up_left;
 
     DefaultTower();
+    ~DefaultTower();
 };
 
 #endif // DEFAULTTOWER_H

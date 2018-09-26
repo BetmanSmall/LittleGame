@@ -1,6 +1,12 @@
 #include "defaultunit.h"
 
 DefaultUnit::DefaultUnit() {
+    qDebug() << "DefaultTower::DefaultTower(); -- ";
+}
+
+DefaultUnit::~DefaultUnit() {
+    qDebug() << "DefaultTower::~DefaultTower(); -- ";
+    clearVectors();
 }
 
 void DefaultUnit::clearVectors() {

@@ -86,6 +86,7 @@ Tower* TowersManager::createTower(int x, int y, DefaultTower* tower)
         towers[amount].radius = tower->radius;
         towers[amount].size = tower->size;
         towers[amount].type = tower->type;
+        towers[amount].elapsedReloadTime = tower->reloadTime;
         towers[amount].currX = x;
         towers[amount].currY = y;
         towers[amount].pixmap = tower->pixmap;

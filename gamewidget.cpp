@@ -7,7 +7,11 @@ GameWidget::GameWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+#ifdef QT_DEBUG
     ASSETS_PATH = "../../LittleGame/assets/";
+#else
+    ASSETS_PATH = "./assets/";
+#endif
 
     srand(time(0));
 
@@ -26,7 +30,7 @@ GameWidget::GameWidget(QWidget *parent) :
     defaultNumCreateUnits = 30;
 
     unitsMove_TimerMilliSec = 100;
-    towersAttack_TimerMilliSec = 100;
+    towersAttack_TimerMilliSec = 50;
     scanMouseMove_TimerMilliSec = 100;
 //    bulletsFly_TimerMilliSec = 100;
 
@@ -92,28 +96,36 @@ GameWidget::GameWidget(QWidget *parent) :
 
 GameWidget::~GameWidget()
 {
+    if (underConstruction) {
+        delete underConstruction;
+    }
+    stopTimer_UnitsMoveAndTowerAttack();
     field.deleteField();
+    if (scanMouseMove_TimerId)
+        killTimer(scanMouseMove_TimerId);
+//    field.field = NULL;
     delete ui;
 }
 
 void GameWidget::timerEvent(QTimerEvent *event) {
-    qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
+//    qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
+//    test = test<8 ? test+1 : 0;
 //    if(test == 1)
 //        qDebug() << "test";
     int timerId = event->timerId();
-
-    if(timerId == unitsMove_TimerId) {
+    if (timerId == unitsMove_TimerId) {
 //        if(test == 0)
 //            field.spawnHeroInSpawnPoint();
-        test = test<8 ? test+1 : 0;
 //        qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
-        if(int result = field.stepAllUnits()) {
+        if (int result = field.stepAllUnits()) {
             if(result == 4) {
                 global_text = "Hero contact With Enemy!";
                 signal_closeWidgetGameFinished(false);
+                return;
             } else if(result == 3) {
                 global_text = "Hero in ExitPoint!";
                 signal_closeWidgetGameFinished(true);
+                return;
             } else if(result == 2) {
                 global_text = "You WIN!";
 //                QMessageBox msg;
@@ -138,7 +150,7 @@ void GameWidget::timerEvent(QTimerEvent *event) {
         }
     } else if (timerId == towersAttack_TimerId) {
 //      field.setMainCoorMapAndSizeCell(mainCoorMapX, mainCoorMapY, sizeCell);
-        field.towersAttack();
+        field.towersAttack(towersAttack_TimerMilliSec);
 //        std::vector<Tower*> towers = field.getAllTowers();
 //        for(int k = 0; k < towers.size(); k++) {
 //            Tower* tmpTower = towers[k];
@@ -214,24 +226,49 @@ void GameWidget::timerEvent(QTimerEvent *event) {
 //        }
 //        // --------------------
     }
-    update();
+//    qDebug() << "GameWidget::timerEvent(); -- update()";
+//    qDebug() << "GameWidget::timerEvent(); -- field.field: " << field.field;
+//    if (field.field != NULL) {
+        update();
+//    }
 }
 
-void GameWidget::keyPressEvent(QKeyEvent * event)
-{
+void GameWidget::keyPressEvent(QKeyEvent * event) {
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int sizeCell = field.getSizeCell();
-
     int sizeX = field.getSizeX();
     int sizeY = field.getSizeY();
 
     int key = event->key();
-//    qDebug() << "GameWidget::keyPressEvent() -- key: " << key;
-
+    qDebug() << "GameWidget::keyPressEvent(); -- key: " << key;
     if(key == Qt::Key_0) {
-//        qDebug
-//        test = 1;
+        test++;
+        signal_changeWindowState();
+//        parentWidget()->setWindowState(parentWidget()->windowState() ^ Qt::WindowFullScreen);
+//        parentWidget()->showFullScreen();
+//        parentWidget()->repaint();
+//        parentWidget()->setWindowState( (parentWidget()->windowState()!=Qt::WindowFullScreen) ? Qt::WindowFullScreen : Qt::WindowNoState);
+//        QRect rec = QApplication::desktop()->screenGeometry();
+//        if (this->width() != rec.width()) {
+//            move(0, 0);
+//            parentWidget()->move(0, 0);
+//            parentWidget()->resize(rec.width(), rec.height());
+//            resize(rec.width(), rec.height());
+//            showMinimized();
+//            parentWidget()->
+//            parentWidget()->setMinimumWidth(rec.width());
+//            parentWidget()->setMinimumHeight(rec.height());
+//        } else {
+//            parentWidget()->move(rec.width()/3, 0);
+//            parentWidget()->resize(1024, 768);
+//            resize(1024, 768);
+//            parentWidget()->setMinimumWidth(1024);
+//            parentWidget()->setMinimumHeight(768);
+//            parentWidget()->setMaximumWidth(1024);
+//            parentWidget()->setMaximumHeight(768);
+//        }
+        qDebug() << "GameWidget::keyPressEvent(); -- parentWidget()->windowState():" << parentWidget()->windowState();
     } else if(key == Qt::Key_1) {
         ui->drawGrid_checkBox->toggle();
     } else if(key == Qt::Key_2) {
@@ -247,9 +284,10 @@ void GameWidget::keyPressEvent(QKeyEvent * event)
     } else if(key == Qt::Key_7) {
         ui->drawTowerUnderConstruction_checkBox->toggle();
     } else if(key == Qt::Key_Space) {
-        test++;
+        gamePause != gamePause;
     } else if (event->key() == Qt::Key_Enter) {
         signal_closeWidgetGameFinished(true);
+        return;
     } else if(key == Qt::Key_Left) {
         if(mainCoorMapX < 0) {
             mainCoorMapX += pixelsShiftMap;
@@ -293,26 +331,23 @@ void GameWidget::keyPressEvent(QKeyEvent * event)
     update();
 }
 
-void GameWidget::paintEvent(QPaintEvent *)
-{
+void GameWidget::paintEvent(QPaintEvent* event) {
 //    if(test == 1)
 //        qDebug() << "test";
 //    test = test<100 ? test+1 : 0;
 //    qDebug() << "Paint" << test;
     p.begin(this);
-    if(gameStart)
-    {
-//        if(!gamePause)
-//        {
+    if (gameStart) {
+//        if (!gamePause) {
             drawFullField();
             if(ui->drawField_checkBox->isChecked())
                 drawField();
             if(ui->drawRelief_checkBox->isChecked())
                 drawRelief();
-            if(ui->drawTowersByTowers_checkBox->isChecked())
-                drawTowersByTowers();
             if(ui->drawStepsAndMouse_checkBox->isChecked())
                 drawStepsAndMouse();
+            if(ui->drawTowersByTowers_checkBox->isChecked())
+                drawTowersByTowers();
 //            drawTowersByField();
 
             if(ui->drawUnits_checkBox->isChecked())
@@ -396,8 +431,7 @@ void GameWidget::drawGrid()
     }
 }
 
-void GameWidget::drawField()
-{
+void GameWidget::drawField() {
     int fieldX = field.getSizeX();
     int fieldY = field.getSizeY();
 
@@ -414,10 +448,8 @@ void GameWidget::drawField()
     int sizeCellX = field.getSizeCell();
     int sizeCellY = sizeCellX/2;
 
-    for(int y = 0; y < fieldY; y++)
-    {
-        for(int x = 0; x < fieldX; x++)
-        {
+    for(int y = 0; y < fieldY; y++) {
+        for(int x = 0; x < fieldX; x++) {
 //            qDebug() << "GameWidget::drawField(); -- x: (" << x << "/" << fieldX << ") -- y: (" << y << "/" << fieldY << ")";
             if(mapLoad) {
                 QPixmap pix = field.getCell(x, y)->backgroundPixmap;//getPixmapOfCell(x, y);
@@ -565,88 +597,95 @@ void GameWidget::drawRelief()
 
 void GameWidget::drawTowersByTowers() {
 //    qDebug() << "GameWidget::drawTowersByTowers();";
+    int fieldX = field.getSizeX();
+    int fieldY = field.getSizeY();
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int spaceWidget = field.getSpaceWidget();
     int sizeCell = field.getSizeCell();
+    int sizeCellX = sizeCell;
+    int sizeCellY = sizeCellX/2;
     std::vector<Tower*> towers = field.getAllTowers();
     int size = towers.size();
-    for(int k = 0; k < size; k++) {
-        int x = towers[k]->currX;
-        int y = towers[k]->currY;
-        int size = towers[k]->defTower->size;
+    for (int k = 0; k < size; k++) {
+        Tower* tmpTower = towers[k];
+        if (tmpTower != NULL) {
+            int towerX = tmpTower->currX;
+            int towerY = tmpTower->currY;
+            int size = tmpTower->defTower->size;
 
-        if(!field.getIsometric()) {
-//            qDebug() << "GameWidget::drawTowersByTowers(); -- NO Isometric!";
-            int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;
-            int pxlsY = mainCoorMapY + spaceWidget + y*sizeCell;
-            int localSizeCell = sizeCell*size;
+            if(!field.getIsometric()) {
+//              qDebug() << "GameWidget::drawTowersByTowers(); -- NO Isometric!";
+//                int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;
+//                int pxlsY = mainCoorMapY + spaceWidget + y*sizeCell;
+//                int localSizeCell = sizeCell*size;
 
-            if(!mapLoad)
-                p.fillRect(pxlsX+1, pxlsY+1, localSizeCell-1, localSizeCell-1, QColor(127, 255, 0));
-            else
-                p.drawPixmap(pxlsX, pxlsY, localSizeCell/* + sizeCell*/, localSizeCell/* + sizeCell*/, towers[k]->pixmap);
-
-    //        int attackX = towers[k]->attackX;
-    //        int attackY = towers[k]->attackY;
-    //        if(attackX != -1 && attackY != -1)
-    //        {
-    //            attackX = mainCoorMapX + spaceWidget + attackX*sizeCell;
-    //            attackY = mainCoorMapY + spaceWidget + attackY*sizeCell;
-    //            p.drawLine(pxlsX+localSizeCell/2, pxlsY+localSizeCell/2, attackX, attackY);
-    //        }
-
-            for(int iBullet = 0; iBullet < towers[k]->bullets.size(); iBullet++) {
-    //            int bulletX = mainCoorMapX + spaceWidget + towers[k]->bullets[iBullet].getCurrX()*sizeCell;
-    //            int bulletY = mainCoorMapY + spaceWidget + towers[k]->bullets[iBullet].getCurrY()*sizeCell;
-                int bulletX = towers[k]->bullets[iBullet].getCurrX() - mainCoorMapX;
-                int bulletY = towers[k]->bullets[iBullet].getCurrY() - mainCoorMapY;
-
-                p.drawPixmap(bulletX, bulletY, sizeCell, sizeCell, towers[k]->bullets[iBullet].getPixmap());
-            }
-
-    //        QPixmap bullet_fly_up = towers[k]->defTower->bullet_fly_up;
-    //        QPixmap bullet_fly_up_right = towers[k]->defTower->bullet_fly_up_right;
-    //        QPixmap bullet_fly_right = towers[k]->defTower->bullet_fly_right;
-    //        QPixmap bullet_fly_down_right = towers[k]->defTower->bullet_fly_down_right;
-    //        QPixmap bullet_fly_down = towers[k]->defTower->bullet_fly_down;
-    //        QPixmap bullet_fly_down_left = towers[k]->defTower->bullet_fly_down_left;
-    //        QPixmap bullet_fly_left = towers[k]->defTower->bullet_fly_left;
-    //        QPixmap bullet_fly_up_left = towers[k]->defTower->bullet_fly_up_left;
-
-    //        p.drawPixmap(pxlsX, pxlsY - localSizeCell, localSizeCell, localSizeCell, bullet_fly_up);
-    //        p.drawPixmap(pxlsX + localSizeCell, pxlsY - localSizeCell, localSizeCell, localSizeCell, bullet_fly_up_right);
-    //        p.drawPixmap(pxlsX + localSizeCell, pxlsY, localSizeCell, localSizeCell, bullet_fly_right);
-    //        p.drawPixmap(pxlsX + localSizeCell, pxlsY + localSizeCell, localSizeCell, localSizeCell, bullet_fly_down_right);
-    //        p.drawPixmap(pxlsX, pxlsY + localSizeCell, localSizeCell, localSizeCell, bullet_fly_down);
-    //        p.drawPixmap(pxlsX - localSizeCell, pxlsY + localSizeCell, localSizeCell, localSizeCell, bullet_fly_down_left);
-    //        p.drawPixmap(pxlsX - localSizeCell, pxlsY, localSizeCell, localSizeCell, bullet_fly_left);
-    //        p.drawPixmap(pxlsX - localSizeCell, pxlsY - localSizeCell, localSizeCell, localSizeCell, bullet_fly_up_left);
-        } else {
-//            qDebug() << "GameWidget::drawTowersByTowers(); -- Isometric!";
-
-            int sizeCellX = sizeCell;
-            int sizeCellY = sizeCellX/2;
-            int height = towers[k]->defTower->height;
-
-            int isometricSpaceX = (field.getSizeY()-y)*(sizeCellX/2);
-            int isometricSpaceY = y*(sizeCellY/2);
-
-            int pxlsX = mainCoorMapX + isometricSpaceX+spaceWidget + x*(sizeCellX/2);
-            int pxlsY = mainCoorMapY + isometricSpaceY+spaceWidget + x*(sizeCellY/2);
-
-            if(!mapLoad) {
-//                p.fillRect(pxlsX+1, pxlsY+1, localSizeCell-1, localSizeCell-1, QColor(127, 255, 0));
+//                if(!mapLoad) {
+//                    p.fillRect(pxlsX+1, pxlsY+1, localSizeCell-1, localSizeCell-1, QColor(127, 255, 0));
+//                } else {
+//                    p.drawPixmap(pxlsX, pxlsY, localSizeCell/* + sizeCell*/, localSizeCell/* + sizeCell*/, tmpTower->pixmap);
+//                    for(int iBullet = 0; iBullet < tmpTower->bullets.size(); iBullet++) {
+//                        int bulletX = tmpTower->bullets[iBullet].getCurrX() - mainCoorMapX;
+//                        int bulletY = tmpTower->bullets[iBullet].getCurrY() - mainCoorMapY;
+//                        p.drawPixmap(bulletX, bulletY, sizeCell, sizeCell, tmpTower->bullets[iBullet].getPixmap());
+//                    }
+//                }
             } else {
-//                sizeCellX = sizeCellX*2;
-//                sizeCellY = sizeCellY*2;
-                p.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, towers[k]->pixmap);
-                for(int iBullet = 0; iBullet < towers[k]->bullets.size(); iBullet++) {
-        //            int bulletX = mainCoorMapX + spaceWidget + towers[k]->bullets[iBullet].getCurrX()*sizeCell;
-        //            int bulletY = mainCoorMapY + spaceWidget + towers[k]->bullets[iBullet].getCurrY()*sizeCell;
-                    int bulletX = towers[k]->bullets[iBullet].getCurrX() - mainCoorMapX;
-                    int bulletY = towers[k]->bullets[iBullet].getCurrY() - mainCoorMapY;
-                    p.drawPixmap(bulletX, bulletY, sizeCell, sizeCell, towers[k]->bullets[iBullet].getPixmap());
+//              qDebug() << "GameWidget::drawTowersByTowers(); -- Isometric!";
+                int height = tmpTower->defTower->height;
+                int isometricSpaceX = (field.getSizeY()-towerY)*(sizeCellX/2);
+                int isometricSpaceY = towerY*(sizeCellY/2);
+                int pxlsX = mainCoorMapX + isometricSpaceX+spaceWidget + towerX*(sizeCellX/2);
+                int pxlsY = mainCoorMapY + isometricSpaceY+spaceWidget + towerX*(sizeCellY/2);
+                if (!mapLoad) {
+                    p.fillRect(pxlsX+1, pxlsY+1, sizeCell-1, sizeCell-1, QColor(127, 255, 0));
+                } else {
+                    p.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, tmpTower->pixmap);
+                }
+
+                for (int iBullet = 0; iBullet < tmpTower->bullets.size(); iBullet++) {
+                    Bullet* tmpBullet = tmpTower->bullets[iBullet];
+
+                    int bulletCellX = tmpBullet->currCellX;
+                    int bulletCellY = tmpBullet->currCellY;
+//                    qDebug() << "GameWidget::drawTowersByTowers(); -- bulletCellX:" << bulletCellX  << " bulletCellY:" << bulletCellY << " iBullet:" << iBullet;
+                    int lastX, lastY;
+                    int animationCurrIter, animationMaxIter;
+                    QPixmap pixmap = tmpBullet->getAnimationInformation(&lastX, &lastY, &animationCurrIter, &animationMaxIter);
+//                    qDebug() << "GameWidget::drawTowersByTowers(); -- lastX:" << lastX  << " lastY:" << lastY;
+//                    qDebug() << "GameWidget::drawTowersByTowers(); -- bulletCellX:" << bulletCellX  << " bulletCellY:" << bulletCellY;
+//                    qDebug() << "GameWidget::drawTowersByTowers(); -- animationCurrIter:" << animationCurrIter  << " animationMaxIter:" << animationMaxIter;
+
+                    int isometricCoorX = (sizeCell/2) * fieldY;
+                    int isometricCoorY = 0;
+                    isometricCoorX = (field.getSizeCell()/2) * (fieldY - (bulletCellY));
+                    isometricCoorY = (field.getSizeCell()/4) * (bulletCellY);
+                    int mainX = mainCoorMapX + isometricCoorX + bulletCellX*(sizeCellX/2);
+                    int mainY = mainCoorMapY + isometricCoorY + bulletCellX*(sizeCellY/2);
+                    int pxlsX = mainX - sizeCellX/2;
+                    int pxlsY = mainY - sizeCellY;
+                    if(bulletCellX > lastX && bulletCellY > lastY) {
+                        pxlsY -= (sizeCellY/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    } else if(bulletCellX == lastX && bulletCellY > lastY) {
+                        pxlsX += (sizeCellX/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                        pxlsY -= (sizeCellY/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    } else if (bulletCellX < lastX && bulletCellY > lastY) {
+                        pxlsX += (sizeCellX/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    } else if (bulletCellX < lastX && bulletCellY == lastY) {
+                        pxlsX += (sizeCellX/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                        pxlsY += (sizeCellY/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    } else if (bulletCellX < lastX && bulletCellY < lastY) {
+                        pxlsY += (sizeCellY/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    } else if (bulletCellX == lastX && bulletCellY < lastY) {
+                        pxlsX -= (sizeCellX/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                        pxlsY += (sizeCellY/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    } else if (bulletCellX > lastX && bulletCellY < lastY) {
+                        pxlsX -= (sizeCellX/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    } else if (bulletCellX > lastX && bulletCellY == lastY) {
+                        pxlsX -= (sizeCellX/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                        pxlsY -= (sizeCellY/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
+                    }
+                    p.drawPixmap(pxlsX, pxlsY+sizeCellY/2, sizeCellX, sizeCellY*2, pixmap);
                 }
             }
         }
@@ -1068,7 +1107,7 @@ void GameWidget::buildTower(int x, int y) {
     if(x == -1 && y == -1) {
         qDebug() << "GameWidget:1:buildTower(" << x << ", " << y << "); -- ";
 
-        vector<DefaultTower*> towers = faction.getFirstTowers();
+        vector<DefaultTower*> towers = field.faction->getFirstTowers();
         int size = towers.size();
 //        qDebug() << "towers.size(): " << size;
 
@@ -1149,7 +1188,8 @@ void GameWidget::mousePressEvent(QMouseEvent* event) {
     if(whichCell(mouseX,mouseY)) {
         text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
         global_text2 = text.toStdString().c_str();
-        if(event->button() == Qt::LeftButton) {
+        if(button == Qt::LeftButton) {
+        } else if(button == Qt::RightButton) {
             pan = true;
             prevMouseX = event->x();
             prevMouseY = event->y();
@@ -1158,14 +1198,13 @@ void GameWidget::mousePressEvent(QMouseEvent* event) {
             prevGlobalMouseX = event->globalX();
             prevGlobalMouseY = event->globalY();
             setCursor(Qt::ClosedHandCursor);
-//        } else if(event->button() == Qt::RightButton) {
-        } else if(event->button() == Qt::MidButton) {
+//        } else if(button == Qt::MidButton) {
 //            field.createUnit(mouseX, mouseY);
-            if(field.getCell(mouseX, mouseY)->isEmpty()) {
-                buildTower(mouseX, mouseY);
-            } else if(field.getCell(mouseX, mouseY)->getTower() != NULL) {
-                field.deleteTower(mouseX, mouseY);
-            }
+//            if(field.getCell(mouseX, mouseY)->isEmpty()) {
+//                buildTower(mouseX, mouseY);
+//            } else if(field.getCell(mouseX, mouseY)->getTower() != NULL) {
+//                field.deleteTower(mouseX, mouseY);
+//            }
         }
     }
     update();
@@ -1183,36 +1222,37 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         global_text2 = text.toStdString().c_str();
         qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
         if(button == Qt::LeftButton) {
-            pan = false;
-            setCursor(Qt::ArrowCursor);
-            if ( (prevMouseCellX == mouseX && prevMouseCellY == mouseY) ) {
-                if ( (prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
-                    field.updateHeroDestinationPoint(mouseX, mouseY);
-                    if(field.isSetSpawnPoint()) {
-                        startTimer_UnitsMoveAndTowerAttack();
-                    }
-                }
+            field.updateHeroDestinationPoint(mouseX, mouseY);
+            if(field.isSetSpawnPoint()) {
+                startTimer_UnitsMoveAndTowerAttack();
             }
 //            event->accept();
 //            if(!field.containBusy(mouseX, mouseY))
 //                field.waveAlgorithm();
         } else if (button == Qt::RightButton) {
-            int randNumber = ( 80+(rand()%20) );
-            QPixmap pixmap = tileSets[0].tiles[randNumber];
-            Cell* cell = field.getCell(mouseX, mouseY);
-            if (cell != NULL) {
-                if(cell->isEmpty()) {
-                    cell->setTerrain(pixmap);
-                } else if (cell->getTower() != NULL) {
-//                    clearTower(mouseX, mouseY);
-                } else if (cell->isTerrain()) {
-                    cell->removeTerrain();
-                } else {
-                    qDebug() << "GameWidget::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
+            pan = false;
+            setCursor(Qt::ArrowCursor);
+            if ( (prevMouseCellX == mouseX && prevMouseCellY == mouseY) ) {
+                if ( (prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
+                    Cell* cell = field.getCell(mouseX, mouseY);
+                    if (cell != NULL) {
+                        if(cell->isEmpty()) {
+                            int randNumber = ( 80+(rand()%20) );
+                            QPixmap pixmap = tileSets[0].tiles[randNumber];
+                            cell->setTerrain(pixmap);
+                        } else if (cell->getTower() != NULL) {
+                            cell->removeTower();
+        //                    clearTower(mouseX, mouseY);
+                        } else if (cell->isTerrain()) {
+                            cell->removeTerrain();
+                        } else {
+                            qDebug() << "GameWidget::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
+                        }
+                    }
+                    field.updateHeroDestinationPoint();
+        //            field.updatePathFinderWalls();
                 }
             }
-            field.updateHeroDestinationPoint();
-//            field.updatePathFinderWalls();
         } else if(event->button() == Qt::XButton1) {
             field.updateHeroDestinationPoint(mouseX,mouseY);
             if(field.isSetSpawnPoint()) {
@@ -1360,7 +1400,7 @@ void GameWidget::wheelEvent(QWheelEvent* event) {
 //void GameWidget::keyReleaseEvent(QKeyEvent *event) {
 //}
 
-void GameWidget::loadMap(QString mapName)
+void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
 {
     if(unitsMove_TimerId) {
         killTimer(unitsMove_TimerId);
@@ -1382,6 +1422,7 @@ void GameWidget::loadMap(QString mapName)
     int mapSizeX, mapSizeY;
     int tileMapWidth, tileMapHeight;
 
+    Faction* faction = new Faction();
     //tileset
 //    vector<TileSet> tileSets;
     TileSet tileSet;
@@ -1444,7 +1485,7 @@ void GameWidget::loadMap(QString mapName)
                 {
 //                    qDebug() << "tileSet.name.contains('unit')";
 
-                    DefaultTower tower;
+                    DefaultTower* tower = new DefaultTower();
 
                     xmlReader.readNext(); // <tileset "empty">
                     xmlReader.readNext(); // <properties>
@@ -1458,17 +1499,19 @@ void GameWidget::loadMap(QString mapName)
 //                        qDebug() << xmlReader.name().toString() << " " << xmlReader.isStartElement();
 
                         if(xmlReader.attributes().value("name").toString() == "attack")
-                            tower.attack = xmlReader.attributes().value("value").toInt();
+                            tower->attack = xmlReader.attributes().value("value").toInt();
                         else if(xmlReader.attributes().value("name").toString() == "name")
-                            tower.name = xmlReader.attributes().value("value").toString();
+                            tower->name = xmlReader.attributes().value("value").toString();
                         else if(xmlReader.attributes().value("name").toString() == "radius")
-                            tower.radius = xmlReader.attributes().value("value").toInt();
+                            tower->radius = xmlReader.attributes().value("value").toInt();
                         else if(xmlReader.attributes().value("name").toString() == "size")
-                            tower.size = xmlReader.attributes().value("value").toInt();
+                            tower->size = xmlReader.attributes().value("value").toInt();
+//                        else if(xmlReader.attributes().value("name").toString() == "reloadTime")
+//                            tower->reloadTime = xmlReader.attributes().value("value").toInt();
                         else if(xmlReader.attributes().value("name").toString() == "height")
-                            tower.height = xmlReader.attributes().value("value").toInt();
+                            tower->height = xmlReader.attributes().value("value").toInt();
                         else if(xmlReader.attributes().value("name").toString() == "type")
-                            tower.type = xmlReader.attributes().value("value").toInt();
+                            tower->type = xmlReader.attributes().value("value").toInt();
 
                         xmlReader.readNext(); // </property>
 //                        qDebug() << xmlReader.name().toString() << " " << xmlReader.isStartElement();
@@ -1519,143 +1562,29 @@ void GameWidget::loadMap(QString mapName)
                     xmlReader.readNext(); // <terraintypes "empty">
                     xmlReader.readNext(); // <terrain>
 
-                    while(xmlReader.name().toString() == "terrain")
-                    {
+                    while(xmlReader.name().toString() == "terrain") {
                         QString name = xmlReader.attributes().value("name").toString();
                         int tileGID = xmlReader.attributes().value("tile").toInt();
                         QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
 
-                        if(name == "idle_up")
-                            tower.pixmap = pixmap;
-                        else if(name == "bullet_fly_up")
-                            tower.bullet_fly_up = pixmap;
-                        else if(name == "bullet_fly_up_right") {
-                            tower.bullet_fly_up_right = pixmap;
-                            tower.bullet_fly_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+                        if(name == "idle_up") {
+                            tower->pixmap = pixmap;
+                        } else if(name.contains("bullet")) {
+                            tower->bullet.push_back(pixmap);
+                        } else if (name == "bullet_fly_up") {
+                            tower->bullet_fly_up = pixmap;
+                        } else if(name == "bullet_fly_up_right") {
+                            tower->bullet_fly_up_right = pixmap;
+                            tower->bullet_fly_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+                        } else if(name == "bullet_fly_right") {
+                            tower->bullet_fly_right = pixmap;
+                            tower->bullet_fly_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+                        } else if(name == "bullet_fly_down_right") {
+                            tower->bullet_fly_down_right = pixmap;
+                            tower->bullet_fly_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+                        } else if(name == "bullet_fly_down") {
+                            tower->bullet_fly_down = pixmap;
                         }
-                        else if(name == "bullet_fly_right") {
-                            tower.bullet_fly_right = pixmap;
-                            tower.bullet_fly_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "bullet_fly_down_right") {
-                            tower.bullet_fly_down_right = pixmap;
-                            tower.bullet_fly_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "bullet_fly_down")
-                            tower.bullet_fly_down = pixmap;
-
-/*//                        IN DEVELOPING..
-                            tower.idle_up = pixmap;
-                        else if(name == "idle_up_right")
-                        {
-                            tower.idle_up_right = pixmap;
-                            tower.idle_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "idle_right")
-                        {
-                            tower.idle_right = pixmap;
-                            tower.idle_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "idle_down_right")
-                        {
-                            tower.idle_down_right = pixmap;
-                            tower.idle_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        }
-                        else if(name == "idle_down")
-                            tower.idle_down = pixmap;
-                        else if(name.contains("walk"))
-                        {
-                            if(name.contains("up"))
-                            {
-                                if(!name.contains("right"))
-                                    tower.walk_up.push_back(pixmap);
-                                else
-                                {
-                                    tower.walk_up_right.push_back(pixmap);
-                                    tower.walk_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            }
-                            else if(name.contains("right"))
-                            {
-                                if(!name.contains("down"))
-                                {
-                                    tower.walk_right.push_back(pixmap);
-                                    tower.walk_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                                else
-                                {
-                                    tower.walk_down_right.push_back(pixmap);
-                                    tower.walk_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            }
-                            else if(name.contains("down"))
-                            {
-                                if(!name.contains("right"))
-                                    tower.walk_down.push_back(pixmap);
-                            }
-                        }
-                        else if(name.contains("attack"))
-                        {
-                            if(name.contains("up"))
-                            {
-                                if(!name.contains("right"))
-                                    tower.attack_up.push_back(pixmap);
-                                else
-                                {
-                                    tower.attack_up_right.push_back(pixmap);
-                                    tower.attack_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            }
-                            else if(name.contains("right"))
-                            {
-                                if(!name.contains("down"))
-                                {
-                                    tower.attack_right.push_back(pixmap);
-                                    tower.attack_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                                else
-                                {
-                                    tower.attack_down_right.push_back(pixmap);
-                                    tower.attack_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            }
-                            else if(name.contains("down"))
-                            {
-                                if(!name.contains("right"))
-                                    tower.attack_down.push_back(pixmap);
-                            }
-                        }
-                        else if(name.contains("death"))
-                        {
-                            if(name.contains("up"))
-                            {
-                                if(!name.contains("right"))
-                                    tower.death_up.push_back(pixmap);
-                                else
-                                {
-                                    tower.death_up_right.push_back(pixmap);
-                                    tower.death_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            }
-                            else if(name.contains("right"))
-                            {
-                                if(!name.contains("down"))
-                                {
-                                    tower.death_right.push_back(pixmap);
-                                    tower.death_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                                else
-                                {
-                                    tower.death_down_right.push_back(pixmap);
-                                    tower.death_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            }
-                            else if(name.contains("down"))
-                            {
-                                if(!name.contains("right"))
-                                    tower.death_down.push_back(pixmap);
-                            }
-                        }*/
 
                         xmlReader.readNext(); // </terrain>
                         xmlReader.readNext(); // </terrain "empty">
@@ -1664,13 +1593,13 @@ void GameWidget::loadMap(QString mapName)
 
 //                    qDebug() << "tower.walk_down.size(): " << &tower << "->" << tower.walk_down.size();
                     qDebug() << "faction.creatyNewTower(tower);";
-                    faction.createNewTower(tower);
+                    faction->addTower(tower);
                 }
                 else if(tileSet.name.contains("unit"))
                 {
 //                    qDebug() << "tileSet.name.contains('unit')";
 
-                    DefaultUnit unit;
+                    DefaultUnit* unit = new DefaultUnit();
 //                    loadUnit = true;
 
                     xmlReader.readNext(); // <tileset "empty">
@@ -1685,9 +1614,9 @@ void GameWidget::loadMap(QString mapName)
 //                        qDebug() << xmlReader.name().toString() << " " << xmlReader.isStartElement();
 
                         if(xmlReader.attributes().value("name").toString() == "health_point")
-                            unit.healtPoint = xmlReader.attributes().value("value").toInt();
+                            unit->healtPoint = xmlReader.attributes().value("value").toInt();
                         else if(xmlReader.attributes().value("name").toString() == "name")
-                            unit.name = xmlReader.attributes().value("value").toString();
+                            unit->name = xmlReader.attributes().value("value").toString();
 
                         xmlReader.readNext(); // </property>
 //                        qDebug() << xmlReader.name().toString() << " " << xmlReader.isStartElement();
@@ -1745,52 +1674,52 @@ void GameWidget::loadMap(QString mapName)
 //                        qDebug() << "GameWidget::loadMap(); -- unitPixmaps: " << name << "tileGID: " << tileGID << " : " << !pixmap.isNull();
 
                         if(name == "idle_up") {
-                            unit.idle_up = pixmap;
-                            unit.idle.push_back(pixmap);
+                            unit->idle_up = pixmap;
+                            unit->idle.push_back(pixmap);
                         } else if(name == "idle_up_right") {
-                            unit.idle_up_right = pixmap;
-                            unit.idle.push_back(pixmap);
-                            unit.idle_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                            unit.idle.push_back(unit.idle_up_left);
+                            unit->idle_up_right = pixmap;
+                            unit->idle.push_back(pixmap);
+                            unit->idle_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+                            unit->idle.push_back(unit->idle_up_left);
                         } else if(name == "idle_right") {
-                            unit.idle_right = pixmap;
-                            unit.idle.push_back(pixmap);
-                            unit.idle_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                            unit.idle.push_back(unit.idle_left);
+                            unit->idle_right = pixmap;
+                            unit->idle.push_back(pixmap);
+                            unit->idle_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+                            unit->idle.push_back(unit->idle_left);
                         } else if(name == "idle_down_right") {
-                            unit.idle_down_right = pixmap;
-                            unit.idle.push_back(pixmap);
-                            unit.idle_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                            unit.idle.push_back(unit.idle_down_left);
+                            unit->idle_down_right = pixmap;
+                            unit->idle.push_back(pixmap);
+                            unit->idle_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+                            unit->idle.push_back(unit->idle_down_left);
                         } else if(name == "idle_down") {
-                            unit.idle_down = pixmap;
-                            unit.idle.push_back(pixmap);
+                            unit->idle_down = pixmap;
+                            unit->idle.push_back(pixmap);
                         } else if(name.contains("walk")) {
                             if(name.contains("up")) {
                                 if(!name.contains("right")) {
-                                    unit.walk_up.push_back(pixmap);
+                                    unit->walk_up.push_back(pixmap);
                                 } else {
-                                    unit.walk_up_right.push_back(pixmap);
-                                    unit.walk_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->walk_up_right.push_back(pixmap);
+                                    unit->walk_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                             }
                             else if(name.contains("right"))
                             {
                                 if(!name.contains("down"))
                                 {
-                                    unit.walk_right.push_back(pixmap);
-                                    unit.walk_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->walk_right.push_back(pixmap);
+                                    unit->walk_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                                 else
                                 {
-                                    unit.walk_down_right.push_back(pixmap);
-                                    unit.walk_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->walk_down_right.push_back(pixmap);
+                                    unit->walk_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                             }
                             else if(name.contains("down"))
                             {
                                 if(!name.contains("right"))
-                                    unit.walk_down.push_back(pixmap);
+                                    unit->walk_down.push_back(pixmap);
                             }
                         }
                         else if(name.contains("attack"))
@@ -1798,30 +1727,30 @@ void GameWidget::loadMap(QString mapName)
                             if(name.contains("up"))
                             {
                                 if(!name.contains("right"))
-                                    unit.attack_up.push_back(pixmap);
+                                    unit->attack_up.push_back(pixmap);
                                 else
                                 {
-                                    unit.attack_up_right.push_back(pixmap);
-                                    unit.attack_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->attack_up_right.push_back(pixmap);
+                                    unit->attack_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                             }
                             else if(name.contains("right"))
                             {
                                 if(!name.contains("down"))
                                 {
-                                    unit.attack_right.push_back(pixmap);
-                                    unit.attack_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->attack_right.push_back(pixmap);
+                                    unit->attack_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                                 else
                                 {
-                                    unit.attack_down_right.push_back(pixmap);
-                                    unit.attack_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->attack_down_right.push_back(pixmap);
+                                    unit->attack_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                             }
                             else if(name.contains("down"))
                             {
                                 if(!name.contains("right"))
-                                    unit.attack_down.push_back(pixmap);
+                                    unit->attack_down.push_back(pixmap);
                             }
                         }
                         else if(name.contains("death"))
@@ -1829,30 +1758,30 @@ void GameWidget::loadMap(QString mapName)
                             if(name.contains("up"))
                             {
                                 if(!name.contains("right"))
-                                    unit.death_up.push_back(pixmap);
+                                    unit->death_up.push_back(pixmap);
                                 else
                                 {
-                                    unit.death_up_right.push_back(pixmap);
-                                    unit.death_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->death_up_right.push_back(pixmap);
+                                    unit->death_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                             }
                             else if(name.contains("right"))
                             {
                                 if(!name.contains("down"))
                                 {
-                                    unit.death_right.push_back(pixmap);
-                                    unit.death_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->death_right.push_back(pixmap);
+                                    unit->death_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                                 else
                                 {
-                                    unit.death_down_right.push_back(pixmap);
-                                    unit.death_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+                                    unit->death_down_right.push_back(pixmap);
+                                    unit->death_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
                                 }
                             }
                             else if(name.contains("down"))
                             {
                                 if(!name.contains("right"))
-                                    unit.death_down.push_back(pixmap);
+                                    unit->death_down.push_back(pixmap);
                             }
                         }
                         xmlReader.readNext(); // </terrain>
@@ -1861,9 +1790,9 @@ void GameWidget::loadMap(QString mapName)
                     }
 
 //                    qDebug() << "unit.walk" << unit.walk_down.size();
-                    qDebug() << "unit.walk_down.size(): " << &unit << "->" << unit.walk_down.size();
+                    qDebug() << "unit.walk_down.size(): " << &unit << "->" << unit->walk_down.size();
                     qDebug() << "faction.creatyNewUnit(unit);";
-                    faction.createNewUnit(unit);
+                    faction->addUnit(unit);
 //                    unit.clearVectors();
                 }
             }
@@ -1978,6 +1907,9 @@ void GameWidget::loadMap(QString mapName)
                         } else if (layerName == "removeground") {
                             field.getCell(x, y)->setTerrain(pixmap);
                         } else if (layerName == "towers") {
+                            field.getCell(x, y)->removeTerrain();
+                            qDebug() << "GameWidget::loadMap(); -- faction:" << faction->getFirstTowers()[0];
+                            field.setTower(x, y, faction->getFirstTowers()[0]);
 //                            field.setTower()
                         } else {
                             field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap);
@@ -2065,25 +1997,29 @@ void GameWidget::loadMap(QString mapName)
         qDebug() << "GameWidget::loadMap(); -- Completed load map.";
     }
 
-    field.setFaction(&faction);
+    field.setFaction(faction);
 //    field.spawnHeroInSpawnPoint();
 
+    qDebug() << "GameWidget::loadMap(); -- towersCount:" << towersCount;
     int terrainType = rand()%2;
     if (mapName.contains("randomMap")) {
         for (int x = 0; x < mapSizeX; x++) {
             for (int y = 0; y < mapSizeY; y++) {
-                if( (rand()%100) < 35 ) {
+                if( (rand()%100) < 30 ) {
 //                    int randNumber = ( ( ((terrainType)?30:50) ) + (rand()%20) );
-                    int randNumber = ( 80+(rand()%20) );
+//                    int randNumber = ( 80+(rand()%20) );
+                    int randNumber = ( 124+(rand()%2) );
 //                    qDebug() << "GameWidget::loadMap(); -- randNumber:" << randNumber;
-                    QPixmap pixmap = tileSet.tiles[84];//randNumber];
+                    QPixmap pixmap = tileSet.tiles[randNumber];
                     field.getCell(x, y)->setTerrain(pixmap);
-//                } else if ((rand()%100) < 5 ) {
-//                    field.setTower(x, y, faction.getFirstTowers()[0]);
+//                } else if ( ( (rand()%100) < 5 ) && (towersCount-- > 0) ) {
+//                    field.setTower(x, y, field.faction->getFirstTowers()[0]);
                 }
             }
         }
     }
+//    field.getCell(0, 0)->removeTerrain();
+//    field.setTower(0, 0, faction.getFirstTowers()[0]);
     field.pathFinder.setWorldSize({mapSizeX, mapSizeY});
     field.pathFinder.setHeuristic(AStar::Heuristic::euclidean);
     field.pathFinder.setDiagonalMovement(false);
@@ -2101,22 +2037,28 @@ void GameWidget::loadMap(QString mapName)
     file->close();
 //    update();
     field.spawnHeroInSpawnPoint();
-    int randomEnemyCount = 5+rand()%10;
+//    int randomEnemyCount = 5+rand()%10;
+    qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
+    int randomEnemyCount = enemyCount;
     for (int k = 0; k < randomEnemyCount; k++) {
         int randomX = rand()%mapSizeX;
         int randomY = rand()%mapSizeY;
         field.createUnit(randomX, randomY); // magic numbers need fix
     }
+    for (int k = 0; k < towersCount; k++) {
+        int randomX = rand()%mapSizeX;
+        int randomY = rand()%mapSizeY;
+        field.setTower(randomX, randomY, field.faction->getFirstTowers()[0]);
+//        field.create(randomX, randomY); // magic numbers need fix
+    }
     startTimer_UnitsMoveAndTowerAttack();
+    qDebug() << "GameWidget::loadMap(); -- END";
 }
 
-void GameWidget::on_loadMaps_clicked()
-{
+void GameWidget::on_loadMaps_clicked() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "../LittleGame/maps/", tr("Maps (*.xml)"));
-
 //    qDebug() << "FileName: " << fileName;
-
-    loadMap(fileName);
+    loadMap(fileName, 0 , 0);
 }
 
 /*void Widget::on_loadMaps_clicked()

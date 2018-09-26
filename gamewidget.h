@@ -6,6 +6,7 @@
 //#include <unistd.h>
 #include <time.h>
 
+#include <QDesktopWidget>
 #include <QDebug>
 #include <QWidget>
 //#include <QGLWidget>
@@ -70,8 +71,9 @@ public:
      */
     void keyPressEvent(QKeyEvent* event);
 
+//    QRect screenSize;
     QPainter p;
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent* event);
     void drawGrid();
     void drawField();
     void drawFullField();
@@ -107,14 +109,13 @@ public:
      * @brief Загрузка карты
      * @param mapName
      */
-    void loadMap(QString mapName);
+    void loadMap(QString mapName, int enemyCount, int towersCount);
 
     bool gameStart;
     bool gamePause;
     bool mapLoad;
 
 //    bool setUpBuildTower;
-
     UnderConstruction* underConstruction;
 //    DefaultTower* towersUnderConstruction;
 //    int towersStartUnderConstructionX, towersStartUnderConstructionY;
@@ -140,7 +141,7 @@ public:
 
     int test;
     Field field;
-    Faction faction;
+//    Faction faction;
     vector<TileSet> tileSets;
 
 //    Test Zone!
@@ -152,7 +153,7 @@ public:
     string global_text;
     string global_text2;
 
-    bool pan;
+    bool pan = false;
     int prevMouseX, prevMouseY;
     int prevMouseCellX, prevMouseCellY;
     int prevGlobalMouseX, prevGlobalMouseY;
@@ -168,6 +169,7 @@ private slots:
     void on_goUnits_clicked();
 
 signals:
+    void signal_changeWindowState();
     void signal_closeWidgetGameFinished(bool win);
 };
 

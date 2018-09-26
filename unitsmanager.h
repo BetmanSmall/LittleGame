@@ -11,8 +11,9 @@
 /**
  * @brief The UnitsManager class
  */
-class UnitsManager
-{
+class UnitsManager {
+public: // we are friendly to all!
+    Unit* hero;
     Unit* units;
 
     QPixmap defaultPixmapForUnit;
@@ -94,6 +95,8 @@ public:
      * с координатами ни одного крипа в массиве.
      */
     Unit* getUnit(int x, int y);
+
+    Unit* createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit);
     /**
      * @brief createUnit - Если переменная size позволяет создать ещё крипа, то инициализирует нового крипа.
      * @param coorByCellX - координаты, где нужно создать крипа по оси x << Trouble

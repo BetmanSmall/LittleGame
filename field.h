@@ -13,25 +13,19 @@
 #include "bullet.h"
 #include "cell.h"
 
-//struct FieldCells {
-
-//};
-
-using FieldCells = Cell*;
-
 /**
  * @brief Поле из ячеек
  * @details Класс так же отвечает за Башни, Юнитов. И пока что одну фракцию
  */
 class Field
 {
-public: // we are freindly!
+public: // we are friendly!
     AStar::PathFinder pathFinder;
 //private:
-    FieldCells field;
+    Cell* field;
     TowersManager towersManager;
     UnitsManager unitsManager;
-    Faction* faction1;
+    Faction* faction;
 
 //    bool unitSet;
 
@@ -78,7 +72,7 @@ public:
      * @brief Временная функция, устанавливает Фракцию
      * @param faction - Указатель на фракцию
      */
-    void setFaction(Faction* faction);
+    void setFaction(Faction *faction);
 
     /**
      * @brief Устанавливает точку спавна на поле
@@ -176,7 +170,7 @@ public:
      */
     int getTileMapHeight();
 
-    bool towersAttack();
+    bool towersAttack(int deltaTime);
     /**
      * @brief Применяет Волновой Алгоритм на поле из ячееки по данным кординатам
      * @param x - Координаты по X

@@ -19,6 +19,7 @@ public:
     ~MainMenu();
 //    void paintEvent(QPaintEvent *);
     void updateGameStatus(bool win);
+    void updateEnemyAndTowersCount();
 
 private:
     Ui::MainMenu *ui;
@@ -32,6 +33,8 @@ private slots:
     void on_exitButton_clicked();
     void on_killButton_clicked();
     void on_sound_clicked();
+    void on_enemyCount_valueChanged(int value);
+    void on_towersCount_valueChanged(int value);
 
 protected:
     void keyPressEvent(QKeyEvent* event);
@@ -41,6 +44,8 @@ signals:
     void signal_openChooseMapMenu();
     void signal_openOptionMenu();
     void signal_exit();
+    void signal_enemyCountChanged(int value);
+    void signal_towersCountChanged(int value);
     void signal_actionSoundRadioButton();
 };
 

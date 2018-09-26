@@ -1024,6 +1024,26 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>EnemyCount:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="enemyCount">
+       <property name="maximum">
+        <number>32</number>
+       </property>
+       <property name="value">
+        <number>16</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_6">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -1035,6 +1055,23 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>TowersCount:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="towersCount">
+       <property name="maximum">
+        <number>32</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="verticalSpacer">
