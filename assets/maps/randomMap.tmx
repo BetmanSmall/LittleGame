@@ -3,7 +3,208 @@
  <tileset firstgid="1" name="Iso-64x64-outside" tilewidth="64" tileheight="64" tilecount="160" columns="10">
   <image source="textures/Iso-64x64-outside.png" width="640" height="1024"/>
  </tileset>
- <tileset firstgid="161" name="tower1_winter_scout" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+ <tileset firstgid="161" name="TileObjectsRubbleWalls" tilewidth="64" tileheight="64" tilecount="128" columns="8">
+  <image source="textures/TileObjectsRubbleWalls.png" width="512" height="1024"/>
+ </tileset>
+ <tileset firstgid="289" name="explosion" tilewidth="256" tileheight="128" tilecount="12" columns="3">
+  <image source="textures/explosion.png" width="768" height="512"/>
+  <terraintypes>
+   <terrain name="explosion0" tile="0"/>
+   <terrain name="explosion1" tile="1"/>
+   <terrain name="explosion2" tile="2"/>
+   <terrain name="explosion3" tile="3"/>
+   <terrain name="explosion4" tile="4"/>
+   <terrain name="explosion5" tile="5"/>
+   <terrain name="explosion6" tile="6"/>
+   <terrain name="explosion7" tile="7"/>
+   <terrain name="explosion8" tile="8"/>
+   <terrain name="explosion9" tile="9"/>
+   <terrain name="explosion10" tile="10"/>
+   <terrain name="explosion11" tile="11"/>
+  </terraintypes>
+  <tile id="0">
+   <animation>
+    <frame tileid="0" duration="100"/>
+    <frame tileid="1" duration="100"/>
+    <frame tileid="2" duration="100"/>
+    <frame tileid="3" duration="100"/>
+    <frame tileid="4" duration="100"/>
+    <frame tileid="5" duration="100"/>
+    <frame tileid="6" duration="100"/>
+    <frame tileid="7" duration="100"/>
+    <frame tileid="8" duration="100"/>
+    <frame tileid="9" duration="100"/>
+    <frame tileid="10" duration="100"/>
+    <frame tileid="11" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="301" name="fireball_0" tilewidth="64" tileheight="64" tilecount="64" columns="8">
+  <image source="textures/fireball_0.png" width="512" height="512"/>
+  <terraintypes>
+   <terrain name="fireball_left" tile="0"/>
+   <terrain name="fireball_left" tile="1"/>
+   <terrain name="fireball_left" tile="2"/>
+   <terrain name="fireball_left" tile="3"/>
+   <terrain name="fireball_left" tile="4"/>
+   <terrain name="fireball_left" tile="5"/>
+   <terrain name="fireball_left" tile="6"/>
+   <terrain name="fireball_left" tile="7"/>
+   <terrain name="fireball_up_left" tile="8"/>
+   <terrain name="fireball_up_left" tile="9"/>
+   <terrain name="fireball_up_left" tile="10"/>
+   <terrain name="fireball_up_left" tile="11"/>
+   <terrain name="fireball_up_left" tile="12"/>
+   <terrain name="fireball_up_left" tile="13"/>
+   <terrain name="fireball_up_left" tile="14"/>
+   <terrain name="fireball_up_left" tile="15"/>
+   <terrain name="fireball_up" tile="16"/>
+   <terrain name="fireball_up" tile="17"/>
+   <terrain name="fireball_up" tile="18"/>
+   <terrain name="fireball_up" tile="19"/>
+   <terrain name="fireball_up" tile="20"/>
+   <terrain name="fireball_up" tile="21"/>
+   <terrain name="fireball_up" tile="22"/>
+   <terrain name="fireball_up" tile="23"/>
+   <terrain name="fireball_up_right" tile="24"/>
+   <terrain name="fireball_up_right" tile="25"/>
+   <terrain name="fireball_up_right" tile="26"/>
+   <terrain name="fireball_up_right" tile="27"/>
+   <terrain name="fireball_up_right" tile="28"/>
+   <terrain name="fireball_up_right" tile="29"/>
+   <terrain name="fireball_up_right" tile="30"/>
+   <terrain name="fireball_up_right" tile="31"/>
+   <terrain name="fireball_right" tile="32"/>
+   <terrain name="fireball_right" tile="33"/>
+   <terrain name="fireball_right" tile="34"/>
+   <terrain name="fireball_right" tile="35"/>
+   <terrain name="fireball_right" tile="36"/>
+   <terrain name="fireball_right" tile="37"/>
+   <terrain name="fireball_right" tile="38"/>
+   <terrain name="fireball_right" tile="39"/>
+   <terrain name="fireball_down_right" tile="40"/>
+   <terrain name="fireball_down_right" tile="41"/>
+   <terrain name="fireball_down_right" tile="42"/>
+   <terrain name="fireball_down_right" tile="43"/>
+   <terrain name="fireball_down_right" tile="44"/>
+   <terrain name="fireball_down_right" tile="45"/>
+   <terrain name="fireball_down_right" tile="46"/>
+   <terrain name="fireball_down_right" tile="47"/>
+   <terrain name="fireball_down" tile="48"/>
+   <terrain name="fireball_down" tile="49"/>
+   <terrain name="fireball_down" tile="50"/>
+   <terrain name="fireball_down" tile="51"/>
+   <terrain name="fireball_down" tile="52"/>
+   <terrain name="fireball_down" tile="53"/>
+   <terrain name="fireball_down" tile="54"/>
+   <terrain name="fireball_down" tile="55"/>
+   <terrain name="fireball_down_left" tile="56"/>
+   <terrain name="fireball_down_left" tile="57"/>
+   <terrain name="fireball_down_left" tile="58"/>
+   <terrain name="fireball_down_left" tile="59"/>
+   <terrain name="fireball_down_left" tile="60"/>
+   <terrain name="fireball_down_left" tile="61"/>
+   <terrain name="fireball_down_left" tile="62"/>
+   <terrain name="fireball_down_left" tile="63"/>
+  </terraintypes>
+  <tile id="0">
+   <animation>
+    <frame tileid="0" duration="100"/>
+    <frame tileid="1" duration="100"/>
+    <frame tileid="2" duration="100"/>
+    <frame tileid="3" duration="100"/>
+    <frame tileid="4" duration="100"/>
+    <frame tileid="5" duration="100"/>
+    <frame tileid="6" duration="100"/>
+    <frame tileid="7" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="8">
+   <animation>
+    <frame tileid="8" duration="100"/>
+    <frame tileid="9" duration="100"/>
+    <frame tileid="10" duration="100"/>
+    <frame tileid="11" duration="100"/>
+    <frame tileid="12" duration="100"/>
+    <frame tileid="13" duration="100"/>
+    <frame tileid="14" duration="100"/>
+    <frame tileid="15" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="16">
+   <animation>
+    <frame tileid="16" duration="100"/>
+    <frame tileid="17" duration="100"/>
+    <frame tileid="18" duration="100"/>
+    <frame tileid="19" duration="100"/>
+    <frame tileid="20" duration="100"/>
+    <frame tileid="21" duration="100"/>
+    <frame tileid="22" duration="100"/>
+    <frame tileid="23" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="24">
+   <animation>
+    <frame tileid="24" duration="100"/>
+    <frame tileid="25" duration="100"/>
+    <frame tileid="26" duration="100"/>
+    <frame tileid="27" duration="100"/>
+    <frame tileid="28" duration="100"/>
+    <frame tileid="29" duration="100"/>
+    <frame tileid="30" duration="100"/>
+    <frame tileid="31" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="32">
+   <animation>
+    <frame tileid="32" duration="100"/>
+    <frame tileid="33" duration="100"/>
+    <frame tileid="34" duration="100"/>
+    <frame tileid="35" duration="100"/>
+    <frame tileid="36" duration="100"/>
+    <frame tileid="37" duration="100"/>
+    <frame tileid="38" duration="100"/>
+    <frame tileid="39" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="40">
+   <animation>
+    <frame tileid="40" duration="100"/>
+    <frame tileid="41" duration="100"/>
+    <frame tileid="42" duration="100"/>
+    <frame tileid="43" duration="100"/>
+    <frame tileid="44" duration="100"/>
+    <frame tileid="45" duration="100"/>
+    <frame tileid="46" duration="100"/>
+    <frame tileid="47" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="48">
+   <animation>
+    <frame tileid="48" duration="100"/>
+    <frame tileid="49" duration="100"/>
+    <frame tileid="50" duration="100"/>
+    <frame tileid="51" duration="100"/>
+    <frame tileid="52" duration="100"/>
+    <frame tileid="53" duration="100"/>
+    <frame tileid="54" duration="100"/>
+    <frame tileid="55" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="56">
+   <animation>
+    <frame tileid="56" duration="100"/>
+    <frame tileid="57" duration="100"/>
+    <frame tileid="58" duration="100"/>
+    <frame tileid="59" duration="100"/>
+    <frame tileid="60" duration="100"/>
+    <frame tileid="61" duration="100"/>
+    <frame tileid="62" duration="100"/>
+    <frame tileid="63" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="365" name="tower1_winter_scout" tilewidth="64" tileheight="64" tilecount="9" columns="3">
   <properties>
    <property name="attack" value="1"/>
    <property name="height" value="1"/>
@@ -25,200 +226,7 @@
    <terrain name="bullet" tile="8"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="170" name="tower2_summer_scout" tilewidth="64" tileheight="64" tilecount="2" columns="1">
-  <properties>
-   <property name="attack" value="1"/>
-   <property name="height" value="1"/>
-   <property name="name" value="Summer Scout"/>
-   <property name="radius" value="1"/>
-   <property name="size" value="1"/>
-   <property name="type" value="2"/>
-  </properties>
-  <image source="textures/warcraft2/tilesets/summer/human/buildings/guard_tower.png" trans="ff00ff" width="64" height="128"/>
-  <terraintypes>
-   <terrain name="idle_up" tile="0"/>
-  </terraintypes>
- </tileset>
- <tileset firstgid="172" name="tower3_duckTower" tilewidth="64" tileheight="128" tilecount="1" columns="1">
-  <properties>
-   <property name="attack" value="5"/>
-   <property name="height" value="2"/>
-   <property name="name" value="Duck Tower"/>
-   <property name="radius" value="5"/>
-   <property name="size" value="1"/>
-   <property name="type" value="3"/>
-  </properties>
-  <image source="textures/warcraft2/duck_tower01.png" trans="ff00ff" width="64" height="128"/>
-  <terraintypes>
-   <terrain name="idle_up" tile="0"/>
-  </terraintypes>
- </tileset>
- <tileset firstgid="173" name="tower4_mystic" tilewidth="64" tileheight="64" tilecount="12" columns="3">
-  <properties>
-   <property name="attack" value="1"/>
-   <property name="height" value="1"/>
-   <property name="name" value="Mystic Tower"/>
-   <property name="radius" value="3"/>
-   <property name="size" value="1"/>
-   <property name="type" value="4"/>
-  </properties>
-  <image source="textures/isom_tiles_castle.png" trans="ff00ff" width="192" height="256"/>
-  <terraintypes>
-   <terrain name="idle_up" tile="0"/>
-  </terraintypes>
- </tileset>
- <tileset firstgid="185" name="unit" tilewidth="128" tileheight="128" tilecount="48" columns="6">
-  <properties>
-   <property name="health_point" value="100"/>
-   <property name="name" value="Warrior"/>
-  </properties>
-  <image source="textures/warrior.png" trans="ff00ff" width="768" height="1024"/>
-  <terraintypes>
-   <terrain name="idle_up" tile="0"/>
-   <terrain name="idle_up" tile="28"/>
-   <terrain name="idle_up_right" tile="34"/>
-   <terrain name="idle_right" tile="40"/>
-   <terrain name="idle_down_right" tile="46"/>
-   <terrain name="idle_down" tile="4"/>
-   <terrain name="walk1_up" tile="26"/>
-   <terrain name="walk2_up" tile="27"/>
-   <terrain name="walk3_up" tile="26"/>
-   <terrain name="walk4_up" tile="25"/>
-   <terrain name="walk5_up" tile="29"/>
-   <terrain name="walk6_up" tile="24"/>
-   <terrain name="walk7_up" tile="29"/>
-   <terrain name="walk8_up" tile="25"/>
-   <terrain name="walk1_up_right" tile="32"/>
-   <terrain name="walk2_up_right" tile="33"/>
-   <terrain name="walk3_up_right" tile="32"/>
-   <terrain name="walk4_up_right" tile="31"/>
-   <terrain name="walk5_up_right" tile="35"/>
-   <terrain name="walk6_up_right" tile="30"/>
-   <terrain name="walk7_up_right" tile="35"/>
-   <terrain name="walk8_up_right" tile="31"/>
-   <terrain name="walk1_right" tile="38"/>
-   <terrain name="walk2_right" tile="39"/>
-   <terrain name="walk3_right" tile="38"/>
-   <terrain name="walk4_right" tile="37"/>
-   <terrain name="walk5_right" tile="41"/>
-   <terrain name="walk6_right" tile="36"/>
-   <terrain name="walk7_right" tile="41"/>
-   <terrain name="walk8_right" tile="37"/>
-   <terrain name="walk1_down_right" tile="44"/>
-   <terrain name="walk2_down_right" tile="45"/>
-   <terrain name="walk3_down_right" tile="44"/>
-   <terrain name="walk4_down_right" tile="43"/>
-   <terrain name="walk5_down_right" tile="47"/>
-   <terrain name="walk6_down_right" tile="42"/>
-   <terrain name="walk7_down_right" tile="47"/>
-   <terrain name="walk8_down_right" tile="43"/>
-   <terrain name="walk1_down" tile="2"/>
-   <terrain name="walk2_down" tile="3"/>
-   <terrain name="walk3_down" tile="2"/>
-   <terrain name="walk4_down" tile="1"/>
-   <terrain name="walk5_down" tile="5"/>
-   <terrain name="walk6_down" tile="0"/>
-   <terrain name="walk7_down" tile="5"/>
-   <terrain name="walk8_down" tile="1"/>
-  </terraintypes>
-  <tile id="0">
-   <animation>
-    <frame tileid="2" duration="100"/>
-    <frame tileid="3" duration="100"/>
-    <frame tileid="2" duration="100"/>
-    <frame tileid="1" duration="100"/>
-    <frame tileid="5" duration="100"/>
-    <frame tileid="0" duration="100"/>
-    <frame tileid="5" duration="100"/>
-    <frame tileid="1" duration="100"/>
-   </animation>
-  </tile>
-  <tile id="6">
-   <animation>
-    <frame tileid="8" duration="100"/>
-    <frame tileid="9" duration="100"/>
-    <frame tileid="8" duration="100"/>
-    <frame tileid="7" duration="100"/>
-    <frame tileid="11" duration="100"/>
-    <frame tileid="6" duration="100"/>
-    <frame tileid="11" duration="100"/>
-    <frame tileid="7" duration="100"/>
-   </animation>
-  </tile>
-  <tile id="12">
-   <animation>
-    <frame tileid="14" duration="100"/>
-    <frame tileid="15" duration="100"/>
-    <frame tileid="14" duration="100"/>
-    <frame tileid="13" duration="100"/>
-    <frame tileid="17" duration="100"/>
-    <frame tileid="12" duration="100"/>
-    <frame tileid="17" duration="100"/>
-    <frame tileid="13" duration="100"/>
-   </animation>
-  </tile>
-  <tile id="18">
-   <animation>
-    <frame tileid="20" duration="100"/>
-    <frame tileid="21" duration="100"/>
-    <frame tileid="20" duration="100"/>
-    <frame tileid="19" duration="100"/>
-    <frame tileid="23" duration="100"/>
-    <frame tileid="18" duration="100"/>
-    <frame tileid="23" duration="100"/>
-    <frame tileid="19" duration="100"/>
-   </animation>
-  </tile>
-  <tile id="24">
-   <animation>
-    <frame tileid="26" duration="100"/>
-    <frame tileid="27" duration="100"/>
-    <frame tileid="26" duration="100"/>
-    <frame tileid="25" duration="100"/>
-    <frame tileid="29" duration="100"/>
-    <frame tileid="24" duration="100"/>
-    <frame tileid="29" duration="100"/>
-    <frame tileid="25" duration="100"/>
-   </animation>
-  </tile>
-  <tile id="30">
-   <animation>
-    <frame tileid="32" duration="100"/>
-    <frame tileid="33" duration="100"/>
-    <frame tileid="32" duration="100"/>
-    <frame tileid="31" duration="100"/>
-    <frame tileid="35" duration="100"/>
-    <frame tileid="30" duration="100"/>
-    <frame tileid="35" duration="100"/>
-    <frame tileid="31" duration="100"/>
-   </animation>
-  </tile>
-  <tile id="36">
-   <animation>
-    <frame tileid="38" duration="40"/>
-    <frame tileid="39" duration="40"/>
-    <frame tileid="38" duration="40"/>
-    <frame tileid="37" duration="40"/>
-    <frame tileid="41" duration="40"/>
-    <frame tileid="36" duration="40"/>
-    <frame tileid="41" duration="40"/>
-    <frame tileid="37" duration="40"/>
-   </animation>
-  </tile>
-  <tile id="42">
-   <animation>
-    <frame tileid="44" duration="1000"/>
-    <frame tileid="45" duration="1000"/>
-    <frame tileid="44" duration="1000"/>
-    <frame tileid="43" duration="1000"/>
-    <frame tileid="47" duration="1000"/>
-    <frame tileid="42" duration="1000"/>
-    <frame tileid="47" duration="1000"/>
-    <frame tileid="43" duration="1000"/>
-   </animation>
-  </tile>
- </tileset>
- <tileset firstgid="233" name="unit3_footman" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="374" name="unit3_footman" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Footman"/>
@@ -297,7 +305,7 @@
    <terrain name="death3_down" tile="59"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="293" name="unit1_grunt" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="434" name="unit1_grunt" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Grunt"/>
@@ -376,7 +384,7 @@
    <terrain name="death3_down" tile="59"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="353" name="unit2_troll_axethrower" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="494" name="unit2_troll_axethrower" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Troll"/>

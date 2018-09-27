@@ -21,14 +21,14 @@ public:
     QPixmap pixmap;
     std::vector<QPixmap> bullet;
 
-    QPixmap bullet_fly_up;
-    QPixmap bullet_fly_up_right;
-    QPixmap bullet_fly_right;
-    QPixmap bullet_fly_down_right;
-    QPixmap bullet_fly_down;
-    QPixmap bullet_fly_down_left;
-    QPixmap bullet_fly_left;
-    QPixmap bullet_fly_up_left;
+    std::vector<QPixmap> bullet_fly_up;
+    std::vector<QPixmap> bullet_fly_up_right;
+    std::vector<QPixmap> bullet_fly_right;
+    std::vector<QPixmap> bullet_fly_down_right;
+    std::vector<QPixmap> bullet_fly_down;
+    std::vector<QPixmap> bullet_fly_down_left;
+    std::vector<QPixmap> bullet_fly_left;
+    std::vector<QPixmap> bullet_fly_up_left;
 
 //    QPixmap idle_up;
 //    QPixmap idle_up_right;

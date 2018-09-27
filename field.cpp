@@ -252,49 +252,51 @@ bool Field::towersAttack(int deltaTime) {
                     tmpBullet->lastCellY = currY;
                     tmpBullet->currCellX = exitX;
                     tmpBullet->currCellY = exitY;
-//                    if(getIsometric()) {
-//                        if(exitX < currX && exitY < currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_up.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_up;
-//                            tmpBullet->direction = DirectionUp;
-//                        } else if(exitX == currX && exitY < currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_up_right.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_up_right;
-//                            tmpBullet->direction = DirectionUpRight;
-//                        } else if(exitX > currX && exitY < currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_right.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_right;
-//                            tmpBullet->direction = DirectionRight;
-//                        } else if(exitX < currX && exitY == currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_up_left.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_up_left;
-//                            tmpBullet->direction = DirectionUpLeft;
-//                        } else if(exitX > currX && exitY == currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_down_right.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_down_right;
-//                            tmpBullet->direction = DirectionDownRight;
-//                        } else if(exitX < currX && exitY > currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_left.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_left;
-//                            tmpBullet->direction = DirectionLeft;
-//                        } else if(exitX == currX && exitY > currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_down_left.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_down_left;
-//                            tmpBullet->direction = DirectionDownLeft;
-//                        } else if(exitX > currX && exitY > currY) {
-//                            tmpBullet->animationMaxIter = tmpBullet->defUnit->walk_down.size();
-//                            tmpBullet->activePixmaps = tmpBullet->defUnit->walk_down;
-//                            tmpBullet->direction = DirectionDown;
-//                        }
-//                    }
+                    if(getIsometric()) {
+                        if(exitX < currX && exitY < currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_up.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_up;
+                            tmpBullet->direction = DirectionUp;
+                        } else if(exitX == currX && exitY < currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_up_right.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_up_right;
+                            tmpBullet->direction = DirectionUpRight;
+                        } else if(exitX > currX && exitY < currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_right.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_right;
+                            tmpBullet->direction = DirectionRight;
+                        } else if(exitX < currX && exitY == currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_up_left.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_up_left;
+                            tmpBullet->direction = DirectionUpLeft;
+                        } else if(exitX > currX && exitY == currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_down_right.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_down_right;
+                            tmpBullet->direction = DirectionDownRight;
+                        } else if(exitX < currX && exitY > currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_left.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_left;
+                            tmpBullet->direction = DirectionLeft;
+                        } else if(exitX == currX && exitY > currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_down_left.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_down_left;
+                            tmpBullet->direction = DirectionDownLeft;
+                        } else if(exitX > currX && exitY > currY) {
+                            tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_down.size();
+                            tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_down;
+                            tmpBullet->direction = DirectionDown;
+                        }
+                    }
 //                qDebug() << "tmpBullet->animationMaxIter: " << tmpBullet << "->" << tmpBullet->animationMaxIter;
-                    tmpBullet->animationMaxIter = tmpBullet->defTower->bullet.size();
-                    tmpBullet->activePixmaps = tmpBullet->defTower->bullet;
+                    if (tmpBullet->activePixmaps.empty() && !tmpBullet->defTower->bullet.empty()) {
+                        tmpBullet->animationMaxIter = tmpBullet->defTower->bullet.size();
+                        tmpBullet->activePixmaps = tmpBullet->defTower->bullet;
+                    }
                     tmpBullet->pixmap = tmpBullet->activePixmaps[0];
                     tmpBullet->animationCurrIter = 0;
 //                } else {
-//                    tmpBullet->animationMaxIter = tmpBullet->defUnit->idle.size();
-//                    tmpBullet->activePixmaps = tmpBullet->defUnit->idle;
+//                    tmpBullet->animationMaxIter = tmpBullet->defTower->idle.size();
+//                    tmpBullet->activePixmaps = tmpBullet->defTower->idle;
 //                    tmpBullet->direction = DirectionIdle;
 //                    tmpBullet->pixmap = tmpBullet->activePixmaps[0];
                 }
@@ -849,13 +851,14 @@ bool Field::setTower(int x, int y, DefaultTower* defTower) {
 
 bool Field::spawnHeroInSpawnPoint() { //Unit* unit, int type)
     getCell(spawnPointX, spawnPointY)->removeTerrain();
+    deleteTower(spawnPointX, spawnPointY);
     return createUnit(spawnPointX, spawnPointY, 0); // type 0 = hero
 }
 
 Unit* Field::createUnit(int x, int y, int type) {
 //    if(x == -1 && y == -1)
 //        return createUnit(spawnPointX, spawnPointY, unit);//, type);
-    qDebug() << "Field::createUnit(" << x << ", " << y << ", " << type << "); -- ";
+//    qDebug() << "Field::createUnit(" << x << ", " << y << ", " << type << "); -- ";
     int coorByMapX, coorByMapY;
     if(!getIsometric()) {
         coorByMapX = mainCoorMapX + spaceWidget + x*sizeCell;
@@ -870,11 +873,11 @@ Unit* Field::createUnit(int x, int y, int type) {
     }
     Unit* unit;
     if (type == 0) {
-        unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(1)); //, type);
+        unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(0)); //, type);
 //        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(1), type);
         updateHeroDestinationPoint(exitPointX, exitPointY);
     } else /*if (type == 1)*/ {
-        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById((2+(rand()%(faction->units.size()-2)))), type);
+        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById((1+(rand()%(faction->units.size()-1)))), type);
         if (unit != NULL) { //
             int randomX = rand()%sizeX;
             int randomY = rand()%sizeY;

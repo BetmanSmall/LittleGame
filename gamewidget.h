@@ -43,6 +43,7 @@ struct TileSet {
     int tileHeight;
     QPixmap img;
     vector<QRect> subRects;
+    vector<QString> tilesNames; // fireball specific load
     vector<QPixmap> tiles;
 };
 

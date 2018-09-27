@@ -1259,12 +1259,13 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
                 Cell* cell = field.getCell(mouseX, mouseY);
                 if (cell != NULL) {
                     if(cell->isEmpty()) {
-                        int randNumber = ( 80+(rand()%20) );
+//                        int randNumber = ( 80+(rand()%20) );
+                        int randNumber = ( 124+(rand()%2) );
                         QPixmap pixmap = tileSets[0].tiles[randNumber];
                         cell->setTerrain(pixmap);
                     } else if (cell->getTower() != NULL) {
-                        cell->removeTower();
-    //                    clearTower(mouseX, mouseY);
+//                        cell->removeTower();
+                        field.deleteTower(mouseX, mouseY);
                     } else if (cell->isTerrain()) {
                         cell->removeTerrain();
                     } else {
@@ -1504,7 +1505,7 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
 
                 if(tileSet.name.contains("tower"))
                 {
-//                    qDebug() << "tileSet.name.contains('unit')";
+//                    qDebug() << "tileSet.name.contains('tower')";
 
                     DefaultTower* tower = new DefaultTower();
 
@@ -1592,24 +1593,58 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
                             tower->pixmap = pixmap;
                         } else if(name.contains("bullet")) {
                             tower->bullet.push_back(pixmap);
-                        } else if (name == "bullet_fly_up") {
-                            tower->bullet_fly_up = pixmap;
-                        } else if(name == "bullet_fly_up_right") {
-                            tower->bullet_fly_up_right = pixmap;
-                            tower->bullet_fly_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        } else if(name == "bullet_fly_right") {
-                            tower->bullet_fly_right = pixmap;
-                            tower->bullet_fly_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        } else if(name == "bullet_fly_down_right") {
-                            tower->bullet_fly_down_right = pixmap;
-                            tower->bullet_fly_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                        } else if(name == "bullet_fly_down") {
-                            tower->bullet_fly_down = pixmap;
+//                        } else if (name == "bullet_fly_up") {
+//                            tower->bullet_fly_up = pixmap;
+//                        } else if(name == "bullet_fly_up_right") {
+//                            tower->bullet_fly_up_right = pixmap;
+//                            tower->bullet_fly_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+//                        } else if(name == "bullet_fly_right") {
+//                            tower->bullet_fly_right = pixmap;
+//                            tower->bullet_fly_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+//                        } else if(name == "bullet_fly_down_right") {
+//                            tower->bullet_fly_down_right = pixmap;
+//                            tower->bullet_fly_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+//                        } else if(name == "bullet_fly_down") {
+//                            tower->bullet_fly_down = pixmap;
                         }
 
                         xmlReader.readNext(); // </terrain>
                         xmlReader.readNext(); // </terrain "empty">
                         xmlReader.readNext(); // <terrain> - </terraintypes>
+                    }
+
+                    foreach (TileSet tileSetTmp, tileSets) {
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.name:" << tileSetTmp.name;
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.firstTileID:" << tileSetTmp.firstTileID;
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.subRects.size():" << tileSetTmp.subRects.size();
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.tiles.size():" << tileSetTmp.tiles.size();
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.tilesNames.size():" << tileSetTmp.tilesNames.size();
+                        if (tileSetTmp.name == "fireball_0") {
+                            for (int tPk = 0; tPk < tileSetTmp.tilesNames.size(); tPk++) {
+//                            foreach (QPixmap tilePix, tileSetTmp.tiles) {
+                                QString tileName = tileSetTmp.tilesNames[tPk];
+                                int tileId = tileSetTmp.firstTileID+tPk-1;
+                                if (tileName == "fireball_left") {
+                                    tower->bullet_fly_left.push_back(tileSetTmp.tiles[tileId]);
+                                } else if (tileName == "fireball_up_left") {
+                                    tower->bullet_fly_up_left.push_back(tileSetTmp.tiles[tileId]);
+                                } else if (tileName == "fireball_up") {
+                                    tower->bullet_fly_up.push_back(tileSetTmp.tiles[tileId]);
+                                } else if (tileName == "fireball_up_right") {
+                                    tower->bullet_fly_up_right.push_back(tileSetTmp.tiles[tileId]);
+                                } else if (tileName == "fireball_right") {
+                                    tower->bullet_fly_right.push_back(tileSetTmp.tiles[tileId]);
+                                } else if (tileName == "fireball_down_right") {
+                                    tower->bullet_fly_down_right.push_back(tileSetTmp.tiles[tileId]);
+                                } else if (tileName == "fireball_down") {
+                                    tower->bullet_fly_down.push_back(tileSetTmp.tiles[tileId]);
+                                } else if (tileName == "fireball_down_left") {
+                                    tower->bullet_fly_down_left.push_back(tileSetTmp.tiles[tileId]);
+                                }
+                            }
+                            tower->bullet.clear();
+//                            tileSetTmp.tilesNames.clear();
+                        }
                     }
 
 //                    qDebug() << "tower.walk_down.size(): " << &tower << "->" << tower.walk_down.size();
@@ -1810,6 +1845,24 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
                         xmlReader.readNext(); // <terrain> - </terraintypes>
                     }
 
+                    foreach (TileSet tileSetTmp, tileSets) {
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.name:" << tileSetTmp.name;
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.firstTileID:" << tileSetTmp.firstTileID;
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.subRects.size():" << tileSetTmp.subRects.size();
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.tiles.size():" << tileSetTmp.tiles.size();
+//                        qDebug() << "GameWidget::loadMap(); -- tileSetTmp.tilesNames.size():" << tileSetTmp.tilesNames.size();
+                        if (tileSetTmp.name == "explosion") {
+                            for (int tPk = 0; tPk < tileSetTmp.subRects.size(); tPk++) {
+//                            foreach (QPixmap tilePix, tileSetTmp.tiles) {
+//                                QString tileName = tileSetTmp.tilesNames[tPk];
+                                int tileId = tileSetTmp.firstTileID+tPk-1;
+                                unit->explosion.push_back(tileSetTmp.tiles[tileId]);
+                            }
+                            qDebug() << "GameWidget::loadMap(); -- unit->explosion.size():" << unit->explosion.size();
+//                            tileSetTmp.tilesNames.clear();
+                        }
+                    }
+
 //                    qDebug() << "unit.walk" << unit.walk_down.size();
                     qDebug() << "unit.walk_down.size(): " << &unit << "->" << unit->walk_down.size();
                     qDebug() << "faction.creatyNewUnit(unit);";
@@ -1851,48 +1904,51 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
             }
             else if(nameElement == "terrain")
             {
-                QString name = xmlReader.attributes().value("name").toString();
-                int tileGID = xmlReader.attributes().value("tile").toInt();
+                if (tileSet.name == "fireball_0") {// || tileSet.name == "explosion") {
+                    QString name = xmlReader.attributes().value("name").toString();
+//                    int tileGID = xmlReader.attributes().value("tile").toInt();
+//                    QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
+                    tileSet.tilesNames.push_back(name);
+//                    tileSet.tiles.insert(tileGID, pixmap);
+                }
 //                    QPixmap pixmap = tileSet.img;
 //                    pixmap = pixmap.copy(tileSet.subRects[tileGID]);
-                QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
 //                QPixmap pixmapMirrored = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-
-                if(name == "Unit")
-                {
-                    global_pixmap = pixmap;
-                    field.unitsManager.setDefaulPixmapForUnit(pixmap);//setPixmapForUnit(pixmap);
-                    qDebug() << "GameWidget::loadMap(); -- Set default Pixmap for Unit!";
-                }
-                if(tileSet.name.contains("unit"))
-                {
-                    // GAVNO!!
-                }
-                else if(name == "Tower")
-                {
-//                    int towerAttack = -1;
-//                    int towerRadius = -1;
-//                    int towerType = -1;
-
-//                    xmlReader.readNext(); // <properties>
-//                    xmlReader.readNext(); // <property>
-
-//                    while(xmlReader.name().toString() == "property")
-//                    {
-//                        if(xmlReader.attributes().value("name").toString() == "attack")
-//                            towerAttack = xmlReader.attributes().value("value").toInt();
-//                        else if(xmlReader.attributes().value("name").toString() == "radius")
-//                            towerRadius = xmlReader.attributes().value("value").toInt();
-//                        else if(xmlReader.attributes().value("name").toString() == "type")
-//                            towerType = xmlReader.attributes().value("value").toInt();
-//                        xmlReader.readNext();
-//                    }
-
+//                if(name == "Unit")
+//                {
 //                    global_pixmap = pixmap;
-//                    field.setPixmapForTower(pixmap);
-//                    faction.creatyNewTower(towerType, towerRadius, towerAttack, pixmap);
-//                    qDebug() << "Tower Set!";
-                }
+//                    field.unitsManager.setDefaulPixmapForUnit(pixmap);//setPixmapForUnit(pixmap);
+//                    qDebug() << "GameWidget::loadMap(); -- Set default Pixmap for Unit!";
+//                }
+//                if(tileSet.name.contains("unit"))
+//                {
+//                    // GAVNO!!
+//                }
+//                else if(name == "Tower")
+//                {
+////                    int towerAttack = -1;
+////                    int towerRadius = -1;
+////                    int towerType = -1;
+
+////                    xmlReader.readNext(); // <properties>
+////                    xmlReader.readNext(); // <property>
+
+////                    while(xmlReader.name().toString() == "property")
+////                    {
+////                        if(xmlReader.attributes().value("name").toString() == "attack")
+////                            towerAttack = xmlReader.attributes().value("value").toInt();
+////                        else if(xmlReader.attributes().value("name").toString() == "radius")
+////                            towerRadius = xmlReader.attributes().value("value").toInt();
+////                        else if(xmlReader.attributes().value("name").toString() == "type")
+////                            towerType = xmlReader.attributes().value("value").toInt();
+////                        xmlReader.readNext();
+////                    }
+
+////                    global_pixmap = pixmap;
+////                    field.setPixmapForTower(pixmap);
+////                    faction.creatyNewTower(towerType, towerRadius, towerAttack, pixmap);
+////                    qDebug() << "Tower Set!";
+//                }
             }
             else if(nameElement == "layer")
             {
@@ -2033,9 +2089,10 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
                 if( (rand()%100) < 30 ) {
 //                    int randNumber = ( ( ((terrainType)?30:50) ) + (rand()%20) );
 //                    int randNumber = ( 80+(rand()%20) );
-                    int randNumber = ( 124+(rand()%2) );
+//                    int randNumber = ( 124+(rand()%2) );
+                    int randNumber = tileSets[1].firstTileID-1+( 42+(rand()%4) );
 //                    qDebug() << "GameWidget::loadMap(); -- randNumber:" << randNumber;
-                    QPixmap pixmap = tileSet.tiles[randNumber];
+                    QPixmap pixmap = tileSets[1].tiles[randNumber];
                     field.getCell(x, y)->setTerrain(pixmap);
 //                } else if ( ( (rand()%100) < 5 ) && (towersCount-- > 0) ) {
 //                    field.setTower(x, y, field.faction->getFirstTowers()[0]);
@@ -2057,24 +2114,25 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
 
     mapLoad = true;
     tileSet.subRects.clear();
-//    tileSet.tiles.clear();
+    tileSet.tiles.clear();
 //    tileSets.clear();
     file->close();
 //    update();
-    field.spawnHeroInSpawnPoint();
-//    int randomEnemyCount = 5+rand()%10;
-    qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
-    int randomEnemyCount = enemyCount;
-    for (int k = 0; k < randomEnemyCount; k++) {
-        int randomX = rand()%mapSizeX;
-        int randomY = rand()%mapSizeY;
-        field.createUnit(randomX, randomY); // magic numbers need fix
-    }
     for (int k = 0; k < towersCount; k++) {
         int randomX = rand()%mapSizeX;
         int randomY = rand()%mapSizeY;
         field.setTower(randomX, randomY, field.faction->getFirstTowers()[0]);
 //        field.create(randomX, randomY); // magic numbers need fix
+    }
+    field.spawnHeroInSpawnPoint();
+
+    qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
+//    int randomEnemyCount = 5+rand()%10;
+    int randomEnemyCount = enemyCount;
+    for (int k = 0; k < randomEnemyCount; k++) {
+        int randomX = rand()%mapSizeX;
+        int randomY = rand()%mapSizeY;
+        field.createUnit(randomX, randomY); // magic numbers need fix
     }
     startTimer_UnitsMoveAndTowerAttack();
     qDebug() << "GameWidget::loadMap(); -- END";

@@ -119,6 +119,8 @@ bool UnitsManager::attackUnit(int x, int y, int damage, Unit *unit)
                     units[k].animationMaxIter = units[k].defUnit->death_down_right.size();
                     units[k].activePixmaps = units[k].defUnit->death_down_right;
                 }
+                units[k].animationMaxIter += units[k].defUnit->explosion.size();
+                units[k].activePixmaps.insert(units[k].activePixmaps.end(), units[k].defUnit->explosion.begin(), units[k].defUnit->explosion.end());
 //                qDebug() << "tmpUnit->animationMaxIter: " << tmpUnit << "->" << tmpUnit->animationMaxIter;
                 units[k].pixmap = units[k].activePixmaps[0];
                 // ЛАЖА !!!!!!
@@ -151,8 +153,8 @@ Unit* UnitsManager::getUnit(int x, int y) {
 }
 
 Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit) {
-    qDebug() << "UnitsManager::createHero(); -- " << coorByCellX << ", " << coorByCellY << ", " << coorByMapX << ", " << coorByMapY;
-    qDebug() << "UnitsManager::createHero(); -- unit:" << unit << " hero:" << hero;
+//    qDebug() << "UnitsManager::createHero(); -- " << coorByCellX << ", " << coorByCellY << ", " << coorByMapX << ", " << coorByMapY;
+//    qDebug() << "UnitsManager::createHero(); -- unit:" << unit << " hero:" << hero;
     if (hero == NULL) {
         hero = createUnit(coorByCellX, coorByCellY, coorByMapX, coorByMapY, unit, 0);
     }
@@ -160,7 +162,7 @@ Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX,
 }
 
 Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type){
-    qDebug() << "UnitsManager::createUnit(); -- unit:" << unit;
+//    qDebug() << "UnitsManager::createUnit(); -- unit:" << unit;
     if(amount < size) {
         units[amount].hp = 100;
         units[amount].alive = true;

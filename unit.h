@@ -47,7 +47,7 @@ public:
     Unit();
     ~Unit();
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
-    bool takeDamage(int damage);
+//    bool takeDamage(int damage);
 };
 
 #endif // UNIT_H

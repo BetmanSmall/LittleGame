@@ -55,6 +55,8 @@ public:
     std::vector<QPixmap> death_left;
     std::vector<QPixmap> death_up_left;
 
+    std::vector<QPixmap> explosion;
+
     DefaultUnit();
     ~DefaultUnit();
     void clearVectors();
