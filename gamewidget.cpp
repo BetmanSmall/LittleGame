@@ -13,13 +13,11 @@ GameWidget::GameWidget(QWidget *parent) :
     ASSETS_PATH = "./assets/";
 #endif
 
-    srand(time(0));
-
     gameStart = true;
     gamePause = false;
     mapLoad = false;
 
-    underConstruction = NULL;
+//    underConstruction = NULL;
 
     pixelsShiftMap = 32;
 
@@ -96,9 +94,9 @@ GameWidget::GameWidget(QWidget *parent) :
 
 GameWidget::~GameWidget()
 {
-    if (underConstruction) {
-        delete underConstruction;
-    }
+//    if (underConstruction) {
+//        delete underConstruction;
+//    }
     stopTimer_UnitsMoveAndTowerAttack();
     field.deleteField();
     if (scanMouseMove_TimerId)
@@ -210,11 +208,11 @@ void GameWidget::timerEvent(QTimerEvent *event) {
 
             field.setMainCoorMap(mainCoorMapX, mainCoorMapY);
         }
-        if (whichCell(curX, curY)) {
-            if (underConstruction) {
-                underConstruction->setEndCoors(curX, curY);
-            }
-        }
+//        if (whichCell(curX, curY)) {
+//            if (underConstruction) {
+//                underConstruction->setEndCoors(curX, curY);
+//            }
+//        }
 //    } else if (timerId == bulletsFly_TimerId) {
 //        // ПЕРЕПИСАТЬ!
 //        std::vector<Tower*> towers = field.getAllTowers();
@@ -276,17 +274,19 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
     } else if(key == Qt::Key_1) {
         ui->drawGrid_checkBox->toggle();
     } else if(key == Qt::Key_2) {
-        ui->drawStepsAndMouse_checkBox->toggle();
+        ui->drawBlackTiles_checkBox->toggle();
     } else if(key == Qt::Key_3) {
-        ui->drawField_checkBox->toggle();
+        ui->drawPaths_checkBox->toggle();
     } else if(key == Qt::Key_4) {
-        ui->drawUnits_checkBox->toggle();
+        ui->drawBackGround_checkBox->toggle();
     } else if(key == Qt::Key_5) {
-        ui->drawTowersByTowers_checkBox->toggle();
+        ui->drawGround_checkBox->toggle();
     } else if(key == Qt::Key_6) {
-        ui->drawRelief_checkBox->toggle();
+        ui->drawForeGround_checkBox->toggle();
     } else if(key == Qt::Key_7) {
-        ui->drawTowerUnderConstruction_checkBox->toggle();
+        ui->drawUnits_checkBox->toggle();
+    } else if(key == Qt::Key_8) {
+        ui->drawTowersByTowers_checkBox->toggle();
     } else if(key == Qt::Key_Space) {
         gamePause = !gamePause;
         qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
@@ -340,82 +340,96 @@ void GameWidget::paintEvent(QPaintEvent* event) {
 //    if(test == 1)
 //        qDebug() << "test";
 //    test = test<100 ? test+1 : 0;
-//    qDebug() << "Paint" << test;
-    p.begin(this);
+//    qDebug() << "GameWidget::paintEvent(); -- test:" << test;
+    painter.begin(this);
     if (gameStart) {
 //        if (!gamePause) {
             drawFullField();
-            if(ui->drawField_checkBox->isChecked())
-                drawField();
-            if(ui->drawRelief_checkBox->isChecked())
-                drawRelief();
-            if(ui->drawStepsAndMouse_checkBox->isChecked())
-                drawStepsAndMouse();
-            if(ui->drawTowersByTowers_checkBox->isChecked())
-                drawTowersByTowers();
+            if(ui->drawBackGround_checkBox->isChecked())
+                drawBackGround();
 //            drawTowersByField();
 
             if(ui->drawUnits_checkBox->isChecked())
                 drawUnits();
+            if(ui->drawGround_checkBox->isChecked())
+                drawGround();
+            if(ui->drawTowersByTowers_checkBox->isChecked())
+                drawTowersByTowers();
+            if(ui->drawForeGround_checkBox->isChecked())
+                drawForeGround();
+
+            if(ui->drawBlackTiles_checkBox->isChecked())
+                drawBlackTiles();
+            if(ui->drawPaths_checkBox->isChecked())
+                drawPaths();
 
             if(ui->drawGrid_checkBox->isChecked())
                 drawGrid();
-            if(ui->drawTowerUnderConstruction_checkBox->isChecked())
-                drawTowersUnderConstruction();
+//            if(ui->drawTowerUnderConstruction_checkBox->isChecked())
+//                drawTowersUnderConstruction();
 
-            p.setPen(QColor(255,0,0));
-            p.drawLine(width()/2-5, height()/2-5, width()/2+5, height()/2+5);
-            p.drawLine(width()/2+5, height()/2-5, width()/2-5, height()/2+5);
+//            painter.setPen(QColor(255,0,0));
+//            painter.drawLine(width()/2-5, height()/2-5, width()/2+5, height()/2+5);
+//            painter.drawLine(width()/2+5, height()/2-5, width()/2-5, height()/2+5);
 
-            p.setPen(QColor(255,0,0));
-//            p.drawText(width()-width()/4, height()-height()/10, QString("%1").arg(mainCoorMapX));
-//            p.drawText(width()-width()/4, height()-height()/10+20, QString("%1").arg(mainCoorMapY));
-            p.drawText(10, 20, QString(global_text.c_str()));
-            p.drawText(10, 40, QString(global_text2.c_str()));
-            p.drawText(10, 60, QString("%1").arg(field.getMainCoorMapX()));
-            p.drawText(10, 80, QString("%1").arg(field.getMainCoorMapY()));
-//            p.drawText(10, 100, QString("%1").arg(underConstruction->startX));
-//            p.drawText(10, 120, QString("%1").arg(underConstruction->startY));
-//            double vm, rss;
-//            process_mem_usage(vm, rss);
-            p.drawText(10, 100, QString("VM:%1"));//.arg(vm));
-            p.drawText(10, 120, QString("RSS:%1"));//.arg(rss));
+//            painter.setPen(QColor(255,0,0));
+////            p.drawText(width()-width()/4, height()-height()/10, QString("%1").arg(mainCoorMapX));
+////            p.drawText(width()-width()/4, height()-height()/10+20, QString("%1").arg(mainCoorMapY));
+//            painter.drawText(10, 20, QString(global_text.c_str()));
+//            painter.drawText(10, 40, QString(global_text2.c_str()));
+//            painter.drawText(10, 60, QString("%1").arg(field.getMainCoorMapX()));
+//            painter.drawText(10, 80, QString("%1").arg(field.getMainCoorMapY()));
+////            p.drawText(10, 100, QString("%1").arg(underConstruction->startX));
+////            p.drawText(10, 120, QString("%1").arg(underConstruction->startY));
+////            double vm, rss;
+////            process_mem_usage(vm, rss);
+//            painter.drawText(10, 100, QString("VM:%1"));//.arg(vm));
+//            painter.drawText(10, 120, QString("RSS:%1"));//.arg(rss));
 //        }
     }
-    p.end();
+    painter.end();
 }
 
-void GameWidget::drawGrid()
-{
+void GameWidget::drawFullField() {
+    if(field.getIsometric()) {
+        QPixmap pixmap = tileSets[0].tiles[85]; // draw water2
+        int sizeCellX = field.getSizeCell();
+        int sizeCellY = sizeCellX/2;
+        int sizeX = (width()/sizeCellX)+1;
+        int sizeY = (height()/sizeCellY)*2+2;
+        int isometricSpaceX = 0;
+        int isometricSpaceY = -(sizeCellY/2);
+        for (int y = 0; y <= sizeY; y++) {
+            for (int x = 0; x <= sizeX; x++) {
+                painter.drawPixmap(isometricSpaceX - sizeCellX/2 + x*sizeCellX, isometricSpaceY - sizeCellY, sizeCellX, sizeCellY*2, pixmap);
+            }
+            isometricSpaceY += sizeCellY/2;
+            isometricSpaceX = isometricSpaceX != 0 ? 0 : sizeCellX/2;
+        }
+    }
+}
+
+void GameWidget::drawGrid() {
+    int fieldX = field.getSizeX();
+    int fieldY = field.getSizeY();
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int spaceWidget = field.getSpaceWidget();
     int sizeCell = field.getSizeCell();
 
-    int fieldX = field.getSizeX();
-    int fieldY = field.getSizeY();
-
-    p.setPen(QColor(100, 60, 21));
-
+    painter.setPen(QColor(100, 60, 21));
     if(field.getIsometric()) {
         int halfSizeCellX = field.getSizeCell()/2;
         int halfSizeCellY = halfSizeCellX/2;
-//        int sizeCellX = field.getTileMapWidth()/2;
-//        int sizeCellY = field.getTileMapHeight()/2;
         int isometricSpaceX = halfSizeCellX*fieldY;
         int isometricSpaceY = halfSizeCellY*fieldY;
-
-//        qDebug() << "GameWidget::drawGrid(); -- isometricSpaceX: " << isometricSpaceX;
-//        qDebug() << "GameWidget::drawGrid(); -- isometricSpaceY: " << isometricSpaceY;
-//        qDebug() << "GameWidget::drawGrid(); -- fieldX: " << fieldX;
-//        qDebug() << "GameWidget::drawGrid(); -- fieldY: " << fieldY;
 
         for(int x = 0; x < fieldX+1; x++) {
             int x1 = mainCoorMapX + isometricSpaceX+spaceWidget + x*halfSizeCellX;
             int y1 = mainCoorMapY + spaceWidget + x*halfSizeCellY;
             int x2 = mainCoorMapX + spaceWidget + x*halfSizeCellX;
             int y2 = mainCoorMapY + isometricSpaceY+spaceWidget + x*halfSizeCellY;
-            p.drawLine(x1, y1, x2, y2);
+            painter.drawLine(x1, y1, x2, y2);
 //            qDebug() << "GameWidget::drawGrid(); -- x1: " << x1 << " y1: " << y1 << " x2: " << x2 << " y2: " << y2;
         }
         for(int y = 0; y < fieldY+1; y++) {
@@ -423,20 +437,20 @@ void GameWidget::drawGrid()
             int y1 = mainCoorMapY + spaceWidget + y*halfSizeCellY;
             int x2 = mainCoorMapX + isometricSpaceX*2+spaceWidget - (halfSizeCellX*(fieldY-fieldX)) - y*halfSizeCellX;
             int y2 = mainCoorMapY + isometricSpaceY+spaceWidget - (halfSizeCellY*(fieldY-fieldX)) + y*halfSizeCellY;
-            p.drawLine(x1, y1, x2, y2);
+            painter.drawLine(x1, y1, x2, y2);
 //            qDebug() << "GameWidget::drawGrid(); -- x1: " << x1 << " y1: " << y1 << " x2: " << x2 << " y2: " << y2;
         }
     } else {
         for(int x = 0; x < fieldX+1; x++) {
-            p.drawLine(mainCoorMapX + spaceWidget + x*sizeCell, mainCoorMapY + spaceWidget, mainCoorMapX + spaceWidget + x*sizeCell, mainCoorMapY + spaceWidget + sizeCell*fieldY);
+            painter.drawLine(mainCoorMapX + spaceWidget + x*sizeCell, mainCoorMapY + spaceWidget, mainCoorMapX + spaceWidget + x*sizeCell, mainCoorMapY + spaceWidget + sizeCell*fieldY);
         }
         for(int y = 0; y < fieldY+1; y++) {
-            p.drawLine(mainCoorMapX + spaceWidget, mainCoorMapY + spaceWidget + y*sizeCell, mainCoorMapX + spaceWidget + sizeCell*fieldX, mainCoorMapY + spaceWidget + y*sizeCell);
+            painter.drawLine(mainCoorMapX + spaceWidget, mainCoorMapY + spaceWidget + y*sizeCell, mainCoorMapX + spaceWidget + sizeCell*fieldX, mainCoorMapY + spaceWidget + y*sizeCell);
         }
     }
 }
 
-void GameWidget::drawField() {
+void GameWidget::drawBackGround() {
     int fieldX = field.getSizeX();
     int fieldY = field.getSizeY();
 
@@ -448,44 +462,30 @@ void GameWidget::drawField() {
     int isometricCoorX = (sizeCell/2) * fieldY;
     int isometricCoorY = 0;
 
-//    int sizeCellX = field.getTileMapWidth()/2;
-//    int sizeCellY = field.getTileMapHeight()/2;
     int sizeCellX = field.getSizeCell();
     int sizeCellY = sizeCellX/2;
 
     for(int y = 0; y < fieldY; y++) {
         for(int x = 0; x < fieldX; x++) {
-//            qDebug() << "GameWidget::drawField(); -- x: (" << x << "/" << fieldX << ") -- y: (" << y << "/" << fieldY << ")";
+//            qDebug() << "GameWidget::drawBackGround(); -- x: (" << x << "/" << fieldX << ") -- y: (" << y << "/" << fieldY << ")";
             if(mapLoad) {
-                QPixmap pix = field.getCell(x, y)->backgroundPixmap;//getPixmapOfCell(x, y);
-                if(!field.getIsometric()) {
-//                    qDebug() << "GameWidget::drawField(); -- NO Isometric!";
-                    int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;
-                    int pxlsY = mainCoorMapY + spaceWidget + y*sizeCell;
-                    int localSizeCell = sizeCell;
-
-                    p.drawPixmap(pxlsX, pxlsY, localSizeCell, localSizeCell, pix);
-                } else {
-//                    qDebug() << "GameWidget::drawField(); -- Isometric!";
-                    int x1 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + x*(sizeCellX/2);
-                    int y1 = mainCoorMapY + isometricCoorY - (sizeCellY) + x*(sizeCellY/2);
-
-//                    int x2 = mainCoorMapX + isometricSpaceX*2+spaceWidget - y*sizeCellX; << Android DNO
-//                    int y2 = mainCoorMapY + isometricSpaceY+spaceWidget + y*sizeCellY; << Android DNO -- Dorabotat'
-
-//                    qDebug() << "GameWidget::drawField(); -- sizeCellX: " << sizeCellX;
-//                    qDebug() << "GameWidget::drawField(); -- sizeCellY: " << sizeCellY;
-//                    qDebug() << "GameWidget::drawField(); -- mainCoorMapX: " << mainCoorMapX;
-//                    qDebug() << "GameWidget::drawField(); -- mainCoorMapY: " << mainCoorMapY;
-//                    qDebug() << "GameWidget::drawField(); -- isometricCoorX: " << isometricCoorX;
-//                    qDebug() << "GameWidget::drawField(); -- isometricCoorY: " << isometricCoorY;
-//                    qDebug() << "GameWidget::drawField(); -- x: " << x << " y: " << y << " pix: " << !pix.isNull();
-//                    qDebug() << "GameWidget::drawField(); -- x: " << x;
-//                    qDebug() << "GameWidget::drawField(); -- y: " << y;
-//                    qDebug() << "GameWidget::drawField(); -- x1: " << x1;
-//                    qDebug() << "GameWidget::drawField(); -- y1: " << y1;
-
-                    p.drawPixmap(x1, y1, sizeCellX, sizeCellY*2, pix);
+                Cell* cell = field.getCell(x, y);
+                foreach (QPixmap pix, cell->backgroundTiles) {
+//                    QPixmap pix = field.getCell(x, y)->backgroundPixmap;//getPixmapOfCell(x, y);
+                    if(!field.getIsometric()) {
+    //                    qDebug() << "GameWidget::drawBackGround(); -- NO Isometric!";
+                        int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;
+                        int pxlsY = mainCoorMapY + spaceWidget + y*sizeCell;
+                        int localSizeCell = sizeCell;
+                        painter.drawPixmap(pxlsX, pxlsY, localSizeCell, localSizeCell, pix);
+                    } else {
+    //                    qDebug() << "GameWidget::drawBackGround(); -- Isometric!";
+                        int x1 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + x*(sizeCellX/2);
+                        int y1 = mainCoorMapY + isometricCoorY - (sizeCellY) + x*(sizeCellY/2);
+    //                    int x2 = mainCoorMapX + isometricSpaceX*2+spaceWidget - y*sizeCellX; << Android DNO
+    //                    int y2 = mainCoorMapY + isometricSpaceY+spaceWidget + y*sizeCellY; << Android DNO -- Dorabotat'
+                        painter.drawPixmap(x1, y1, sizeCellX, sizeCellY*2, pix);
+                    }
                 }
             }
         }
@@ -494,33 +494,8 @@ void GameWidget::drawField() {
     }
 }
 
-void GameWidget::drawFullField() {
-    if(field.getIsometric()) {
-        QPixmap pixmap = tileSets[0].tiles[85];
-//        QPixmap pixmap = field.getCell(0, 0)->backgroundPixmap;//.getPixmapOfCell(0, 0);
-
-        int sizeCellX = field.getSizeCell();
-        int sizeCellY = sizeCellX/2;
-
-        int sizeX = (width()/sizeCellX)+1;
-        int sizeY = (height()/sizeCellY)*2+2;
-
-        int isometricSpaceX = 0;
-        int isometricSpaceY = -(sizeCellY/2);
-
-        for(int y = 0; y <= sizeY; y++) {
-            for(int x = 0; x <= sizeX; x++) {
-                p.drawPixmap(isometricSpaceX - sizeCellX/2 + x*sizeCellX, isometricSpaceY - sizeCellY, sizeCellX, sizeCellY*2, pixmap);
-            }
-            isometricSpaceY += sizeCellY/2;
-            isometricSpaceX = isometricSpaceX != 0 ? 0 : sizeCellX/2;
-        }
-    }
-}
-
-void GameWidget::drawRelief()
-{
-//    qDebug() << "GameWidget::drawRelief();";
+void GameWidget::drawGround() {
+//    qDebug() << "GameWidget::drawGround();";
     int fieldX = field.getSizeX();
     int fieldY = field.getSizeY();
 
@@ -528,24 +503,20 @@ void GameWidget::drawRelief()
     int mainCoorMapY = field.getMainCoorMapY();
     int spaceWidget = field.getSpaceWidget();
     int sizeCell = field.getSizeCell();
+    int sizeCellX = field.getSizeCell();
+    int sizeCellY = sizeCellX/2;
 
     int isometricCoorX = (sizeCell/2) * fieldY;
     int isometricCoorY = 0;
 
-//    int sizeCellX = field.getTileMapWidth()/2;
-//    int sizeCellY = field.getTileMapHeight()/2;
-    int sizeCellX = field.getSizeCell();
-    int sizeCellY = sizeCellX/2;
-
-    for(int y = 0; y < fieldY; y++)
-    {
-        for(int x = 0; x < fieldX; x++)
-        {
-            if(field.getCell(x, y)->isTerrain())
-            {
-//            qDebug() << "GameWidget::drawRelief(); -- x: (" << x << "/" << fieldX << ") -- y: (" << y << "/" << fieldY << ")";
-//            if(mapLoad) {
-                    QPixmap pix = field.getCell(x, y)->busyPixmap;//getBusyPixmapOfCell(x, y);
+    for(int y = 0; y < fieldY; y++) {
+        for(int x = 0; x < fieldX; x++) {
+            Cell* cell = field.getCell(x, y);
+            if(cell != NULL && cell->isTerrain()) {
+                foreach (QPixmap pix, cell->terrainTiles) {
+//                for (int k = cell->terrainTiles.size()-1; k >=0; k--) {
+//                for (int k = 0; k < 0; k++) {
+//                    QPixmap pix = cell->terrainTiles[k];
                     if(!field.getIsometric()) {
 //                        qDebug() << "GameWidget::drawRelief(); -- NO Isometric!";
                         int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell;//+1;
@@ -553,21 +524,55 @@ void GameWidget::drawRelief()
                         int localSizeCell = sizeCell;//-1;
 
 //                        if(!mapLoad) {
-                            p.fillRect(pxlsX+1, pxlsY+1, localSizeCell-1, localSizeCell-1, QColor(0, 0, 0));
+                            painter.fillRect(pxlsX+1, pxlsY+1, localSizeCell-1, localSizeCell-1, QColor(0, 0, 0));
 //                        } else {
-                            p.drawPixmap(pxlsX, pxlsY, localSizeCell, localSizeCell, pix);
+                            painter.drawPixmap(pxlsX, pxlsY, localSizeCell, localSizeCell, pix);
 //                        }
                     } else {
 //                        qDebug() << "GameWidget::drawRelief(); -- Isometric!";
                         int x1 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + x*(sizeCellX/2);
                         int y1 = mainCoorMapY + isometricCoorY - (sizeCellY) + x*(sizeCellY/2);
-//                    qDebug() << "GameWidget::drawRelief(); -- x: " << x << " y: " << y << " pix: " << !pix.isNull();
-//                    qDebug() << "GameWidget::drawRelief(); -- x1: " << x1;
-//                    qDebug() << "GameWidget::drawRelief(); -- y1: " << y1;
-
-                        p.drawPixmap(x1, y1, sizeCellX, sizeCellY*2, pix);
+                        painter.drawPixmap(x1, y1, sizeCellX, sizeCellY*2, pix);
+//                        if (ui->drawBlackTiles_checkBox->isChecked()) {
+//                            painter.drawPixmap(x1, y1, sizeCellX, sizeCellY*2, global_pixmap);
+//                        }
                     }
-//            }
+                }
+            }
+        }
+        isometricCoorX = (field.getSizeCell()/2) * (fieldY - (y+1));
+        isometricCoorY = (field.getSizeCell()/4) * (y+1);
+    }
+}
+
+void GameWidget::drawForeGround() {
+//    qDebug() << "GameWidget::drawForeGround();";
+    int fieldX = field.getSizeX();
+    int fieldY = field.getSizeY();
+
+    int mainCoorMapX = field.getMainCoorMapX();
+    int mainCoorMapY = field.getMainCoorMapY();
+    int sizeCell = field.getSizeCell();
+    int sizeCellX = field.getSizeCell();
+    int sizeCellY = sizeCellX/2;
+
+    int isometricCoorX = (sizeCell/2) * fieldY;
+    int isometricCoorY = 0;
+
+    for (int y = 0; y < fieldY; y++) {
+        for (int x = 0; x < fieldX; x++) {
+            Cell* cell = field.getCell(x, y);
+            if (cell != NULL) {
+                foreach (QPixmap pix, cell->foregroundTiles) {
+                    if(!field.getIsometric()) {
+//                        qDebug() << "GameWidget::drawRelief(); -- NO Isometric!";
+                    } else {
+//                        qDebug() << "GameWidget::drawRelief(); -- Isometric!";
+                        int x1 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + x*(sizeCellX/2);
+                        int y1 = mainCoorMapY + isometricCoorY - (sizeCellY) + x*(sizeCellY/2);
+                        painter.drawPixmap(x1, y1, sizeCellX, sizeCellY*2, pix);
+                    }
+                }
             }
         }
         isometricCoorX = (field.getSizeCell()/2) * (fieldY - (y+1));
@@ -643,9 +648,9 @@ void GameWidget::drawTowersByTowers() {
                 int pxlsX = mainCoorMapX + isometricSpaceX+spaceWidget + towerX*(sizeCellX/2);
                 int pxlsY = mainCoorMapY + isometricSpaceY+spaceWidget + towerX*(sizeCellY/2);
                 if (!mapLoad) {
-                    p.fillRect(pxlsX+1, pxlsY+1, sizeCell-1, sizeCell-1, QColor(127, 255, 0));
+                    painter.fillRect(pxlsX+1, pxlsY+1, sizeCell-1, sizeCell-1, QColor(127, 255, 0));
                 } else {
-                    p.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, tmpTower->pixmap);
+                    painter.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, tmpTower->pixmap);
                 }
 
                 for (int iBullet = 0; iBullet < tmpTower->bullets.size(); iBullet++) {
@@ -690,7 +695,7 @@ void GameWidget::drawTowersByTowers() {
                         pxlsX -= (sizeCellX/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
                         pxlsY -= (sizeCellY/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
                     }
-                    p.drawPixmap(pxlsX, pxlsY+sizeCellY/2, sizeCellX, sizeCellY*2, pixmap);
+                    painter.drawPixmap(pxlsX, pxlsY+sizeCellY/2, sizeCellX, sizeCellY*2, pixmap);
                 }
             }
         }
@@ -750,7 +755,7 @@ void GameWidget::drawUnits()
                                 pxlsY += (sizeCell/animationMaxIter)*(animationMaxIter-animationCurrIter);
 
 //                            qDebug() << "GameWidget::drawUnits(); -- Pix: " << !pixmap.isNull();
-                            p.drawPixmap(pxlsX, pxlsY, localSizeCell + localSpaceCell*2, localSizeCell + localSpaceCell*2, pixmap);
+                            painter.drawPixmap(pxlsX, pxlsY, localSizeCell + localSpaceCell*2, localSizeCell + localSpaceCell*2, pixmap);
 //                            p.drawRect(pxlsX, pxlsY, localSizeCell + localSpaceCell*2, localSizeCell + localSpaceCell*2);
 
                             int maxHP = 100;
@@ -759,8 +764,8 @@ void GameWidget::drawUnits()
                             hpWidth = hpWidth/maxHP*hp;
 //                            qDebug() << "hpWidth: " << hpWidth;
 
-                            p.drawRect(pxlsX + localSpaceCell+2, pxlsY, localSizeCell-4, 10);
-                            p.fillRect(pxlsX + localSpaceCell+3, pxlsY+1, hpWidth, 9, QColor(Qt::green));
+                            painter.drawRect(pxlsX + localSpaceCell+2, pxlsY, localSizeCell-4, 10);
+                            painter.fillRect(pxlsX + localSpaceCell+3, pxlsY+1, hpWidth, 9, QColor(Qt::green));
 
                             // IT's NOT GOOD!!! Fixed!
                             units[k]->coorByMapX = pxlsX;
@@ -804,7 +809,7 @@ void GameWidget::drawUnits()
 //                            };
 //                            p.drawPolygon(points, 4);
 
-                            p.drawPixmap(pxlsX, pxlsY+sizeCellY/2, sizeCellX, sizeCellY*2, pixmap);
+                            painter.drawPixmap(pxlsX, pxlsY+sizeCellY/2, sizeCellX, sizeCellY*2, pixmap);
                         }
                     }
                 }
@@ -815,50 +820,46 @@ void GameWidget::drawUnits()
     }
 }
 
-void GameWidget::drawStepsAndMouse() {
-//    qDebug() << "GameWidget::drawStepsAndMouse();";
+void GameWidget::drawBlackTiles() {
+//    qDebug() << "GameWidget::drawBlackTiles();";
     int fieldX = field.getSizeX();
     int fieldY = field.getSizeY();
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int spaceWidget = field.getSpaceWidget();
     int sizeCell = field.getSizeCell();
-    int isometricCoorX = (sizeCell/2) * fieldY;
-    int isometricCoorY = 0;
-
-//    int sizeCellX = field.getTileMapWidth()/2;
-//    int sizeCellY = field.getTileMapHeight()/2;
     int sizeCellX = field.getSizeCell();
     int sizeCellY = sizeCellX/2;
-
-    p.setPen(QColor(255,0,0));
+    int isometricCoorX = (sizeCell/2) * fieldY;
+    int isometricCoorY = 0;
+    painter.setPen(QColor(255,0,0));
     for (int y = 0; y < fieldY; y++) {
         for (int x = 0; x < fieldX; x++) {
             if (!field.getIsometric()) {
-//                qDebug() << "GameWidget::drawStepsAndMouse(); -- NOT Isometric!";
+//                qDebug() << "GameWidget::drawBlackTiles(); -- NOT Isometric!";
                 int pxlsX = mainCoorMapX + spaceWidget + x*sizeCell+1;
                 int pxlsY = mainCoorMapY + spaceWidget + y*sizeCell+1;
                 int localSizeCell = sizeCell-1;
                 int localSpaceCell = sizeCell/4;
 
-                p.drawPixmap(sizeCell, 0, global_pixmap.width(), global_pixmap.height(), global_pixmap);
+                painter.drawPixmap(sizeCell, 0, global_pixmap.width(), global_pixmap.height(), global_pixmap);
 
                 if(field.getStepCell(x, y))
-                    p.drawText(pxlsX + sizeCell/2-5, pxlsY + sizeCell/2+5, QString("%1").arg(field.getStepCell(x, y)));
+                    painter.drawText(pxlsX + sizeCell/2-5, pxlsY + sizeCell/2+5, QString("%1").arg(field.getStepCell(x, y)));
 
                 if(field.isSetSpawnPoint(x,y))
-                    p.fillRect(pxlsX + localSpaceCell, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(255, 162, 0));
+                    painter.fillRect(pxlsX + localSpaceCell, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(255, 162, 0));
 
                 if(field.isSetExitPoint(x,y))
-                    p.fillRect(pxlsX + localSpaceCell, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(0, 255, 0));
+                    painter.fillRect(pxlsX + localSpaceCell, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(0, 255, 0));
             } else {
-//                qDebug() << "GameWidget::drawStepsAndMouse(); -- Isometric!";
+//                qDebug() << "GameWidget::drawBlackTiles(); -- Isometric!";
 //                p.drawPixmap(sizeCell, 0, global_pixmap.width(), global_pixmap.height(), global_pixmap);
 
                 int x2 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + x*(sizeCellX/2);
                 int y2 = mainCoorMapY + isometricCoorY - (sizeCellY) + x*(sizeCellY/2);
                 if (field.pathFinder.detectCollision({x, y})) {
-                    p.drawPixmap(x2, y2, sizeCellX, sizeCellY*2, global_pixmap);
+                    painter.drawPixmap(x2, y2, sizeCellX, sizeCellY*2, global_pixmap);
 //                    p.drawEllipse(x1-sizeCell/4+7, y1-sizeCell/4+7, sizeCell/4, sizeCell/4);
 //                    p.fillRect(x1, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(255, 162, 0));
                 } else {
@@ -874,7 +875,20 @@ void GameWidget::drawStepsAndMouse() {
         isometricCoorX = (field.getSizeCell()/2) * (fieldY - (y+1));
         isometricCoorY = (field.getSizeCell()/4) * (y+1);
     }
+}
 
+void GameWidget::drawPaths() {
+//    qDebug() << "GameWidget::drawPaths();";
+    int fieldX = field.getSizeX();
+    int fieldY = field.getSizeY();
+    int mainCoorMapX = field.getMainCoorMapX();
+    int mainCoorMapY = field.getMainCoorMapY();
+    int sizeCell = field.getSizeCell();
+    int sizeCellX = field.getSizeCell();
+    int sizeCellY = sizeCellX/2;
+    int isometricCoorX = (sizeCell/2) * fieldY;
+    int isometricCoorY = 0;
+    painter.setPen(QColor(255,0,0));
 //    p.setPen(QColor(255,255,255));
 //    p.setBrush(Qt::red);
 //    AStar::Vec2i heroPoint = heroPath.back();
@@ -885,7 +899,6 @@ void GameWidget::drawStepsAndMouse() {
 //    int x4 = mainCoorMapX + isometricCoorX - (sizeCellX/2) + heroPoint.x*(sizeCellX/2);
 //    int y4 = mainCoorMapY + isometricCoorY - (sizeCellY) + heroPoint.x*(sizeCellY/2);
 //    p.drawPixmap(x4, y4, sizeCellX, sizeCellY*2, global_pixmap_HeroPoint);
-
     QPixmap pixmapPathPoint;
     for (int u = 0; u < field.unitsManager.getAmount(); u++) {
         Unit* tmpUnit = field.unitsManager.getUnit(u);
@@ -902,32 +915,32 @@ void GameWidget::drawStepsAndMouse() {
                     isometricCoorY = (field.getSizeCell()/4) * (point.y+0);
                     int pPx = mainCoorMapX + isometricCoorX - (sizeCellX/2) + point.x*(sizeCellX/2);
                     int pPy = mainCoorMapY + isometricCoorY - (sizeCellY) + point.x*(sizeCellY/2);
-                    p.drawPixmap(pPx, pPy, sizeCellX, sizeCellY*2, pixmapPathPoint);
+                    painter.drawPixmap(pPx, pPy, sizeCellX, sizeCellY*2, pixmapPathPoint);
                 }
                 AStar::Vec2i destinationPoint = unitPath.front();
                 isometricCoorX = (field.getSizeCell()/2) * (fieldY - (destinationPoint.y+0));
                 isometricCoorY = (field.getSizeCell()/4) * (destinationPoint.y+0);
                 int destinationPointX = mainCoorMapX + isometricCoorX - (sizeCellX/2) + destinationPoint.x*(sizeCellX/2);
                 int destinationPointY = mainCoorMapY + isometricCoorY - (sizeCellY) + destinationPoint.x*(sizeCellY/2);
-                p.drawPixmap(destinationPointX, destinationPointY, sizeCellX, sizeCellY*2, global_pixmap_DestinationPoint);
+                painter.drawPixmap(destinationPointX, destinationPointY, sizeCellX, sizeCellY*2, global_pixmap_DestinationPoint);
             }
 //        }
     }
 }
 
-void GameWidget::drawTowersUnderConstruction()
-{
-    if(underConstruction)
-    {
-        if(underConstruction->state == 0) {
-            drawTowerUnderConstruction(underConstruction->endX, underConstruction->endY, underConstruction->tower);
-        } else if(underConstruction->state == 1) {
-            drawTowerUnderConstruction(underConstruction->startX, underConstruction->startY, underConstruction->tower);
+//void GameWidget::drawTowersUnderConstruction()
+//{
+//    if(underConstruction)
+//    {
+//        if(underConstruction->state == 0) {
+//            drawTowerUnderConstruction(underConstruction->endX, underConstruction->endY, underConstruction->tower);
+//        } else if(underConstruction->state == 1) {
+//            drawTowerUnderConstruction(underConstruction->startX, underConstruction->startY, underConstruction->tower);
 
-            for(int k = 0; k < underConstruction->coorsX.size(); k++) {
-                drawTowerUnderConstruction(underConstruction->coorsX[k], underConstruction->coorsY[k], underConstruction->tower);
-            }
-        }
+//            for(int k = 0; k < underConstruction->coorsX.size(); k++) {
+//                drawTowerUnderConstruction(underConstruction->coorsX[k], underConstruction->coorsY[k], underConstruction->tower);
+//            }
+//        }
 //        if(whichCell(bEndX, bEndY)) {
 //            qDebug() << "GameWidget::drawTowerUnderConstruction() -- whichCell";
 //            if(bStartX == bEndX) {
@@ -952,8 +965,8 @@ void GameWidget::drawTowersUnderConstruction()
 //                }
 //            }
 //        }
-    }
-}
+//    }
+//}
 
 void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, DefaultTower *tower) {
 //    qDebug() << "GameWidget::drawTowerUnderConstruction(" << buildX << "," << buildY << "," << tower << ");";
@@ -987,12 +1000,12 @@ void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, DefaultTower
                 int pxlsX = mainCoorMapX + spaceWidget + (buildX+x)*sizeCell;//+1;
                 int pxlsY = mainCoorMapY + spaceWidget + (buildY+y)*sizeCell;//+1;
 
-                p.drawPixmap(pxlsX, pxlsY, sizeCell, sizeCell, pix);
+                painter.drawPixmap(pxlsX, pxlsY, sizeCell, sizeCell, pix);
 
                 if(field.getCell(buildX+x, buildY+y)->isEmpty()) {
-                    p.fillRect(pxlsX, pxlsY, sizeCell, sizeCell, cGreen);
+                    painter.fillRect(pxlsX, pxlsY, sizeCell, sizeCell, cGreen);
                 } else {
-                    p.fillRect(pxlsX, pxlsY, sizeCell, sizeCell, cRed);
+                    painter.fillRect(pxlsX, pxlsY, sizeCell, sizeCell, cRed);
                 }
             } else {
 //                qDebug() << "GameWidget::drawTowerUnderConstruction(); -- Isometric!";
@@ -1013,18 +1026,18 @@ void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, DefaultTower
                 QPixmap pix = tower->pixmap;
 
                 if(field.getCell(buildX+x, buildY+y)->isEmpty()) {
-                    p.setOpacity(0.5);
-                    p.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, pix);
+                    painter.setOpacity(0.5);
+                    painter.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, pix);
 //                    p.setOpacity(1);
                 } else {
-                    p.setOpacity(0.5);
-                    p.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, pix);
+                    painter.setOpacity(0.5);
+                    painter.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, pix);
 
                     QPainter painter(&pix);
                     painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
                     painter.fillRect(pix.rect(), cRed);
                     painter.end();
-                    p.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, pix);
+                    painter.drawPixmap(pxlsX - sizeCellX/2, pxlsY + sizeCellY - (sizeCellY*2)*height, sizeCellX, (sizeCellY*2)*height, pix);
                 }
             }
         }
@@ -1128,9 +1141,9 @@ void GameWidget::buildTower(int x, int y) {
         int ret = msgBox.exec();
 //        qDebug() << "ret: " << ret;
 
-        if(underConstruction)
-            delete underConstruction;
-        underConstruction = new UnderConstruction(towers[ret]);
+//        if(underConstruction)
+//            delete underConstruction;
+//        underConstruction = new UnderConstruction(towers[ret]);
 
 //        int currX = cursor().pos().x();
 //        int currY = cursor().pos().y();
@@ -1142,9 +1155,9 @@ void GameWidget::buildTower(int x, int y) {
 //        field.setTower(mouseX, mouseY, towers[ret]);
     } else {
         qDebug() << "GameWidget:2:buildTower(" << x << ", " << y << "); -- ";
-        if(underConstruction) {
-            underConstruction->setStartCoors(x, y);
-        }
+//        if(underConstruction) {
+//            underConstruction->setStartCoors(x, y);
+//        }
 //        if(underConstruction)
 //            delete underConstruction;
 
@@ -1194,14 +1207,9 @@ void GameWidget::mousePressEvent(QMouseEvent* event) {
         text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
         global_text2 = text.toStdString().c_str();
         if(button == Qt::LeftButton) {
-        } else if(button == Qt::RightButton) {
+
+        } else if( (!panMidMouseButton && button == Qt::RightButton) || (panMidMouseButton && button == Qt::MidButton) ) {
             pan = true;
-            prevMouseX = event->x();
-            prevMouseY = event->y();
-            prevMouseCellX = mouseX;
-            prevMouseCellY = mouseY;
-            prevGlobalMouseX = event->globalX();
-            prevGlobalMouseY = event->globalY();
             setCursor(Qt::ClosedHandCursor);
 //        } else if(button == Qt::MidButton) {
 //            field.createUnit(mouseX, mouseY);
@@ -1211,6 +1219,12 @@ void GameWidget::mousePressEvent(QMouseEvent* event) {
 //                field.deleteTower(mouseX, mouseY);
 //            }
         }
+        prevMouseX = event->x();
+        prevMouseY = event->y();
+        prevMouseCellX = mouseX;
+        prevMouseCellY = mouseY;
+        prevGlobalMouseX = event->globalX();
+        prevGlobalMouseY = event->globalY();
     }
     update();
 }
@@ -1226,6 +1240,10 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         text = QString("Release(%1/%2)-(%3/%4) -- %3").arg(mouseX).arg(mouseY).arg(prevMouseCellX).arg(prevMouseCellY).arg(button);
         global_text2 = text.toStdString().c_str();
         qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
+        if( (!panMidMouseButton && button == Qt::RightButton) || (panMidMouseButton && button == Qt::MidButton)) {
+            pan = false;
+            setCursor(Qt::ArrowCursor);
+        }
         if(button == Qt::LeftButton) {
             if (field.getCell(mouseX, mouseY)->isEmpty()) {
                 field.updateHeroDestinationPoint(mouseX, mouseY);
@@ -1237,28 +1255,24 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
 //            if(!field.containBusy(mouseX, mouseY))
 //                field.waveAlgorithm();
         } else if (button == Qt::RightButton) {
-            pan = false;
-            setCursor(Qt::ArrowCursor);
-            if ( (prevMouseCellX == mouseX && prevMouseCellY == mouseY) ) {
-                if ( (prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
-                    Cell* cell = field.getCell(mouseX, mouseY);
-                    if (cell != NULL) {
-                        if(cell->isEmpty()) {
-                            int randNumber = ( 80+(rand()%20) );
-                            QPixmap pixmap = tileSets[0].tiles[randNumber];
-                            cell->setTerrain(pixmap);
-                        } else if (cell->getTower() != NULL) {
-                            cell->removeTower();
-        //                    clearTower(mouseX, mouseY);
-                        } else if (cell->isTerrain()) {
-                            cell->removeTerrain();
-                        } else {
-                            qDebug() << "GameWidget::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
-                        }
+            if ( panMidMouseButton || (prevMouseCellX == mouseX && prevMouseCellY == mouseY && prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
+                Cell* cell = field.getCell(mouseX, mouseY);
+                if (cell != NULL) {
+                    if(cell->isEmpty()) {
+                        int randNumber = ( 80+(rand()%20) );
+                        QPixmap pixmap = tileSets[0].tiles[randNumber];
+                        cell->setTerrain(pixmap);
+                    } else if (cell->getTower() != NULL) {
+                        cell->removeTower();
+    //                    clearTower(mouseX, mouseY);
+                    } else if (cell->isTerrain()) {
+                        cell->removeTerrain();
+                    } else {
+                        qDebug() << "GameWidget::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
                     }
-                    field.updateHeroDestinationPoint();
-        //            field.updatePathFinderWalls();
                 }
+                field.updateHeroDestinationPoint();
+//                  field.updatePathFinderWalls();
             }
 //        } else if(event->button() == Qt::XButton1) {
 //            field.updateHeroDestinationPoint(mouseX, mouseY);
@@ -1907,21 +1921,23 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
 
                     // Устанавливаем TextureRect каждого тайла
                     if (subRectToUse >= 0) {
+                        Cell* cell = field.getCell(x, y);
                         QPixmap pixmap = tileSets[num].img;
                         pixmap = pixmap.copy(tileSets[num].subRects[subRectToUse]);
                         if(layerName == "ground" || layerName == "entity") {
-                            field.getCell(x, y)->setTerrain(pixmap);
+                            cell->setTerrain(pixmap);
                         } else if (layerName == "removeground") {
-                            field.getCell(x, y)->setTerrain(pixmap);
+                            cell->setTerrain(pixmap);
                         } else if (layerName == "towers") {
-                            field.getCell(x, y)->removeTerrain();
+                            cell->removeTerrain();
                             qDebug() << "GameWidget::loadMap(); -- faction:" << faction->getFirstTowers()[0];
                             field.setTower(x, y, faction->getFirstTowers()[0]);
-//                            field.setTower()
                         } else if (layerName == "background"){
-                            field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap);
+                            cell->backgroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap);
+                        } else if (layerName == "entityimg") {
+                            cell->foregroundTiles.push_back(pixmap);
                         } else {
-                            field.getCell(x, y)->foregroundTiles.push_back(pixmap);
+                            cell->foregroundTiles.push_back(pixmap);
                         }
                     } else {
                         //qDebug() << "subRectToUse: " << subRectToUse;
@@ -1968,12 +1984,12 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
 
                 if(name == "spawnPoint") {
                     qDebug() << "GameWidget::loadMap(); -- createSpawnPoint(" << defaultNumCreateUnits << ", " << x << ", " << y << ");";
-                    field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap); // need fix
+                    field.getCell(x, y)->foregroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap); // need fix
                     field.setMousePress(x, y);
                     field.createSpawnPoint(defaultNumCreateUnits, x, y);
                 } else if(name == "exitPoint") {
                     qDebug() << "GameWidget::loadMap(); -- createExitPoint(" << x << ", " << y << ");";
-                    field.getCell(x, y)->backgroundPixmap = pixmap;//setPixmapInCell(x, y, pixmap); // need fix
+                    field.getCell(x, y)->foregroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap); // need fix
                     field.createExitPoint(x, y);
 //                    startUnitTimer();
                 }

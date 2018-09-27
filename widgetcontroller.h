@@ -1,6 +1,8 @@
 #ifndef WIDGETCONTROLLER_H
 #define WIDGETCONTROLLER_H
 
+#include <QDebug>
+#include <QDirIterator>
 #include <QDesktopWidget>
 #include <QWidget>
 //#include <QGLWidget>
@@ -24,6 +26,8 @@ public:
     explicit WidgetController(QWidget *parent = 0);
 
 private:
+    QPainter painter;
+    QPixmap mainMenuBackground;
     QString ASSETS_PATH;
     QMediaPlayer* mediaPlayer;
     QStackedWidget* stackedWidget;
@@ -31,6 +35,7 @@ private:
     std::vector<QString> campaingMaps;
     MainMenu* mainMenu;
     int enemyCount, difficultyLevel, towersCount;
+    bool panMidMouseButtonBool;
 
     void paintEvent(QPaintEvent* );
     void loadMap(GameWidget *gameWidget);
@@ -39,7 +44,6 @@ private slots:
     void showMainMenu();
 
     void showChooseMapMenu();
-    void actionMainMenuSoundRadionButton();
     void showOptionMenu();
     void loadNextCampaingMaps();
     void showGameWidget(QString mapPath);
@@ -54,6 +58,8 @@ private slots:
     void enemyCountChanged(int value);
     void difficultyLevelChanged(int value);
     void towersCountChanged(int value);
+    void actionMainMenuSoundRadionButton(bool checked);
+    void panMidMouseButton(bool checked);
     void closeWidget();
     void closeWidgetGameFinished(bool win);
 };

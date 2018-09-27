@@ -11,7 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = LittleGame
 TEMPLATE = app
 CONFIG += c++11
-
+RESOURCES = application.qrc
+RC_FILE = myapp.rc
 
 SOURCES += main.cpp\
     field.cpp \
@@ -58,3 +59,20 @@ FORMS    += \
     optionmenu.ui \
     choosemapmenu.ui \
     gamewidget.ui
+
+DISTFILES += \
+    assets/images/button1.jpg \
+    assets/images/button1v1.jpg \
+    assets/images/button2.jpg \
+    assets/images/button3.jpg \
+    assets/images/desert.jpg \
+    assets/images/forest.jpg \
+    assets/images/mainmenu.jpg \
+    assets/images/button1v2.png \
+    assets/images/button2v2.png \
+    assets/images/button3v2.png \
+    assets/images/Exit.png \
+    assets/images/littlegame.png \
+    assets/images/Options.png \
+    assets/images/Play.png \
+    assets/images/favicon.ico

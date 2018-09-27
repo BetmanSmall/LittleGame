@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QIcon>
 
 #include "widgetcontroller.h"
 
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setLibraryPaths(paths);
 
     QApplication a(argc, argv);
+    srand(time(0));
 
 //    QRect rec = QApplication::desktop()->screenGeometry();
     WidgetController w;

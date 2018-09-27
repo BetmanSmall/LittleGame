@@ -1,7 +1,5 @@
 #include "widgetcontroller.h"
 
-#include <QDebug>
-
 WidgetController::WidgetController(QWidget *parent) :
     QWidget(parent)
 {
@@ -28,10 +26,19 @@ WidgetController::WidgetController(QWidget *parent) :
 //    move(width()/2, 0);
 //    setWindowState(Qt::WindowFullScreen);
 
+
     mediaPlayer = new QMediaPlayer();
     mediaPlayer->setMedia(QUrl::fromLocalFile(ASSETS_PATH + "music/mainmenu2.mp3"));
     mediaPlayer->setVolume(0);
     mediaPlayer->play();
+//    mainMenuBackground = QPixmap(ASSETS_PATH + "images/mainmenu.jpg");
+//    mainMenuBackground = QPixmap(":/assets/images/mainmenu.jpg");
+    std::vector<QString> menuImgs;
+    QDirIterator it(":/assets/images/", QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        menuImgs.push_back(it.next());
+    }
+    mainMenuBackground = QPixmap(menuImgs[rand()%menuImgs.size()]);
 
     stackedWidget = new QStackedWidget;
     QVBoxLayout* layout = new QVBoxLayout;
@@ -46,10 +53,9 @@ WidgetController::WidgetController(QWidget *parent) :
 }
 
 void WidgetController::paintEvent(QPaintEvent *) {
-    QPainter p(this);
-    QPixmap pix = QPixmap(ASSETS_PATH + "images/mainmenu.jpg");
-    p.drawPixmap(0, 0, width(), height(), pix);
-    p.end();
+    painter.begin(this);
+    painter.drawPixmap(0, 0, width(), height(), mainMenuBackground);
+    painter.end();
 }
 
 void WidgetController::showMainMenu() {
@@ -62,9 +68,10 @@ void WidgetController::showMainMenu() {
     connect(mainMenu, SIGNAL(signal_enemyCountChanged(int)), this, SLOT(enemyCountChanged(int)));
     connect(mainMenu, SIGNAL(signal_difficultyLevelChanged(int)), this, SLOT(difficultyLevelChanged(int)));
     connect(mainMenu, SIGNAL(signal_towersCountChanged(int)), this, SLOT(towersCountChanged(int)));
-    connect(mainMenu, SIGNAL(signal_actionSoundRadioButton()), this, SLOT(actionMainMenuSoundRadionButton()));
+    connect(mainMenu, SIGNAL(signal_actionSoundRadioButton(bool)), this, SLOT(actionMainMenuSoundRadionButton(bool)));
+    connect(mainMenu, SIGNAL(signal_panMidMouseButton(bool)), this, SLOT(panMidMouseButton(bool)));
 
-    mainMenu->updateSlidersValues();
+    mainMenu->updateSlidersAndValues();
     stackedWidget->addWidget(mainMenu);
     stackedWidget->setCurrentWidget(mainMenu);
 }
@@ -84,11 +91,6 @@ void WidgetController::showChooseMapMenu() {
 
     stackedWidget->addWidget(chooseMapMenu);
     stackedWidget->setCurrentWidget(chooseMapMenu);
-}
-
-void WidgetController::actionMainMenuSoundRadionButton() {
-    qDebug() << "WidgetController::actionMainMenuSoundRadionButton(); -- volume:" << mediaPlayer->volume();
-    mediaPlayer->setVolume( (mediaPlayer->volume()>0) ? 0 : 100); // (OptionMenu)(stackedWidget->currentWidget()).ui. );
 }
 
 void WidgetController::showOptionMenu() {
@@ -129,6 +131,7 @@ void WidgetController::showGameWidget(QString mapPath) {
     loadMap(gameWidget);
     gameWidget->loadMap(ASSETS_PATH + mapPath, enemyCount, towersCount);
     gameWidget->field.towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
+    gameWidget->panMidMouseButton = panMidMouseButtonBool;
     qDebug() << "WidgetController::showGameWidget(); -- END";
 }
 
@@ -194,6 +197,16 @@ void WidgetController::towersCountChanged(int value) {
     towersCount = value;
 }
 
+void WidgetController::actionMainMenuSoundRadionButton(bool checked) {
+    qDebug() << "WidgetController::actionMainMenuSoundRadionButton(); -- volume:" << mediaPlayer->volume();
+    mediaPlayer->setVolume( (mediaPlayer->volume()>0) ? 0 : 100); // (OptionMenu)(stackedWidget->currentWidget()).ui. );
+}
+
+void WidgetController::panMidMouseButton(bool checked) {
+    qDebug() << "WidgetController::panMidMouseButton(); -- checked:" << checked;
+    panMidMouseButtonBool = checked;
+}
+
 void WidgetController::closeWidget() {
     qDebug() << "WidgetController::closeWidget(); -- ";
     QWidget* currentWidget = stackedWidget->currentWidget();
@@ -224,8 +237,8 @@ void WidgetController::loadNextCampaingMaps() {
 //        closeWidget();
         showGameWidget(mapPath);
     } else {
-        campaingMaps.push_back("maps/island.tmx");
         campaingMaps.push_back("maps/randomMap.tmx");
+        campaingMaps.push_back("maps/island.tmx");
 //        showMainMenu();
     }
     qDebug() << "WidgetController::loadNextCampaingMaps(); -- campaingMaps.size():" << campaingMaps.size();

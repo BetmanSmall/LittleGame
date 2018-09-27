@@ -34,12 +34,12 @@ bool Cell::isTerrain() {
 }
 
 bool Cell::setTerrain(QPixmap pixmap) {//int x, int y, QPixmap pixmap) {
+    if (!pixmap.isNull()) { // Not good!
+        terrainTiles.push_back(pixmap);
+    }
     if (empty && !spawn && !exit) {
         terrain = true;
         empty = false;
-        if (!pixmap.isNull()) {
-            busyPixmap = pixmap;
-        }
         return true;
     } else {
         return false;

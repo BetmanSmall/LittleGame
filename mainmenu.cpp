@@ -43,10 +43,14 @@ void MainMenu::updateGameStatus(bool win) {
     }
 }
 
-void MainMenu::updateSlidersValues() {
+void MainMenu::updateSlidersAndValues() {
     signal_enemyCountChanged(ui->enemyCount->value());
     signal_difficultyLevelChanged(ui->difficultyLevel->value());
     signal_towersCountChanged(ui->towersCount->value());
+    int a = rand()%2;
+    qDebug() << "MainMenu::updateSlidersAndValues(); -- rand()%2:" << a;
+    ui->panMidMouseButton->setChecked(a);
+    signal_panMidMouseButton(ui->panMidMouseButton->isChecked());
 }
 
 void MainMenu::on_playButton_clicked() {
@@ -87,12 +91,6 @@ void MainMenu::keyPressEvent(QKeyEvent* event) {
     }
 }
 
-void MainMenu::on_sound_clicked() {
-    qDebug() << "MainMenu::on_sound_clicked(); -- ";
-//    ui->sound->move(qrand()%width(), qrand()%height());
-    signal_actionSoundRadioButton();
-}
-
 void MainMenu::on_enemyCount_valueChanged(int value) {
     qDebug() << "MainMenu::on_enemyCount_valueChanged(); -- value:" << value;
     ui->labelEnemyCount->setText( QString("EnemyCount:%1").arg(value) );
@@ -120,4 +118,14 @@ void MainMenu::on_towersCount_valueChanged(int value) {
     qDebug() << "MainMenu::on_towersCount_valueChanged(); -- value:" << value;
     ui->labelTowerCount->setText( QString("TowersCount <= %1").arg(value) );
     signal_towersCountChanged(value);
+}
+
+void MainMenu::on_sound_toggled(bool checked) {
+    qDebug() << "MainMenu::on_sound_toggled(); -- checked:" << checked;
+    signal_actionSoundRadioButton(checked);
+}
+
+void MainMenu::on_panMidMouseButton_toggled(bool checked) {
+    qDebug() << "MainMenu::on_panMidMouseButton_toggled(); -- checked:" << checked;
+    signal_panMidMouseButton(checked);
 }

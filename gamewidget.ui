@@ -49,7 +49,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="drawStepsAndMouse_checkBox">
+      <widget class="QCheckBox" name="drawBlackTiles_checkBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -57,7 +57,7 @@
         <string notr="true">background-color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>drawStepsAndMouse</string>
+        <string>drawBlackTiles</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -65,7 +65,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="drawField_checkBox">
+      <widget class="QCheckBox" name="drawPaths_checkBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -73,7 +73,55 @@
         <string notr="true">background-color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>drawField</string>
+        <string>drawPaths</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="drawBackGround_checkBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(0, 255, 0);</string>
+       </property>
+       <property name="text">
+        <string>drawBackGround</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="drawGround_checkBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(0, 255, 0);</string>
+       </property>
+       <property name="text">
+        <string>drawGround</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="drawForeGround_checkBox">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(0, 255, 0);</string>
+       </property>
+       <property name="text">
+        <string>drawForeGround</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -106,38 +154,6 @@
        </property>
        <property name="text">
         <string>drawTowersByTowers</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="drawRelief_checkBox">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 255, 0);</string>
-       </property>
-       <property name="text">
-        <string>drawRelief</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="drawTowerUnderConstruction_checkBox">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 255, 0);</string>
-       </property>
-       <property name="text">
-        <string>drawTowerUnderConstruction</string>
        </property>
        <property name="checked">
         <bool>true</bool>

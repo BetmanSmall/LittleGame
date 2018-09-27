@@ -72,16 +72,18 @@ public:
     void keyPressEvent(QKeyEvent* event);
 
 //    QRect screenSize;
-    QPainter p;
+    QPainter painter;
     void paintEvent(QPaintEvent* event);
-    void drawGrid();
-    void drawField();
     void drawFullField();
-    void drawRelief();
-    void drawTowersByField();
+    void drawGrid();
+    void drawBackGround();
+    void drawGround();
+    void drawForeGround();
+//    void drawTowersByField();
     void drawTowersByTowers();
     void drawUnits();
-    void drawStepsAndMouse();
+    void drawBlackTiles();
+    void drawPaths();
     void drawTowersUnderConstruction();
     void drawTowerUnderConstruction(int buildX, int buildY, DefaultTower* tower);
 
@@ -116,7 +118,7 @@ public:
     bool mapLoad;
 
 //    bool setUpBuildTower;
-    UnderConstruction* underConstruction;
+//    UnderConstruction* underConstruction;
 //    DefaultTower* towersUnderConstruction;
 //    int towersStartUnderConstructionX, towersStartUnderConstructionY;
 
@@ -153,6 +155,7 @@ public:
     string global_text;
     string global_text2;
 
+    bool panMidMouseButton;
     bool pan = false;
     int prevMouseX, prevMouseY;
     int prevMouseCellX, prevMouseCellY;

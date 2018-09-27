@@ -19,7 +19,7 @@ public:
     ~MainMenu();
 //    void paintEvent(QPaintEvent *);
     void updateGameStatus(bool win);
-    void updateSlidersValues();
+    void updateSlidersAndValues();
 
 private:
     Ui::MainMenu *ui;
@@ -32,10 +32,12 @@ private slots:
     void on_optionsButton_clicked();
     void on_exitButton_clicked();
     void on_killButton_clicked();
-    void on_sound_clicked();
     void on_enemyCount_valueChanged(int value);
     void on_difficultyLevel_valueChanged(int value);
     void on_towersCount_valueChanged(int value);
+
+    void on_sound_toggled(bool checked);
+    void on_panMidMouseButton_toggled(bool checked);
 
 protected:
     void keyPressEvent(QKeyEvent* event);
@@ -48,7 +50,8 @@ signals:
     void signal_enemyCountChanged(int value);
     void signal_difficultyLevelChanged(int value);
     void signal_towersCountChanged(int value);
-    void signal_actionSoundRadioButton();
+    void signal_actionSoundRadioButton(bool checked);
+    void signal_panMidMouseButton(bool checked);
 };
 
 #endif // MAINMENU_H

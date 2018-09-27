@@ -1,8 +1,18 @@
 #include "unitsmanager.h"
 
+UnitsManager::UnitsManager() {
+    qDebug() << "UnitsManager::UnitsManager(); -- ";
+    hero = NULL;
+    units = NULL;
+}
+
+UnitsManager::~UnitsManager() {
+    qDebug() << "UnitsManager::~UnitsManager(); -- ";
+    deleteMass();
+}
+
 void UnitsManager::createMass(int newSize) {
     if(units == NULL) {
-        hero = NULL;
         units = new Unit[newSize];
         size = newSize;
         amount = 0;
@@ -13,10 +23,10 @@ void UnitsManager::createMass(int newSize) {
 }
 
 void UnitsManager::deleteMass() {
-    if (hero != NULL) {
-        delete hero;
-        hero = NULL;
-    }
+//    if (hero != NULL) {
+//        delete hero;
+//        hero = NULL;
+//    }
     if(units != NULL) {
         delete[] units;
         units = NULL;

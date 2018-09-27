@@ -35,9 +35,10 @@ public:
     bool spawn;
     bool exit;
 
-    QPixmap backgroundPixmap;
-    QPixmap busyPixmap;
-//    std::vector<QPixmap> backgroundTiles;
+//    QPixmap backgroundPixmap;
+//    QPixmap busyPixmap;
+    std::vector<QPixmap> backgroundTiles;
+    std::vector<QPixmap> terrainTiles;
     std::vector<QPixmap> foregroundTiles;
 //        Array<Tree> trees;
 //        private bool empty;

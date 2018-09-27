@@ -466,13 +466,6 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QPushButton" name="killButton">
-       <property name="text">
-        <string>KillMe</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
@@ -1011,6 +1004,40 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
+      <widget class="QPushButton" name="killButton">
+       <property name="text">
+        <string>KillMe</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="sound">
+       <property name="text">
+        <string>Sound on/off</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="panMidMouseButton">
+       <property name="text">
+        <string>panMidMouseButton</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -1091,29 +1118,6 @@
      </item>
      <item>
       <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="sound">
-       <property name="text">
-        <string>Sound on/off</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>

@@ -114,6 +114,8 @@ void Field::updateHeroDestinationPoint(int x, int y) {
             if (newPath.front().operator==({x, y})) {
                 newPath.pop_back();
                 tmpUnit->path = newPath;
+            } else {
+                tmpUnit->path.clear();
             }
 //            for(auto& coordinate : tmpUnit->path) {
 //                qDebug() << "Field::updateHeroDestionPoint(); -- x:" << coordinate.x << " y:" << coordinate.y;
