@@ -131,6 +131,7 @@ public:
 
     int defaultNumCreateUnits;
 
+    int timeOfGame;
 //    Timers
     int unitsMove_TimerMilliSec;
     int towersAttack_TimerMilliSec;
@@ -174,7 +175,8 @@ private slots:
 
 signals:
     void signal_changeWindowState();
-    void signal_closeWidgetGameFinished(bool win);
+    void signal_closeWidget();
+    void signal_closeWidgetGameFinished(bool win, int timeOfGame);
 };
 
 #endif // GAMEWIDGET_H

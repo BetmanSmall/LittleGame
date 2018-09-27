@@ -24,17 +24,29 @@ WidgetController::WidgetController(QWidget *parent) :
 //    width = rec.width();
 //    height = rec.height();
 //    move(width()/2, 0);
-//    setWindowState(Qt::WindowFullScreen);
+    setWindowState(Qt::WindowMaximized);
 
-
+    gameRecordsFile = new QFile(ASSETS_PATH + "gameRecords.txt");
+    if (!gameRecordsFile->exists()) {
+        qDebug() << "WidgetController::WidgetController(); -- gameRecords->exists():" << gameRecordsFile->exists();
+    } else {
+        if (gameRecordsFile->open(QIODevice::ReadOnly)) {
+           QTextStream in(gameRecordsFile);
+           while (!in.atEnd()) {
+              QString line = in.readLine();
+              gameRecords.append(line.toInt());
+           }
+           gameRecordsFile->close();
+        }
+    }
     mediaPlayer = new QMediaPlayer();
     mediaPlayer->setMedia(QUrl::fromLocalFile(ASSETS_PATH + "music/mainmenu2.mp3"));
     mediaPlayer->setVolume(0);
     mediaPlayer->play();
-//    mainMenuBackground = QPixmap(ASSETS_PATH + "images/mainmenu.jpg");
+//    mainMenuBackground = QPixmap(ASSETS_PATH + "images/mainmenu/mainmenu3.png");
 //    mainMenuBackground = QPixmap(":/assets/images/mainmenu.jpg");
     std::vector<QString> menuImgs;
-    QDirIterator it(":/assets/images/", QDirIterator::Subdirectories);
+    QDirIterator it(":/assets/images/mainmenu/", QDirIterator::Subdirectories);
     while (it.hasNext()) {
         menuImgs.push_back(it.next());
     }
@@ -46,9 +58,11 @@ WidgetController::WidgetController(QWidget *parent) :
     layout->addWidget(stackedWidget);
     setLayout(layout);
 
-    if (campaingMaps.empty()) {
-        loadNextCampaingMaps(); // pre-load
-    }
+//    if (campaingMaps.empty()) {
+//        loadNextCampaingMaps(); // pre-load
+//    }
+    enemyCount = 16, difficultyLevel = 0, towersCount = 0;
+    panMidMouseButtonBool = true;
     showMainMenu();
 }
 
@@ -61,37 +75,39 @@ void WidgetController::paintEvent(QPaintEvent *) {
 void WidgetController::showMainMenu() {
     qDebug() << "WidgetController::showMainMenu(); -- ";
     mainMenu = new MainMenu();
-    connect(mainMenu, SIGNAL(signal_quickPlay()), this, SLOT(loadNextCampaingMaps()));
-    connect(mainMenu, SIGNAL(signal_openChooseMapMenu()), this, SLOT(showChooseMapMenu()));
+    connect(mainMenu, SIGNAL(signal_playNormalMap()), this, SLOT(loadNormalMap()));
     connect(mainMenu, SIGNAL(signal_openOptionMenu()), this, SLOT(showOptionMenu()));
     connect(mainMenu, SIGNAL(signal_exit()), this, SLOT(closeWidget()));
-    connect(mainMenu, SIGNAL(signal_enemyCountChanged(int)), this, SLOT(enemyCountChanged(int)));
-    connect(mainMenu, SIGNAL(signal_difficultyLevelChanged(int)), this, SLOT(difficultyLevelChanged(int)));
-    connect(mainMenu, SIGNAL(signal_towersCountChanged(int)), this, SLOT(towersCountChanged(int)));
-    connect(mainMenu, SIGNAL(signal_actionSoundRadioButton(bool)), this, SLOT(actionMainMenuSoundRadionButton(bool)));
-    connect(mainMenu, SIGNAL(signal_panMidMouseButton(bool)), this, SLOT(panMidMouseButton(bool)));
 
-    mainMenu->updateSlidersAndValues();
+    mainMenu->updateRecords(gameRecords);
     stackedWidget->addWidget(mainMenu);
     stackedWidget->setCurrentWidget(mainMenu);
 }
 
-void WidgetController::showChooseMapMenu() {
-    qDebug() << "WidgetController::showChooseMapMenu(); -- ";
-
-    ChooseMapMenu* chooseMapMenu = new ChooseMapMenu();
-
-//    connect(chooseMapMenu, SIGNAL(signal_loadMap1()), this, SLOT(loadMap1()));
-//    connect(chooseMapMenu, SIGNAL(signal_loadMap2()), this, SLOT(loadMap2()));
-//    connect(chooseMapMenu, SIGNAL(signal_loadMap3()), this, SLOT(loadMap3()));
-//    connect(chooseMapMenu, SIGNAL(signal_loadMap4()), this, SLOT(loadMap4()));
-//    connect(chooseMapMenu, SIGNAL(signal_loadMap5()), this, SLOT(loadMap5()));
-//    connect(chooseMapMenu, SIGNAL(signal_loadMap6()), this, SLOT(loadMap6()));
-    connect(chooseMapMenu, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
-
-    stackedWidget->addWidget(chooseMapMenu);
-    stackedWidget->setCurrentWidget(chooseMapMenu);
+void WidgetController::loadRandomMap() {
+    showGameWidget("maps/randomMap.tmx");
 }
+
+void WidgetController::loadNormalMap() {
+    showGameWidget("maps/island.tmx");
+}
+
+//void WidgetController::showChooseMapMenu() {
+//    qDebug() << "WidgetController::showChooseMapMenu(); -- ";
+
+//    ChooseMapMenu* chooseMapMenu = new ChooseMapMenu();
+
+////    connect(chooseMapMenu, SIGNAL(signal_loadMap1()), this, SLOT(loadMap1()));
+////    connect(chooseMapMenu, SIGNAL(signal_loadMap2()), this, SLOT(loadMap2()));
+////    connect(chooseMapMenu, SIGNAL(signal_loadMap3()), this, SLOT(loadMap3()));
+////    connect(chooseMapMenu, SIGNAL(signal_loadMap4()), this, SLOT(loadMap4()));
+////    connect(chooseMapMenu, SIGNAL(signal_loadMap5()), this, SLOT(loadMap5()));
+////    connect(chooseMapMenu, SIGNAL(signal_loadMap6()), this, SLOT(loadMap6()));
+//    connect(chooseMapMenu, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
+
+//    stackedWidget->addWidget(chooseMapMenu);
+//    stackedWidget->setCurrentWidget(chooseMapMenu);
+//}
 
 void WidgetController::showOptionMenu() {
     qDebug() << "WidgetController::showChooseMapMenu(); -- ";
@@ -100,16 +116,24 @@ void WidgetController::showOptionMenu() {
     optionMenu->setMediaPlayer(mediaPlayer);
 
     connect(optionMenu, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
+    connect(optionMenu, SIGNAL(signal_enemyCountChanged(int)), this, SLOT(enemyCountChanged(int)));
+    connect(optionMenu, SIGNAL(signal_difficultyLevelChanged(int)), this, SLOT(difficultyLevelChanged(int)));
+    connect(optionMenu, SIGNAL(signal_towersCountChanged(int)), this, SLOT(towersCountChanged(int)));
+    connect(optionMenu, SIGNAL(signal_actionSoundRadioButton(bool)), this, SLOT(actionMainMenuSoundRadionButton(bool)));
+    connect(optionMenu, SIGNAL(signal_panMidMouseButton(bool)), this, SLOT(panMidMouseButton(bool)));
+    connect(optionMenu, SIGNAL(signal_playRandomMap()), this, SLOT(loadRandomMap()));
 
+    optionMenu->updateSlidersAndValues();
+    optionMenu->updateRecords(gameRecords);
     stackedWidget->addWidget(optionMenu);
     stackedWidget->setCurrentWidget(optionMenu);
 }
 
 void WidgetController::loadMap(GameWidget* gameWidget) {
     qDebug() << "WidgetController::loadMap(GameWidget* gameWidget)";
-//    connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
+    connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
     connect(gameWidget, SIGNAL(signal_changeWindowState()), this, SLOT(changeWindowState()));
-    connect(gameWidget, SIGNAL(signal_closeWidgetGameFinished(bool)), this, SLOT(closeWidgetGameFinished(bool)));
+    connect(gameWidget, SIGNAL(signal_closeWidgetGameFinished(bool,int)), this, SLOT(closeWidgetGameFinished(bool,int)));
     stackedWidget->addWidget(gameWidget);
     stackedWidget->setCurrentWidget(gameWidget);
     qDebug() << "WidgetController::loadMap(); -- end";
@@ -221,25 +245,48 @@ void WidgetController::closeWidget() {
     qDebug() << "WidgetController::closeWidget(); -- END";
 }
 
-void WidgetController::closeWidgetGameFinished(bool win) {
-    qDebug() << "WidgetController::closeWidgetGameFinished(); -- win:" << win;
+void WidgetController::closeWidgetGameFinished(bool win, int timeOfGame) {
+    qDebug() << "WidgetController::closeWidgetGameFinished(); -- win:" << win << " timeOfGame:" << timeOfGame;
+    if (win) {
+        gameRecords.push_back(timeOfGame);
+        qSort(gameRecords.begin(), gameRecords.end());
+        mainMenu->updateRecords(gameRecords, timeOfGame);
+        if (gameRecordsFile->open(QIODevice::WriteOnly)) {
+            QTextStream stream(gameRecordsFile);
+            foreach (int record, gameRecords){
+                stream << record << endl;
+            }
+            gameRecordsFile->close();
+        }
+//        int minRecord = gameRecords.first();
+////        minRecord = (timeOfGame<minRecord) ? timeOfGame : minRecord;
+//        for (int r = 1; r < gameRecords.size(); r++) {
+//            int tmpRecord = gameRecords.at(r);
+//            if (tmpRecord < minRecord) {
+//                minRecord = tmpRecord;
+//            }
+//        }
+//        if (timeOfGame < minRecord) {
+
+//        }
+    }
     mainMenu->updateGameStatus(win);
     closeWidget();
-    loadNextCampaingMaps();
+//    loadNextCampaingMaps();
     qDebug() << "WidgetController::closeWidgetGameFinished(); -- END";
 }
 
-void WidgetController::loadNextCampaingMaps() {
-    qDebug() << "WidgetController::loadNextCampaingMaps(); -- ";
-    if (!campaingMaps.empty()) {
-        QString mapPath = campaingMaps.back();
-        campaingMaps.pop_back();
-//        closeWidget();
-        showGameWidget(mapPath);
-    } else {
-        campaingMaps.push_back("maps/randomMap.tmx");
-        campaingMaps.push_back("maps/island.tmx");
-//        showMainMenu();
-    }
-    qDebug() << "WidgetController::loadNextCampaingMaps(); -- campaingMaps.size():" << campaingMaps.size();
-}
+//void WidgetController::loadNextCampaingMaps() {
+//    qDebug() << "WidgetController::loadNextCampaingMaps(); -- ";
+//    if (!campaingMaps.empty()) {
+//        QString mapPath = campaingMaps.back();
+//        campaingMaps.pop_back();
+////        closeWidget();
+//        showGameWidget(mapPath);
+//    } else {
+//        campaingMaps.push_back("maps/randomMap.tmx");
+//        campaingMaps.push_back("maps/island.tmx");
+////        showMainMenu();
+//    }
+//    qDebug() << "WidgetController::loadNextCampaingMaps(); -- campaingMaps.size():" << campaingMaps.size();
+//}

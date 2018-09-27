@@ -8,7 +8,7 @@ void Field::createField(int newSizeX, int newSizeY)
     {
         field = new Cell[newSizeX*newSizeY];
         towersManager.createField(newSizeX*newSizeY);
-        unitsManager.createMass(30);
+        unitsManager.createMass(32);
 
         isometric = false;
 //        unitSet = true;
@@ -210,7 +210,7 @@ bool Field::towersAttack(int deltaTime) {
                 b--;
             } else {
                 if (getCell(currX, currY)->getHero() != NULL) {
-                    unitsManager.attackUnit(currX, currY, 9999, getCell(currX, currY)->getHero()); // Magic number 9999
+                    unitsManager.attackUnit(currX, currY, 9999);//, getCell(currX, currY)->getHero()); // Magic number 9999
                 }
             }
             if(tmpBullet->animationCurrIter < tmpBullet->animationMaxIter) {
@@ -519,11 +519,11 @@ int Field::stepOneUnit(int num) {
             } else /*if (tmpUnit->type != 0)*/ { // Not hero!
                 if (getCell(currX, currY)->getHero() != NULL) {
                     qDebug() << "Field::stepOneUnit(); -- Hero contact with Enemy!";
-                    unitsManager.attackUnit(currX, currY, 9999, getCell(currX, currY)->getHero()); // Magic number 9999
+                    unitsManager.attackUnit(currX, currY, 9999);//, getCell(currX, currY)->getHero()); // Magic number 9999
 //                    return 4;
                 } else if (getCell(exitX, exitY)->getHero() != NULL) {
                     qDebug() << "Field::stepOneUnit(); -- Hero contact with Enemy!";
-                    unitsManager.attackUnit(exitX, exitY, 9999, getCell(exitX, exitY)->getHero()); // Magic number 9999
+                    unitsManager.attackUnit(exitX, exitY, 9999);//, getCell(exitX, exitY)->getHero()); // Magic number 9999
 //                    return 4;
                 }
 //                if (getCell(tmpUnit->lastX, tmpUnit->lastY)->isTerrain()) {

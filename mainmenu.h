@@ -19,7 +19,7 @@ public:
     ~MainMenu();
 //    void paintEvent(QPaintEvent *);
     void updateGameStatus(bool win);
-    void updateSlidersAndValues();
+    void updateRecords(QList<int> recordsList, int timeOfGame = -1);
 
 private:
     Ui::MainMenu *ui;
@@ -27,31 +27,18 @@ private:
     QString ASSETS_PATH;
 
 private slots:
-    void on_quickPlayButton_clicked();
     void on_playButton_clicked();
     void on_optionsButton_clicked();
     void on_exitButton_clicked();
-    void on_killButton_clicked();
-    void on_enemyCount_valueChanged(int value);
-    void on_difficultyLevel_valueChanged(int value);
-    void on_towersCount_valueChanged(int value);
-
-    void on_sound_toggled(bool checked);
-    void on_panMidMouseButton_toggled(bool checked);
 
 protected:
     void keyPressEvent(QKeyEvent* event);
 
 signals:
-    void signal_quickPlay();
-    void signal_openChooseMapMenu();
+    void signal_playNormalMap();
+//    void signal_openChooseMapMenu();
     void signal_openOptionMenu();
     void signal_exit();
-    void signal_enemyCountChanged(int value);
-    void signal_difficultyLevelChanged(int value);
-    void signal_towersCountChanged(int value);
-    void signal_actionSoundRadioButton(bool checked);
-    void signal_panMidMouseButton(bool checked);
 };
 
 #endif // MAINMENU_H

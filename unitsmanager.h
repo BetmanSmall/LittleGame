@@ -78,7 +78,7 @@ public:
      * @param unit - указатель на крипа.
      * @return - true, если нужный крип найден и урон нанесён; false - крип не найден, урон не нанесён.
      */
-    bool attackUnit(int x, int y, int damage, Unit* unit);
+    bool attackUnit(int x, int y, int damage); //, Unit* unit);
 
     /**
      * @brief getUnit - возвращает крипа по его номеру в массиве

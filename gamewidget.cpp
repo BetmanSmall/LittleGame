@@ -27,6 +27,7 @@ GameWidget::GameWidget(QWidget *parent) :
 
     defaultNumCreateUnits = 30;
 
+    timeOfGame = 0;
     unitsMove_TimerMilliSec = 100;
     towersAttack_TimerMilliSec = 50;
     scanMouseMove_TimerMilliSec = 100;
@@ -115,15 +116,16 @@ void GameWidget::timerEvent(QTimerEvent *event) {
     int timerId = event->timerId();
     if (timerId == unitsMove_TimerId) {
         if (!gamePause) {
+            timeOfGame += unitsMove_TimerMilliSec;
     //        qDebug() << "GameWidget::timerEvent(); -- unitsMove_TimerId test:" << test;
             if (int result = field.stepAllUnits()) {
                 if(result == 4) {
                     global_text = "Hero contact With Enemy!";
-                    signal_closeWidgetGameFinished(false);
+                    signal_closeWidgetGameFinished(false, timeOfGame);
                     return;
                 } else if(result == 3) {
                     global_text = "Hero in ExitPoint!";
-                    signal_closeWidgetGameFinished(true);
+                    signal_closeWidgetGameFinished(true, timeOfGame);
                     return;
                 } else if(result == 2) {
                     global_text = "You WIN!";
@@ -291,7 +293,7 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
         gamePause = !gamePause;
         qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
     } else if (event->key() == Qt::Key_Enter) {
-        signal_closeWidgetGameFinished(true);
+        signal_closeWidget();
         return;
     } else if(key == Qt::Key_Left) {
         if(mainCoorMapX < 0) {
@@ -375,6 +377,7 @@ void GameWidget::paintEvent(QPaintEvent* event) {
 //            painter.setPen(QColor(255,0,0));
 ////            p.drawText(width()-width()/4, height()-height()/10, QString("%1").arg(mainCoorMapX));
 ////            p.drawText(width()-width()/4, height()-height()/10+20, QString("%1").arg(mainCoorMapY));
+            painter.drawText(10, 20, QString("timeOfGame:%1").arg(timeOfGame));
 //            painter.drawText(10, 20, QString(global_text.c_str()));
 //            painter.drawText(10, 40, QString(global_text2.c_str()));
 //            painter.drawText(10, 60, QString("%1").arg(field.getMainCoorMapX()));
@@ -773,10 +776,8 @@ void GameWidget::drawUnits()
                             // -----------------------
                         } else {
 //                            qDebug() << "GameWidget::drawUnits(); -- Isometric!";
-
                             int mainX = mainCoorMapX + isometricCoorX + x*(sizeCellX/2);
                             int mainY = mainCoorMapY + isometricCoorY + x*(sizeCellY/2);
-
                             int pxlsX = mainX - sizeCellX/2;
                             int pxlsY = mainY - sizeCellY;
                             if(x > lastX && y > lastY) {
@@ -800,15 +801,6 @@ void GameWidget::drawUnits()
                                 pxlsX -= (sizeCellX/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
                                 pxlsY -= (sizeCellY/2/animationMaxIter)*(animationMaxIter-animationCurrIter);
                             }
-
-//                            QPointF points[4] = {
-//                                QPointF(mainX, mainY + sizeCellY/4),
-//                                QPointF(mainX + sizeCellX/2 - sizeCellX/4, mainY + sizeCellY/2),
-//                                QPointF(mainX, mainY + sizeCellY - sizeCellY/4),
-//                                QPointF(mainX - sizeCellX/2 + sizeCellX/4, mainY + sizeCellY/2)
-//                            };
-//                            p.drawPolygon(points, 4);
-
                             painter.drawPixmap(pxlsX, pxlsY+sizeCellY/2, sizeCellX, sizeCellY*2, pixmap);
                         }
                     }
@@ -2264,7 +2256,7 @@ void GameWidget::on_clearMap_clicked()
 
 void GameWidget::on_closeWidget_clicked()
 {
-    signal_closeWidgetGameFinished(false);
+    signal_closeWidget();
 }
 
 void GameWidget::on_goUnits_clicked()

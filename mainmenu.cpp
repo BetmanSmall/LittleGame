@@ -16,9 +16,12 @@ MainMenu::MainMenu(QWidget *parent) :
     ASSETS_PATH = "./assets/";
 #endif
 
-    ui->playButton->setIcon(QIcon(ASSETS_PATH + "images/Play.png"));
-    ui->optionsButton->setIcon(QIcon(ASSETS_PATH + "images/Options.png"));
-    ui->exitButton->setIcon(QIcon(ASSETS_PATH + "images/Exit.png"));
+//    ui->labelGameRecord->
+//    ui->labelGameStatus->setTextFormat(Qt::RichText);
+//    ui->labelGameStatus->setText("<img src=':/assets/images/best.png'>Hello!");
+//    ui->playButton->setIcon(QIcon(ASSETS_PATH + "images/Play.png"));
+//    ui->optionsButton->setIcon(QIcon(ASSETS_PATH + "images/Options.png"));
+//    ui->exitButton->setIcon(QIcon(ASSETS_PATH + "images/Exit.png"));
 
 //    qDebug() << "MainMenu: X: " << width() << " Y: " << height();
 }
@@ -33,29 +36,45 @@ MainMenu::~MainMenu() {
 //}
 
 void MainMenu::updateGameStatus(bool win) {
-//    ui->gameStatus->setBackgroundRole(QColor::red());
+//    ui->labelGameStatus->setVisible(true);
+//    ui->labelGameRecord->setVisible(true);
     if (win) {
-        ui->gameStatus->setStyleSheet("QLabel { color : green; }");
-        ui->gameStatus->setText( "You WiN!" );
+        ui->labelGameStatus->setPixmap(QPixmap(":/assets/images/statusWin.png"));
+//        ui->labelGameStatus->setStyleSheet("QLabel { color : green; }");
+//        ui->labelGameStatus->setText( "You WiN!" );
     } else {
-        ui->gameStatus->setStyleSheet("QLabel { color : red; }");
-        ui->gameStatus->setText( "You Lose!" );
+        ui->labelGameStatus->setPixmap(QPixmap(":/assets/images/statusLose.png"));
+//        ui->labelGameStatus->setStyleSheet("QLabel { color : red; }");
+//        ui->labelGameStatus->setText( "You Lose!" );
     }
 }
 
-void MainMenu::updateSlidersAndValues() {
-    signal_enemyCountChanged(ui->enemyCount->value());
-    signal_difficultyLevelChanged(ui->difficultyLevel->value());
-    signal_towersCountChanged(ui->towersCount->value());
-    int a = rand()%2;
-    qDebug() << "MainMenu::updateSlidersAndValues(); -- rand()%2:" << a;
-    ui->panMidMouseButton->setChecked(a);
-    signal_panMidMouseButton(ui->panMidMouseButton->isChecked());
+void MainMenu::updateRecords(QList<int> recordsList, int timeOfGame) {
+//    ui->labelGameStatus->setVisible(false);
+//    ui->labelGameRecord->setVisible(false);
+    if (!recordsList.empty()) {
+//        ui->gameRecordsListWidget->clear();
+//        foreach (int record, recordsList) {
+//            ui->gameRecordsListWidget->addItem(QString("%1").arg(record));
+//        }
+//        ui->gameRecordsListWidget->sortItems(Qt::SortOrder::);
+        if (timeOfGame != -1) {
+            ui->labelYourTime->setText( QString("Your time:%1ms").arg(timeOfGame) );
+        }
+        ui->labelGameRecord->setText("GameRecord:" + QString("%1").arg(recordsList.first()) + "ms");
+//    } else {
+    }
+//    for (int w = 0; w < ui->gameRecordsVerticalLayout->count(); w++) {
+//        QWidget* widget = ui->gameRecordsVerticalLayout->itemAt(w)->widget();
+//        if (widget != NULL) {
+//            widget->setVisible(!recordsList.empty());
+//        }
+//    }
 }
 
 void MainMenu::on_playButton_clicked() {
     qDebug() << "MainMenu::on_playButton_clicked(); -- ";
-    signal_openChooseMapMenu();
+    signal_playNormalMap();
 }
 
 void MainMenu::on_optionsButton_clicked() {
@@ -68,64 +87,19 @@ void MainMenu::on_exitButton_clicked() {
     signal_exit();
 }
 
-void MainMenu::on_quickPlayButton_clicked() {
-    qDebug() << "MainMenu::on_quickPlayButton_clicked(); -- ";
-    signal_quickPlay();
-}
-
-void MainMenu::on_killButton_clicked() {
-    qDebug() << "MainMenu::on_killButton_clicked(); -- ";
-    ui->killButton->move(qrand()%width(), qrand()%height());
-}
-
 void MainMenu::keyPressEvent(QKeyEvent* event) {
     int key = event->key();
     qDebug() << "MainMenu::keyPressEvent(); -- key:" << key;
     if (key == Qt::Key_Enter || key == Qt::Key_1) {
-        signal_quickPlay();
+        signal_playNormalMap();
+    } else if (key == Qt::Key_2) {
+        signal_openOptionMenu();
+    } else if (key == Qt::Key_3) {
+        signal_exit();
 //    } else if (event->key() == Qt::Key_Space) {
 //        QRect rec = QApplication::desktop()->screenGeometry();
 //        move(0, 0);
 //        this->setMaximumWidth(rec.width());
 //        this->setMaximumHeight(rec.height());
     }
-}
-
-void MainMenu::on_enemyCount_valueChanged(int value) {
-    qDebug() << "MainMenu::on_enemyCount_valueChanged(); -- value:" << value;
-    ui->labelEnemyCount->setText( QString("EnemyCount:%1").arg(value) );
-    signal_enemyCountChanged(value);
-}
-
-void MainMenu::on_difficultyLevel_valueChanged(int value) {
-    qDebug() << "MainMenu::on_difficultyLevel_valueChanged(); -- value:" << value;
-    QString difficultyLevel = ( (value==0) ? "Easy" : ( (value==1) ? "Normal" : "Hard" ) );
-    ui->labelDifficultyLevel->setText( QString("DifficultyLevel:%1").arg(difficultyLevel) );
-    if (value == 0) {
-        ui->towersCount->setValue(0);
-        ui->towersCount->setEnabled(false);
-    } else if (value == 1) {
-        ui->towersCount->setValue(ui->towersCount->maximum()/2);
-        ui->towersCount->setEnabled(true);
-    } else if (value == 2) {
-        ui->towersCount->setValue(ui->towersCount->maximum());
-        ui->towersCount->setEnabled(true);
-    }
-    signal_difficultyLevelChanged(value);
-}
-
-void MainMenu::on_towersCount_valueChanged(int value) {
-    qDebug() << "MainMenu::on_towersCount_valueChanged(); -- value:" << value;
-    ui->labelTowerCount->setText( QString("TowersCount <= %1").arg(value) );
-    signal_towersCountChanged(value);
-}
-
-void MainMenu::on_sound_toggled(bool checked) {
-    qDebug() << "MainMenu::on_sound_toggled(); -- checked:" << checked;
-    signal_actionSoundRadioButton(checked);
-}
-
-void MainMenu::on_panMidMouseButton_toggled(bool checked) {
-    qDebug() << "MainMenu::on_panMidMouseButton_toggled(); -- checked:" << checked;
-    signal_panMidMouseButton(checked);
 }

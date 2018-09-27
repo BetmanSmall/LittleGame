@@ -38,6 +38,7 @@ public:
     int coorByCellX, coorByCellY;
     int coorByMapX, coorByMapY;
     Direction direction;
+    int animationLastAliveIter;
     int animationCurrIter;
     int animationMaxIter;
     QPixmap pixmap;

@@ -52,85 +52,59 @@ int UnitsManager::getHP(int x, int y) {
     return 0;
 }
 
-bool UnitsManager::attackUnit(int x, int y, int damage, Unit *unit)
-{
-    for(int k = 0; k < amount; k++)
-    {
-        if(!units[k].alive)
+bool UnitsManager::attackUnit(int x, int y, int damage) {//, Unit *unit) {
+//    foreach (Unit* unit, units) {
+    for(int k = 0; k < amount; k++) {
+        Unit* unit = &units[k];
+        if(!unit->alive) {
             continue;
-
-        int localX = units[k].coorByCellX;
-        int localY = units[k].coorByCellY;
-
-        if(localX == x && localY == y)
-        {
-            int localHP = units[k].hp;
+        }
+        int localX = unit->coorByCellX;
+        int localY = unit->coorByCellY;
+        if(localX == x && localY == y) {
+            int localHP = unit->hp;
             localHP = localHP - damage;
-
-            if(localHP <= 0)
-            {
-                units[k].hp = 0;
-//                units[k].coorByCellX = -1;
-//                units[k].coorByCellY = -1;
-                units[k].alive = false;
-                units[k].preDeath = true;
-
-                // ЛАЖА
-                units[k].animationCurrIter = 0;
-                Direction direction = units[k].direction;
-
-                if(direction == DirectionUpLeft)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_up_left.size();
-                    units[k].activePixmaps = units[k].defUnit->death_up_left;
+            if(localHP <= 0) {
+                unit->hp = 0;
+                unit->alive = false;
+                unit->preDeath = true;
+                unit->animationLastAliveIter = unit->animationCurrIter;
+                unit->animationCurrIter = 0;
+                Direction direction = unit->direction;
+                if(direction == DirectionUpLeft) {
+                    unit->animationMaxIter = unit->defUnit->death_up_left.size();
+                    unit->activePixmaps = unit->defUnit->death_up_left;
+                } else if(direction == DirectionUp) {
+                    unit->animationMaxIter = unit->defUnit->death_up.size();
+                    unit->activePixmaps = unit->defUnit->death_up;
+                } else if(direction == DirectionUpRight) {
+                    unit->animationMaxIter = unit->defUnit->death_up_right.size();
+                    unit->activePixmaps = unit->defUnit->death_up_right;
+                } else if(direction == DirectionLeft) {
+                    unit->animationMaxIter = unit->defUnit->death_left.size();
+                    unit->activePixmaps = unit->defUnit->death_left;
+                } else if(direction == DirectionRight) {
+                    unit->animationMaxIter = unit->defUnit->death_right.size();
+                    unit->activePixmaps = unit->defUnit->death_right;
+                } else if(direction == DirectionDownLeft) {
+                    unit->animationMaxIter = unit->defUnit->death_down_left.size();
+                    unit->activePixmaps = unit->defUnit->death_down_left;
+                } else if(direction == DirectionDown) {
+                    unit->animationMaxIter = unit->defUnit->death_down.size();
+                    unit->activePixmaps = unit->defUnit->death_down;
+                } else if(direction == DirectionDownRight) {
+                    unit->animationMaxIter = unit->defUnit->death_down_right.size();
+                    unit->activePixmaps = unit->defUnit->death_down_right;
                 }
-                else if(direction == DirectionUp)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_up.size();
-                    units[k].activePixmaps = units[k].defUnit->death_up;
-                }
-                else if(direction == DirectionUpRight)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_up_right.size();
-                    units[k].activePixmaps = units[k].defUnit->death_up_right;
-                }
-                else if(direction == DirectionLeft)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_left.size();
-                    units[k].activePixmaps = units[k].defUnit->death_left;
-                }
-                else if(direction == DirectionRight)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_right.size();
-                    units[k].activePixmaps = units[k].defUnit->death_right;
-                }
-                else if(direction == DirectionDownLeft)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_down_left.size();
-                    units[k].activePixmaps = units[k].defUnit->death_down_left;
-                }
-                else if(direction == DirectionDown)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_down.size();
-                    units[k].activePixmaps = units[k].defUnit->death_down;
-                }
-                else if(direction == DirectionDownRight)
-                {
-                    units[k].animationMaxIter = units[k].defUnit->death_down_right.size();
-                    units[k].activePixmaps = units[k].defUnit->death_down_right;
-                }
-                units[k].animationMaxIter += units[k].defUnit->explosion.size();
-                units[k].activePixmaps.insert(units[k].activePixmaps.end(), units[k].defUnit->explosion.begin(), units[k].defUnit->explosion.end());
+                unit->animationMaxIter += unit->defUnit->explosion.size();
+                unit->activePixmaps.insert(unit->activePixmaps.end(), unit->defUnit->explosion.begin(), unit->defUnit->explosion.end());
 //                qDebug() << "tmpUnit->animationMaxIter: " << tmpUnit << "->" << tmpUnit->animationMaxIter;
-                units[k].pixmap = units[k].activePixmaps[0];
-                // ЛАЖА !!!!!!
-
-                unit = &units[k];
+                unit->pixmap = unit->activePixmaps[0];
+//                unit = &units[k];
                 return true;
+            } else {
+                unit->hp = localHP;
             }
-            else
-                units[k].hp = localHP;
-
             break;
         }
     }

@@ -478,6 +478,20 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
+      <widget class="QLabel" name="labelGameRecords">
+       <property name="text">
+        <string>GameRecords:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QListWidget" name="gameRecordsListWidget">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -513,7 +527,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QSlider" name="Sound">
+        <widget class="QSlider" name="soundSlider">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -522,17 +536,94 @@
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer">
+      <widget class="QLabel" name="labelEnemyCount">
+       <property name="text">
+        <string>EnemyCount:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="enemyCount">
+       <property name="maximum">
+        <number>32</number>
+       </property>
+       <property name="pageStep">
+        <number>4</number>
+       </property>
+       <property name="value">
+        <number>16</number>
+       </property>
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
+       <property name="tickPosition">
+        <enum>QSlider::NoTicks</enum>
        </property>
-      </spacer>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelDifficultyLevel">
+       <property name="text">
+        <string>DifficultyLevel:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="difficultyLevel">
+       <property name="maximum">
+        <number>2</number>
+       </property>
+       <property name="pageStep">
+        <number>1</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelTowerCount">
+       <property name="text">
+        <string>TowersCount:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="towersCount">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="maximum">
+        <number>32</number>
+       </property>
+       <property name="pageStep">
+        <number>4</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="randomMapButton">
+       <property name="text">
+        <string>RandomMap</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="sound">
+       <property name="text">
+        <string>soundOn/Off</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="panMidMouseButton">
+       <property name="text">
+        <string>panMidMouseButton</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="returnButton">
@@ -540,19 +631,6 @@
         <string>Return</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>
