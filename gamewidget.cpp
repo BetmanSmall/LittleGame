@@ -289,7 +289,7 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
         ui->drawUnits_checkBox->toggle();
     } else if(key == Qt::Key_8) {
         ui->drawTowersByTowers_checkBox->toggle();
-    } else if(key == Qt::Key_Space) {
+    } else if(key == Qt::Key_Space || key == Qt::Key_Escape) {
         gamePause = !gamePause;
         qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
     } else if (event->key() == Qt::Key_Enter) {
@@ -1192,12 +1192,12 @@ void GameWidget::mousePressEvent(QMouseEvent* event) {
     Qt::MouseButton button = event->button();
     int mouseX = event->x();
     int mouseY = event->y();
-    QString text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
-    global_text = text.toStdString().c_str();
-    qDebug() << "GameWidget::mousePressEvent(); -- " << text;
+//    QString text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
+//    global_text = text.toStdString().c_str();
+//    qDebug() << "GameWidget::mousePressEvent(); -- " << text;
     if(whichCell(mouseX,mouseY)) {
-        text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
-        global_text2 = text.toStdString().c_str();
+//        text = QString("Press(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
+//        global_text2 = text.toStdString().c_str();
         if(button == Qt::LeftButton) {
 
         } else if( (!panMidMouseButton && button == Qt::RightButton) || (panMidMouseButton && button == Qt::MidButton) ) {
@@ -1225,13 +1225,13 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
     Qt::MouseButton button = event->button();
     int mouseX = event->x();
     int mouseY = event->y();
-    QString text = QString("Release(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
-    global_text = text.toStdString().c_str();
-    qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
+//    QString text = QString("Release(%1/%2) -- %3").arg(mouseX).arg(mouseY).arg(button);
+//    global_text = text.toStdString().c_str();
+//    qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
     if(whichCell(mouseX, mouseY)) {
-        text = QString("Release(%1/%2)-(%3/%4) -- %3").arg(mouseX).arg(mouseY).arg(prevMouseCellX).arg(prevMouseCellY).arg(button);
-        global_text2 = text.toStdString().c_str();
-        qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
+//        text = QString("Release(%1/%2)-(%3/%4) -- %3").arg(mouseX).arg(mouseY).arg(prevMouseCellX).arg(prevMouseCellY).arg(button);
+//        global_text2 = text.toStdString().c_str();
+//        qDebug() << "GameWidget::mouseReleaseEvent(); -- " << text;
         if( (!panMidMouseButton && button == Qt::RightButton) || (panMidMouseButton && button == Qt::MidButton)) {
             pan = false;
             setCursor(Qt::ArrowCursor);
@@ -1255,9 +1255,9 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
                         int randNumber = ( 124+(rand()%2) );
                         QPixmap pixmap = tileSets[0].tiles[randNumber];
                         cell->setTerrain(pixmap);
-                    } else if (cell->getTower() != NULL) {
-//                        cell->removeTower();
-                        field.deleteTower(mouseX, mouseY);
+//                    } else if (cell->getTower() != NULL) {
+////                        cell->removeTower();
+//                        field.deleteTower(mouseX, mouseY);
                     } else if (cell->isTerrain()) {
                         cell->removeTerrain();
                     } else {
@@ -1973,11 +1973,11 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
                         QPixmap pixmap = tileSets[num].img;
                         pixmap = pixmap.copy(tileSets[num].subRects[subRectToUse]);
                         if(layerName == "ground" || layerName == "entity") {
-                            cell->setTerrain(pixmap);
+                            cell->setTerrain(pixmap, false);
                         } else if (layerName == "removeground") {
                             cell->setTerrain(pixmap);
                         } else if (layerName == "towers") {
-                            cell->removeTerrain();
+                            cell->removeTerrain(true);
                             qDebug() << "GameWidget::loadMap(); -- faction:" << faction->getFirstTowers()[0];
                             field.setTower(x, y, faction->getFirstTowers()[0]);
                         } else if (layerName == "background"){
@@ -2091,6 +2091,24 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
                 }
             }
         }
+    } else {
+        for (int x = 0; x < mapSizeX; x++) {
+            for (int y = 0; y < mapSizeY; y++) {
+                if( (rand()%100) < 10 ) {
+                    if (field.getCell(x, y)->isEmpty()) {
+    //                    int randNumber = ( ( ((terrainType)?30:50) ) + (rand()%20) );
+    //                    int randNumber = ( 80+(rand()%20) );
+                        int randNumber = ( 124+(rand()%2) );
+    //                    int randNumber = tileSets[1].firstTileID-1+( 42+(rand()%4) );
+    //                    qDebug() << "GameWidget::loadMap(); -- randNumber:" << randNumber;
+                        QPixmap pixmap = tileSets[0].tiles[randNumber];
+                        field.getCell(x, y)->setTerrain(pixmap);
+    //                } else if ( ( (rand()%100) < 5 ) && (towersCount-- > 0) ) {
+    //                    field.setTower(x, y, field.faction->getFirstTowers()[0]);
+                    }
+                }
+            }
+        }
     }
 //    field.getCell(0, 0)->removeTerrain();
 //    field.setTower(0, 0, faction.getFirstTowers()[0]);
@@ -2124,7 +2142,11 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount)
     for (int k = 0; k < randomEnemyCount; k++) {
         int randomX = rand()%mapSizeX;
         int randomY = rand()%mapSizeY;
-        field.createUnit(randomX, randomY); // magic numbers need fix
+        if (field.getCell(randomX, randomY)->isEmpty()) {
+            field.createUnit(randomX, randomY); // magic numbers need fix
+        } else {
+            k--;
+        }
     }
     startTimer_UnitsMoveAndTowerAttack();
     qDebug() << "GameWidget::loadMap(); -- END";
@@ -2226,7 +2248,7 @@ void GameWidget::on_clearMap_clicked()
         for(int y = 0; y < field.getSizeY(); y++)
         {
             field.deleteTower(x, y);
-            field.getCell(x, y)->removeTerrain();
+            field.getCell(x, y)->removeTerrain(true);
 //            field.clearStepCell(x, y);
         }
     }

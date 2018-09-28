@@ -24,16 +24,35 @@ MainMenu::MainMenu(QWidget *parent) :
 //    ui->exitButton->setIcon(QIcon(ASSETS_PATH + "images/Exit.png"));
 
 //    qDebug() << "MainMenu: X: " << width() << " Y: " << height();
+//    ui->labelGameRecord->setParent(this);
+//    ui->labelGameRecord->move(width()/2, height()/2);
+//    ui->labelGameRecord->setGeometry(width()/2, height()/2, 50, 20);
+//    ui->playButton->move(width()/2, height()/2);
 }
 
 MainMenu::~MainMenu() {
     delete ui;
 }
 
-//void MainMenu::paintEvent(QPaintEvent *) {
-//    QPainter p(this);
+void MainMenu::paintEvent(QPaintEvent *) {
+    qDebug() << "MainMenu::paintEvent(); -- ";
+//    p.begin(this);
 //    p.fillRect(0, 0, width(), height(), QColor(255, 0, 0));
-//}
+//    QPoint newLabelGameRecordPos = ui->labelGameStatus->pos();// + QPoint(ui->labelGameStatus->width()/2, ui->labelGameStatus->height()/2);
+//    p.drawText(newLabelGameRecordPos.x(), newLabelGameRecordPos.y()+40, ui->labelGameRecord->text());
+//    p.end();
+//    ui->labelGameStatus->setVisible(false);
+//    ui->labelGameRecord->move(width()/2, height()/2);
+//    ui->playButton->move(qrand()%width(), qrand()%height());
+}
+
+void MainMenu::showEvent(QShowEvent*) {
+    qDebug() << "MainMenu::showEvent(); -- ";
+//    ui->labelGameRecord->move(qrand()%width(), qrand()%height());
+//    ui->playButton->move(qrand()%width(), qrand()%height());
+//    ui->labelGameRecord->move(width()/2, height()/2);
+//    update();
+}
 
 void MainMenu::updateGameStatus(bool win) {
 //    ui->labelGameStatus->setVisible(true);
@@ -59,9 +78,9 @@ void MainMenu::updateRecords(QList<int> recordsList, int timeOfGame) {
 //        }
 //        ui->gameRecordsListWidget->sortItems(Qt::SortOrder::);
         if (timeOfGame != -1) {
-            ui->labelYourTime->setText( QString("Your time:%1ms").arg(timeOfGame) );
+            ui->labelYourTime->setText( QString("Твоё время: %1 секунд").arg(timeOfGame/1000) );
         }
-        ui->labelGameRecord->setText("GameRecord:" + QString("%1").arg(recordsList.first()) + "ms");
+        ui->labelGameRecord->setText("Лучшее время: " + QString("%1").arg(recordsList.first()/1000) + " секунд");
 //    } else {
     }
 //    for (int w = 0; w < ui->gameRecordsVerticalLayout->count(); w++) {

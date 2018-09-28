@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QKeyEvent>
+#include <QPainter>
 //#include <QGLWidget>
 //#include <QOpenGLWidget>
 
@@ -17,7 +18,8 @@ class MainMenu : public QWidget
 public:
     explicit MainMenu(QWidget *parent = 0);
     ~MainMenu();
-//    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *);
+    void showEvent(QShowEvent*);
     void updateGameStatus(bool win);
     void updateRecords(QList<int> recordsList, int timeOfGame = -1);
 
@@ -25,6 +27,7 @@ private:
     Ui::MainMenu *ui;
 
     QString ASSETS_PATH;
+    QPainter p;
 
 private slots:
     void on_playButton_clicked();

@@ -3,6 +3,7 @@
 Cell::Cell() {
         unitStepWA = 0;
         empty = true;
+        this->removableTerrain = true;
         this->terrain = false;
         spawn = false;
         exit = false;
@@ -33,11 +34,12 @@ bool Cell::isTerrain() {
     return terrain;
 }
 
-bool Cell::setTerrain(QPixmap pixmap) {//int x, int y, QPixmap pixmap) {
+bool Cell::setTerrain(QPixmap pixmap, bool removable) {//int x, int y, QPixmap pixmap) {
     if (!pixmap.isNull()) { // Not good!
         terrainTiles.push_back(pixmap);
     }
     if (empty && !spawn && !exit) {
+        removableTerrain = removable;
         terrain = true;
         empty = false;
         return true;
@@ -46,8 +48,8 @@ bool Cell::setTerrain(QPixmap pixmap) {//int x, int y, QPixmap pixmap) {
     }
 }
 
-bool Cell::removeTerrain() {
-    if (terrain) {
+bool Cell::removeTerrain(bool force) {
+    if (terrain && (removableTerrain || force) ) {
         terrain = false;
         empty = true;
         return true;

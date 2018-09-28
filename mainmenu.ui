@@ -16,7 +16,7 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QLabel" name="labelGameLogo">
      <property name="pixmap">
@@ -29,9 +29,6 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetMinAndMaxSize</enum>
-     </property>
      <item>
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
@@ -46,43 +43,55 @@
       </spacer>
      </item>
      <item>
-      <layout class="QGridLayout" name="gridLayout">
-       <property name="sizeConstraint">
-        <enum>QLayout::SetFixedSize</enum>
-       </property>
-       <item row="2" column="0">
-        <widget class="QLabel" name="labelYourTime">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QLabel" name="labelGameStatus">
          <property name="text">
-          <string>YourTime:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-         </property>
-         <property name="indent">
-          <number>65</number>
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="labelGameStatus">
-         <property name="pixmap">
-          <pixmap resource="resources.qrc">:/assets/images/statusGameRecord.png</pixmap>
+       <item>
+        <widget class="QLabel" name="labelGameRecord">
+         <property name="font">
+          <font>
+           <family>Comic Nefors</family>
+           <pointsize>20</pointsize>
+           <weight>75</weight>
+           <italic>true</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="text">
+          <string/>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelGameRecord">
+       <item>
+        <widget class="QLabel" name="labelYourTime">
+         <property name="font">
+          <font>
+           <family>Comic Nefors</family>
+           <pointsize>16</pointsize>
+           <weight>75</weight>
+           <italic>true</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(0, 255, 0);</string>
+         </property>
          <property name="text">
-          <string>GameRecord:</string>
+          <string/>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="indent">
-          <number>105</number>
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -189,11 +198,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>labelGameLogo</zorder>
-  <zorder>horizontalLayoutWidget</zorder>
-  <zorder>optionsButton</zorder>
-  <zorder>gridLayoutWidget</zorder>
-  <zorder>horizontalLayoutWidget_2</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

@@ -76,7 +76,7 @@ bool Field::createSpawnPoint(int num, int x, int y){
         spawnPointX = x;
         spawnPointY = y;
         getCell(x, y)->spawn = true;
-        getCell(x, y)->removeTerrain(); // clearBusy(x,y);
+        getCell(x, y)->removeTerrain(true); // clearBusy(x,y);
     }
     unitsManager.deleteMass();
     unitsManager.createMass(num);
@@ -88,7 +88,7 @@ void Field::createExitPoint(int x, int y) {
     exitPointX = x;
     exitPointY = y;
     getCell(x, y)->exit = true;
-    getCell(x, y)->removeTerrain(); // clearBusy(x, y);
+    getCell(x, y)->removeTerrain(true); // clearBusy(x, y);
     waveAlgorithm(x, y);
 }
 
@@ -530,7 +530,7 @@ int Field::stepOneUnit(int num) {
 //                    getCell(tmpUnit->lastX, tmpUnit->lastY)->removeTerrain();
 //                }
                 if (getCell(currX, currY)->isTerrain()) {
-                    getCell(currX, currY)->removeTerrain();
+                    getCell(currX, currY)->removeTerrain(true);
                     updatePathFinderWalls();
                 }
                 if (tmpUnit->path.empty() || getCell(exitX, exitY)->isTerrain()) {
@@ -850,7 +850,7 @@ bool Field::setTower(int x, int y, DefaultTower* defTower) {
 }
 
 bool Field::spawnHeroInSpawnPoint() { //Unit* unit, int type)
-    getCell(spawnPointX, spawnPointY)->removeTerrain();
+    getCell(spawnPointX, spawnPointY)->removeTerrain(true);
     deleteTower(spawnPointX, spawnPointY);
     return createUnit(spawnPointX, spawnPointY, 0); // type 0 = hero
 }

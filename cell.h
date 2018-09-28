@@ -27,6 +27,7 @@ public:
     int unitStepWA;
     bool hero;
     bool empty;
+    bool removableTerrain;
     bool terrain;
     Tower* tower;
 //    bool tower;
@@ -56,8 +57,8 @@ public:
 
     bool isEmpty();
     bool isTerrain();
-    bool setTerrain(QPixmap pixmap = QPixmap());
-    bool removeTerrain();
+    bool setTerrain(QPixmap pixmap = QPixmap(), bool removable = true);
+    bool removeTerrain(bool force = false);
     bool isPassable();
 //    bool getTower();
     Tower* getTower();
