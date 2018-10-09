@@ -4,7 +4,6 @@
 #include <QPixmap>
 
 #include "defaulttower.h"
-
 #include "unit.h"
 
 class Bullet {

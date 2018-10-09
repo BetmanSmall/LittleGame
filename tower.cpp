@@ -2,9 +2,7 @@
 
 Tower::Tower() {
     this->elapsedReloadTime = 0;
-
 }
-
 
 bool Tower::recharge(float delta) {
 

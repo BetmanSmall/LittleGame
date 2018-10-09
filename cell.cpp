@@ -1,16 +1,15 @@
 #include "cell.h"
 
 Cell::Cell() {
-        unitStepWA = 0;
-        empty = true;
-        this->removableTerrain = true;
-        this->terrain = false;
-        spawn = false;
-        exit = false;
+    unitStepWA = 0;
+    empty = true;
+    this->removableTerrain = true;
+    this->terrain = false;
+    spawn = false;
+    exit = false;
 
-        hero = false;
-        tower = NULL;
-
+    hero = false;
+    tower = NULL;
 }
 
 bool Cell::isEmpty() {

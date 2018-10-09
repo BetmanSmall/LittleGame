@@ -14,9 +14,7 @@ public:
     int healtPoint;
     int type;
 
-
     QPixmap pixmap;
-
     QPixmap idle_up;
     QPixmap idle_up_right;
     QPixmap idle_right;
@@ -27,7 +25,6 @@ public:
     QPixmap idle_up_left;
 
     std::vector<QPixmap> idle;
-
     std::vector<QPixmap> walk_up;
     std::vector<QPixmap> walk_up_right;
     std::vector<QPixmap> walk_right;

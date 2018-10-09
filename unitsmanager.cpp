@@ -23,7 +23,6 @@ void UnitsManager::createMass(int newSize) {
 }
 
 void UnitsManager::deleteMass() {
-
     if(units != NULL) {
         delete[] units;
         units = NULL;
@@ -50,7 +49,6 @@ int UnitsManager::getHP(int x, int y) {
 }
 
 bool UnitsManager::attackUnit(int x, int y, int damage) {//, Unit *unit) {
-
     for(int k = 0; k < amount; k++) {
         Unit* unit = &units[k];
         if(!unit->alive) {
@@ -95,9 +93,7 @@ bool UnitsManager::attackUnit(int x, int y, int damage) {//, Unit *unit) {
                 }
                 unit->animationMaxIter += unit->defUnit->explosion.size();
                 unit->activePixmaps.insert(unit->activePixmaps.end(), unit->defUnit->explosion.begin(), unit->defUnit->explosion.end());
-
                 unit->pixmap = unit->activePixmaps[0];
-
                 return true;
             } else {
                 unit->hp = localHP;
@@ -124,7 +120,6 @@ Unit* UnitsManager::getUnit(int x, int y) {
 }
 
 Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit) {
-
     if (hero == NULL) {
         hero = createUnit(coorByCellX, coorByCellY, coorByMapX, coorByMapY, unit, 0);
     }
@@ -132,7 +127,6 @@ Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX,
 }
 
 Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type){
-
     if(amount < size) {
         units[amount].hp = 100;
         units[amount].alive = true;
@@ -144,12 +138,9 @@ Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX,
         units[amount].coorByMapY = coorByMapY;
         units[amount].lastX = coorByCellX;
         units[amount].lastY = coorByCellY;
-
         units[amount].type = type;
-
         units[amount].animationCurrIter = 0;
         units[amount].animationMaxIter = 0;
-
         units[amount].pixmap = defaultPixmapForUnit;
         units[amount].defUnit = unit;
         return &units[amount++];

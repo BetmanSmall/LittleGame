@@ -1,6 +1,5 @@
 #include "underconstruction.h"
 
-
 UnderConstruction::UnderConstruction(DefaultTower *tower) {
     this->state = -1;
     this->tower = tower;
@@ -28,7 +27,6 @@ bool UnderConstruction::setEndCoors(int endX, int endY) {
     if(state == -1) {
         state = 0;
     }
-
     if(state == 1 && tower != NULL) {
         coorsX.clear();
         coorsY.clear();

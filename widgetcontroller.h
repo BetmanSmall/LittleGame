@@ -13,7 +13,6 @@
 #include <QString>
 
 #include "mainmenu.h"
-#include "choosemapmenu.h"
 #include "optionmenu.h"
 #include "gamewidget.h"
 

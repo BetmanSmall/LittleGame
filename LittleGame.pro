@@ -19,7 +19,6 @@ SOURCES += main.cpp\
     mainmenu.cpp \
     widgetcontroller.cpp \
     optionmenu.cpp \
-    choosemapmenu.cpp \
     gamewidget.cpp \
     faction.cpp \
     tower.cpp \
@@ -38,7 +37,6 @@ HEADERS  += \
     mainmenu.h \
     widgetcontroller.h \
     optionmenu.h \
-    choosemapmenu.h \
     gamewidget.h \
     faction.h \
     tower.h \
@@ -55,5 +53,4 @@ HEADERS  += \
 FORMS    += \
     mainmenu.ui \
     optionmenu.ui \
-    choosemapmenu.ui \
     gamewidget.ui

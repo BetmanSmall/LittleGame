@@ -3,7 +3,6 @@
 
 #define CIRCLET8
 #include <iostream>
-
 #include <QPixmap>
 
 #include "astar.h"
@@ -27,10 +26,8 @@ public: // we are friendly!
     UnitsManager unitsManager;
     Faction* faction;
 
-
     int gameOverLimitUnits;
     int currentFinishedUnits;
-
 
     int sizeX, sizeY;
 
@@ -40,7 +37,6 @@ public: // we are friendly!
 
     bool isometric;
     int tileMapWidth, tileMapHeight;
-
 
     int mouseX, mouseY;
     int spawnPointX, spawnPointY;
@@ -88,7 +84,6 @@ public:
 
     void updateHeroDestinationPoint();
     void updateHeroDestinationPoint(int x, int y);
-
     void updatePathFinderWalls();
 
     /**

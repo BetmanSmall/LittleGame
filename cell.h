@@ -8,7 +8,6 @@
 #include "tower.h"
 #include "unit.h"
 
-
 /**
  * @brief Ячейка
  */
@@ -20,7 +19,6 @@ public:
     bool removableTerrain;
     bool terrain;
     Tower* tower;
-
     std::vector<Unit*> units;
 
     bool spawn;
@@ -32,7 +30,6 @@ public:
 
 public:
     Cell();
-
 
     bool isEmpty();
     bool isTerrain();

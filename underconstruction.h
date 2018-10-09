@@ -1,14 +1,13 @@
 #ifndef UNDERCONSTRUCTION_H
 #define UNDERCONSTRUCTION_H
 
-#include "defaulttower.h"
-
 #include <QDebug>
+
+#include "defaulttower.h"
 
 class UnderConstruction
 {
 public:
-
     UnderConstruction(DefaultTower* tower);
     UnderConstruction(int startX, int startY, DefaultTower* tower);
 

@@ -5,7 +5,6 @@ Unit::Unit() {
 }
 
 Unit::~Unit() {
-
     path.clear();
     activePixmaps.clear();
 }
@@ -17,4 +16,3 @@ QPixmap Unit::getAnimationInformation(int *lastX, int *lastY, int *animationCurr
     *animationMaxIter = this->animationMaxIter;
     return this->pixmap;
 }
-

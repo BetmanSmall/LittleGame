@@ -3,7 +3,6 @@
 
 #include <QDebug>
 
-
 MainMenu::MainMenu(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainMenu)

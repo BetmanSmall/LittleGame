@@ -7,8 +7,7 @@
 #include "defaultunit.h"
 #include "astar.h"
 
-enum Direction
-{
+enum Direction {
     DirectionIdle,
     DirectionUp,
     DirectionUpRight,
@@ -48,7 +47,6 @@ public:
     Unit();
     ~Unit();
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
-
 };
 
 #endif // UNIT_H

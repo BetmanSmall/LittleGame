@@ -30,7 +30,6 @@ public:
     std::vector<QPixmap> bullet_fly_left;
     std::vector<QPixmap> bullet_fly_up_left;
 
-
     DefaultTower();
     ~DefaultTower();
 };

@@ -30,7 +30,6 @@ QPixmap Bullet::getAnimationInformation(int *lastX, int *lastY, int *animationCu
     return this->pixmap;
 }
 
-
 void Bullet::setPixmap(QPixmap pixmap) {
     this->pixmap = pixmap;
 }
@@ -47,8 +46,6 @@ int Bullet::getCurrCellY() {
     return currCellY;
 }
 
-
 QPixmap Bullet::getPixmap() {
     return pixmap;
 }
-

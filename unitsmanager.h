@@ -2,7 +2,6 @@
 #define CREEPS_H
 
 #include <stdlib.h>
-
 #include <QPixmap>
 #include <qdebug.h>
 

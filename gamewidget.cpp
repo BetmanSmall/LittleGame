@@ -794,7 +794,7 @@ void GameWidget::wheelEvent(QWheelEvent* event) {
         int wheelY = numSteps.y();
         if(wheelX == 0 && wheelY != 0) {
             if(wheelY > 0) {
-                if(sizeCell < zoomMaxSizeCell)
+                if(sizeCell < zoomMaxSizeCell) {
                     for(int k = 0; k < wheelY; k++) {
                         sizeCell += zoomSizeCell;
                         mainCoorMapX -= (zoomSizeCell*field.getSizeX()/2);
@@ -806,15 +806,16 @@ void GameWidget::wheelEvent(QWheelEvent* event) {
                         mainCoorMapX -= (mouseMapX-mapCenterX);
                         mainCoorMapY -= (mouseMapY-mapCenterY);
                     }
+                }
             } else {
-                    if(sizeCell > zoomMinSizeCell) {
-                        wheelY = -wheelY;
-                        for(int k = 0; k < wheelY; k++) {
-                            sizeCell -= zoomSizeCell;
-                            mainCoorMapX += (zoomSizeCell*field.getSizeX()/2);
-                            mainCoorMapY += (zoomSizeCell*field.getSizeY()/2);
-                        }
+                if(sizeCell > zoomMinSizeCell) {
+                    wheelY = -wheelY;
+                    for(int k = 0; k < wheelY; k++) {
+                        sizeCell -= zoomSizeCell;
+                        mainCoorMapX += (zoomSizeCell*field.getSizeX()/2);
+                        mainCoorMapY += (zoomSizeCell*field.getSizeY()/2);
                     }
+                }
             }
             mainCoorMapX = (mainCoorMapX > 0) ? 0 : mainCoorMapX;
             mainCoorMapY = (mainCoorMapY > 0) ? 0 : mainCoorMapY;
@@ -1184,10 +1185,8 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount) {
                 }
             } else if(nameElement == "object") {
                 QString name = xmlReader.attributes().value("name").toString();
-
                 int num = 0;
                 int tileGID = xmlReader.attributes().value("gid").toInt();
-
                 int size = tileSets.size();
                 for(int k = 0; k < size; k++)
                     if(tileGID >= tileSets[k].firstTileID)
@@ -1196,7 +1195,6 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount) {
                 int tileObjectID = tileGID - tileSets[num].firstTileID;
                 int x = xmlReader.attributes().value("x").toInt();
                 int y = xmlReader.attributes().value("y").toInt();
-
                 if(!field.getIsometric()) {
                     x = x / tileMapWidth; // В файле кординаты графические. Поэтому преобразуем в игровые.
                     y = (y - tileMapWidth) / tileMapWidth;

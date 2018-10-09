@@ -13,7 +13,6 @@
  */
 class Tower
 {
-
 public:
     QString name;
     int attack;
@@ -24,18 +23,13 @@ public:
 
     int currX, currY;
 
-
     QPixmap pixmap;
     DefaultTower* defTower;
     std::vector<Bullet*> bullets;
 
     Tower();
-
     bool recharge(float delta);
-
     void createBullets(int difficultyLevel);
-
-
 };
 
 #endif // TOWER_H

@@ -2,16 +2,13 @@
 
 using namespace std;
 
-void Field::createField(int newSizeX, int newSizeY)
-{
-    if(field == NULL)
-    {
+void Field::createField(int newSizeX, int newSizeY) {
+    if(field == NULL) {
         field = new Cell[newSizeX*newSizeY];
         towersManager.createField(newSizeX*newSizeY);
         unitsManager.createMass(32);
 
         isometric = false;
-
 
         gameOverLimitUnits = 10;
         currentFinishedUnits = 0;
@@ -29,9 +26,7 @@ void Field::createField(int newSizeX, int newSizeY)
         spawnPointY = -1;
         exitPointX = -1;
         exitPointY = -1;
-    }
-    else
-    {
+    } else {
         deleteField();
         createField(newSizeX, newSizeY);
     }
@@ -53,7 +48,6 @@ Cell* Field::getCell(int x, int y) {
             return &field[sizeX*y + x];
         }
     }
-
     return NULL;
 }
 
@@ -133,13 +127,11 @@ void Field::updatePathFinderWalls() {
     }
 }
 
-int Field::getSizeX()
-{
+int Field::getSizeX() {
     return sizeX;
 }
 
-int Field::getSizeY()
-{
+int Field::getSizeY() {
     return sizeY;
 }
 
@@ -190,18 +182,15 @@ int Field::getTileMapHeight() {
 }
 
 bool Field::towersAttack(int deltaTime) {
-
     for(int k = 0; k < towersManager.getAmount(); k++) {
         Tower* tmpTower = towersManager.getTowerById(k);
         if (tmpTower->recharge(deltaTime)) {
             tmpTower->createBullets(towersManager.difficultyLevel);
         }
-
         for (int b = 0; b < tmpTower->bullets.size(); b++) {
             Bullet* tmpBullet = tmpTower->bullets[b];
             int currX = tmpBullet->currCellX;
             int currY = tmpBullet->currCellY;
-
             if (currX < 0 || currX >= sizeX || currY < 0 || currY >= sizeY) {
                 tmpTower->bullets.erase(tmpTower->bullets.begin()+b);
                 delete tmpBullet;
@@ -212,7 +201,6 @@ bool Field::towersAttack(int deltaTime) {
                 }
             }
             if(tmpBullet->animationCurrIter < tmpBullet->animationMaxIter) {
-
                 tmpBullet->pixmap = tmpBullet->activePixmaps[tmpBullet->animationCurrIter++];
             } else {
                 int exitX = currX, exitY = currY;
@@ -241,8 +229,6 @@ bool Field::towersAttack(int deltaTime) {
                     exitX = currX+1;
                     exitY = currY+1;
                 }
-
-
                 if(exitX != currX || exitY != currY) {
                     tmpBullet->lastCellX = currX;
                     tmpBullet->lastCellY = currY;
@@ -283,18 +269,15 @@ bool Field::towersAttack(int deltaTime) {
                             tmpBullet->direction = DirectionDown;
                         }
                     }
-
                     if (tmpBullet->activePixmaps.empty() && !tmpBullet->defTower->bullet.empty()) {
                         tmpBullet->animationMaxIter = tmpBullet->defTower->bullet.size();
                         tmpBullet->activePixmaps = tmpBullet->defTower->bullet;
                     }
                     tmpBullet->pixmap = tmpBullet->activePixmaps[0];
                     tmpBullet->animationCurrIter = 0;
-
                 }
             }
         }
-
     }
     return true;
 }
@@ -318,10 +301,8 @@ void Field::waveAlgorithm(int x, int y) {
     }
 }
 
-void Field::waveStep(int x, int y, int step)
-{
+void Field::waveStep(int x, int y, int step) {
 #ifdef CIRCLET8
-
     bool mass[3][3];
     int nextStep = step+1;
 
@@ -334,7 +315,6 @@ void Field::waveStep(int x, int y, int step)
             if(mass[tmpX+1][tmpY+1])
                 waveStep(x + tmpX, y + tmpY, nextStep);
 #else
-
     bool mass[4];
     int nextStep = step+1;
     int x1 = x-1, x2 = x, x3 = x+1;
@@ -356,27 +336,22 @@ void Field::waveStep(int x, int y, int step)
 #endif
 }
 
-void Field::setMousePress(int x, int y)
-{
+void Field::setMousePress(int x, int y) {
     mouseX = x;
     mouseY = y;
 }
 
-bool Field::getMousePress(int x, int y)
-{
+bool Field::getMousePress(int x, int y) {
     if(mouseX != -1 && mouseY != -1)
         if((x == mouseX && y == mouseY) || (x == -1 && y == -1))
             return true;
-
     return false;
 }
 
 bool Field::isSetSpawnPoint(int x, int y) {
-
     if(spawnPointX != -1 && spawnPointY != -1)
         if((x == spawnPointX && y == spawnPointY) || (x == -1 && y == -1))
             return true;
-
     return false;
 }
 
@@ -384,12 +359,10 @@ bool Field::isSetExitPoint(int x, int y) {
     if(exitPointX != -1 && exitPointY != -1)
         if((x == exitPointX && y == exitPointY) || (x == -1 && y == -1))
             return true;
-
     return false;
 }
 
 int Field::stepAllUnits() {
-
     bool allDead = true;
     for(int k = 0; k < unitsManager.getAmount(); k++) {
         int result = stepOneUnit(k);
@@ -411,7 +384,6 @@ int Field::stepAllUnits() {
             return 4;
         }
     }
-
     if(allDead) {
         return 2;
     } else {
@@ -420,19 +392,14 @@ int Field::stepAllUnits() {
 }
 
 int Field::stepOneUnit(int num) {
-
     Unit* tmpUnit = unitsManager.getUnit(num);
     if(tmpUnit->alive) {
         if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter) {
-
             tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
-
         } else {
             int currX = tmpUnit->coorByCellX;
             int currY = tmpUnit->coorByCellY;
             int exitX = currX, exitY = currY;
-
-
             if (!tmpUnit->path.empty()) {
                 AStar::Vec2i point = tmpUnit->path.back();
                 tmpUnit->path.pop_back();
@@ -464,18 +431,14 @@ int Field::stepOneUnit(int num) {
                     int randomX = rand()%sizeX;
                     int randomY = rand()%sizeY;
                     tmpUnit->path = pathFinder.findPath({tmpUnit->coorByCellX, tmpUnit->coorByCellY}, {randomX, randomY});
-
                 }
-
             }
-
             if(exitX != currX || exitY != currY) {
                 getCell(currX, currY)->clearUnit(tmpUnit);//clearUnit(currX, currY, tmpUnit);
                 tmpUnit->lastX = currX;
                 tmpUnit->lastY = currY;
                 tmpUnit->coorByCellX = exitX;
                 tmpUnit->coorByCellY = exitY;
-
                 if(!getIsometric()) {
                     if(exitX < currX && exitY < currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
@@ -545,7 +508,6 @@ int Field::stepOneUnit(int num) {
                         tmpUnit->direction = DirectionDown;
                     }
                 }
-
                 tmpUnit->pixmap = tmpUnit->activePixmaps[0];
                 tmpUnit->animationCurrIter = 0;
                 getCell(exitX, exitY)->setUnit(tmpUnit);
@@ -558,9 +520,7 @@ int Field::stepOneUnit(int num) {
         }
     } else if(tmpUnit->preDeath) {
         if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter) {
-
             tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
-
         } else {
             tmpUnit->preDeath = false;
             return 4;
@@ -571,49 +531,43 @@ int Field::stepOneUnit(int num) {
     return 0;
 }
 
-int Field::getNumStep(int x, int y)
-{
+int Field::getNumStep(int x, int y) {
     if(x >= 0 && x < getSizeX())
         if(y >= 0 && y < getSizeY())
             if(!getCell(x, y)->isTerrain())
                 if(!getCell(x, y)->getTower())
                     return getStepCell(x, y);
-
     return 0;
 }
 
-int Field::getStepCell(int x, int y)
-{
+int Field::getStepCell(int x, int y) {
     return field[sizeX*y + x].unitStepWA;
 }
 
-bool Field::setNumOfCell(int x, int y, int step)
-{
-    if(x >= 0 && x < getSizeX())
-        if(y >= 0 && y < getSizeY())
-            if(!getCell(x, y)->isTerrain() && !getCell(x, y)->getTower())
-                if(getStepCell(x, y) > step || getStepCell(x, y) == 0)
-                {
+bool Field::setNumOfCell(int x, int y, int step) {
+    if(x >= 0 && x < getSizeX()) {
+        if(y >= 0 && y < getSizeY()) {
+            if(!getCell(x, y)->isTerrain() && !getCell(x, y)->getTower()) {
+                if(getStepCell(x, y) > step || getStepCell(x, y) == 0) {
                     setStepCell(x, y, step);
                     return true;
                 }
-
+            }
+        }
+    }
     return false;
 }
 
-void Field::setStepCell(int x, int y, int step)
-{
+void Field::setStepCell(int x, int y, int step) {
     field[sizeX*y + x].unitStepWA = step;
 }
 
-void Field::clearStepCell(int x, int y)
-{
+void Field::clearStepCell(int x, int y) {
     field[sizeX*y + x].unitStepWA = 0;
 }
 
 
-int Field::getUnitHpInCell(int x, int y)
-{
+int Field::getUnitHpInCell(int x, int y) {
     if(x >= 0 && x < getSizeX())
         if(y >= 0 && y < getSizeY())
             if(containUnit(x,y))
@@ -622,56 +576,52 @@ int Field::getUnitHpInCell(int x, int y)
     return 0;
 }
 
-Unit* Field::getUnitWithLowHP(int x, int y)
-{
-    if(x >= 0 && x < getSizeX())
-        if(y >= 0 && y < getSizeY())
-            if(!field[sizeX*y + x].units.empty())
-            {
+Unit* Field::getUnitWithLowHP(int x, int y) {
+    if(x >= 0 && x < getSizeX()) {
+        if(y >= 0 && y < getSizeY()) {
+            if(!field[sizeX*y + x].units.empty()) {
                 Unit* unit = field[sizeX*y + x].units.front();
                 int localHp = unit->hp;
                 int size = field[sizeX*y + x].units.size();
-                for(int k = 1; k < size; k++)
-                {
+                for(int k = 1; k < size; k++) {
                     int hp = field[sizeX*y + x].units[k]->hp;
-                    if(hp < localHp)
-                    {
+                    if(hp < localHp) {
                         unit = field[sizeX*y + x].units[k];
                         localHp = unit->hp;
                     }
                 }
                 return unit;
             }
+        }
+    }
     return NULL;
 }
 
-std::vector<Tower*> Field::getAllTowers()
-{
+std::vector<Tower*> Field::getAllTowers() {
     std::vector<Tower*> exitTowers;
-
-    for(int k = 0; k < towersManager.getAmount(); k++)
+    for(int k = 0; k < towersManager.getAmount(); k++) {
         exitTowers.push_back(towersManager.getTowerById(k));
-
+    }
     return exitTowers;
 }
 
 
-int Field::containUnit(int x, int y, Unit *unit)
-{
-    if(!field[sizeX*y + x].units.empty())
-    {
+int Field::containUnit(int x, int y, Unit *unit) {
+    if(!field[sizeX*y + x].units.empty()) {
         int size = field[sizeX*y + x].units.size();
-        if(unit == NULL)
+        if(unit == NULL) {
             return size;
-        else
-            for(int k = 0; k < size; k++)
-                if(field[sizeX*y + x].units[k] == unit)
+        } else {
+            for(int k = 0; k < size; k++) {
+                if(field[sizeX*y + x].units[k] == unit) {
                     return k+1;
+                }
+            }
+        }
     }
 
     return 0;
 }
-
 
 bool Field::setTower(int x, int y, DefaultTower* defTower) {
     int size = defTower->size;
@@ -690,7 +640,6 @@ bool Field::setTower(int x, int y, DefaultTower* defTower) {
                 }
             }
         }
-
         return true;
     }
     return false;
@@ -703,7 +652,6 @@ bool Field::spawnHeroInSpawnPoint() { //Unit* unit, int type)
 }
 
 Unit* Field::createUnit(int x, int y, int type) {
-
     int coorByMapX, coorByMapY;
     if(!getIsometric()) {
         coorByMapX = mainCoorMapX + spaceWidget + x*sizeCell;
@@ -719,7 +667,6 @@ Unit* Field::createUnit(int x, int y, int type) {
     Unit* unit;
     if (type == 0) {
         unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(0)); //, type);
-
         updateHeroDestinationPoint(exitPointX, exitPointY);
     } else /*if (type == 1)*/ {
         unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById((1+(rand()%(faction->units.size()-1)))), type);
@@ -734,7 +681,6 @@ Unit* Field::createUnit(int x, int y, int type) {
     }
     getCell(x, y)->setUnit(unit);
 }
-
 
 bool Field::deleteTower(int x, int y) {
     Tower* tower = towersManager.getTower(x, y);
@@ -752,4 +698,3 @@ bool Field::deleteTower(int x, int y) {
     }
     return false;
 }
-
