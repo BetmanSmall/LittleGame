@@ -10,15 +10,6 @@
 
 using namespace std;
 
-//class Tower
-//{
-//public:
-//    int type;
-//    int radius;
-//    int attack;
-//    int currX, currY;
-//    QPixmap pixmap;
-//};
 
 /**
  * @brief The Towers class

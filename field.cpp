@@ -11,7 +11,7 @@ void Field::createField(int newSizeX, int newSizeY)
         unitsManager.createMass(32);
 
         isometric = false;
-//        unitSet = true;
+
 
         gameOverLimitUnits = 10;
         currentFinishedUnits = 0;
@@ -53,7 +53,7 @@ Cell* Field::getCell(int x, int y) {
             return &field[sizeX*y + x];
         }
     }
-//    qDebug() << "Field::getCell(); -- Bad x:" << x << " y:" << y;
+
     return NULL;
 }
 
@@ -94,7 +94,7 @@ void Field::createExitPoint(int x, int y) {
 
 void Field::updateHeroDestinationPoint() {
     qDebug() << "Field::updateHeroDestinationPoint(); -- ";
-//    updateHeroDestinationPoint(exitPointX, exitPointY);
+
     Unit* hero = unitsManager.hero;
     qDebug() << "Field::updateHeroDestinationPoint(); -- hero:" << hero;
     if (hero != NULL && !hero->path.empty()) {
@@ -117,9 +117,7 @@ void Field::updateHeroDestinationPoint(int x, int y) {
             } else {
                 tmpUnit->path.clear();
             }
-//            for(auto& coordinate : tmpUnit->path) {
-//                qDebug() << "Field::updateHeroDestionPoint(); -- x:" << coordinate.x << " y:" << coordinate.y;
-//            }
+
         }
     }
 }
@@ -192,7 +190,7 @@ int Field::getTileMapHeight() {
 }
 
 bool Field::towersAttack(int deltaTime) {
-//    qDebug() << "Field::towersAttack(); -- deltaTime:" << deltaTime;
+
     for(int k = 0; k < towersManager.getAmount(); k++) {
         Tower* tmpTower = towersManager.getTowerById(k);
         if (tmpTower->recharge(deltaTime)) {
@@ -203,7 +201,7 @@ bool Field::towersAttack(int deltaTime) {
             Bullet* tmpBullet = tmpTower->bullets[b];
             int currX = tmpBullet->currCellX;
             int currY = tmpBullet->currCellY;
-//            qDebug() << "Field::towersAttack(); -- currX: " << currX << " currY:" << currY;
+
             if (currX < 0 || currX >= sizeX || currY < 0 || currY >= sizeY) {
                 tmpTower->bullets.erase(tmpTower->bullets.begin()+b);
                 delete tmpBullet;
@@ -214,7 +212,7 @@ bool Field::towersAttack(int deltaTime) {
                 }
             }
             if(tmpBullet->animationCurrIter < tmpBullet->animationMaxIter) {
-//                qDebug() << "Field::towersAttack(); -- tmpBullet->animationCurrIter: " << tmpBullet << "->" << tmpBullet->animationCurrIter;
+
                 tmpBullet->pixmap = tmpBullet->activePixmaps[tmpBullet->animationCurrIter++];
             } else {
                 int exitX = currX, exitY = currY;
@@ -243,9 +241,7 @@ bool Field::towersAttack(int deltaTime) {
                     exitX = currX+1;
                     exitY = currY+1;
                 }
-    //            qDebug() << "Field::stepOneUnit(); -- exitX: " << exitX << " exitY: " << exitY;
-    //            qDebug() << "Field::stepOneUnit(); -- currX: " << currX << " currY: " << currY;
-    //            qDebug() << "Field::stepOneUnit(); -- exitPointX: " << exitPointX << " exitPointY: " << exitPointY;
+
 
                 if(exitX != currX || exitY != currY) {
                     tmpBullet->lastCellX = currX;
@@ -287,83 +283,18 @@ bool Field::towersAttack(int deltaTime) {
                             tmpBullet->direction = DirectionDown;
                         }
                     }
-//                qDebug() << "tmpBullet->animationMaxIter: " << tmpBullet << "->" << tmpBullet->animationMaxIter;
+
                     if (tmpBullet->activePixmaps.empty() && !tmpBullet->defTower->bullet.empty()) {
                         tmpBullet->animationMaxIter = tmpBullet->defTower->bullet.size();
                         tmpBullet->activePixmaps = tmpBullet->defTower->bullet;
                     }
                     tmpBullet->pixmap = tmpBullet->activePixmaps[0];
                     tmpBullet->animationCurrIter = 0;
-//                } else {
-//                    tmpBullet->animationMaxIter = tmpBullet->defTower->idle.size();
-//                    tmpBullet->activePixmaps = tmpBullet->defTower->idle;
-//                    tmpBullet->direction = DirectionIdle;
-//                    tmpBullet->pixmap = tmpBullet->activePixmaps[0];
+
                 }
             }
         }
 
-//        int x = tmpTower->currX;
-//        int y = tmpTower->currY;
-////        int type = tmpTower->type;
-//        int radius = tmpTower->radius; // 1 // 5
-//        int size = tmpTower->size;
-//        tmpTower->attackX = -1;
-//        tmpTower->attackY = -1;
-//        Unit* unit = NULL;
-//        int defaultHp = 100;
-//        int attackX = x, attackY = y;
-//        for (int tmpY = (0-radius); tmpY < radius+size; tmpY++) {
-//            for (int tmpX = (0-radius); tmpX < radius+size; tmpX++) {
-//                if (!(tmpX == 0 && tmpY == 0)) {
-//                    Cell* cell = getCell(x + tmpX, y + tmpY);
-//                    if (cell != NULL) {
-//                        Unit* tmpUnit = cell->getHero();
-//    //                    Unit* tmpUnit = getUnitWithLowHP(x + tmpX, y + tmpY);
-//                        if(tmpUnit != NULL) {
-//                            int hp = tmpUnit->hp;//getUnitHpInCell(x + tmpX, y + tmpY);
-//                            if(hp <= defaultHp && hp != 0) {
-//                                unit = tmpUnit;
-//                                defaultHp = hp;
-//                                attackX = x + tmpX;
-//                                attackY = y + tmpY;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-
-////        if(attackX != x || attackY != y)
-//        if(unit != NULL) {
-////            if(type == 1)
-////            Unit* unit = NULL;
-////            qDebug() << "unit: " << unit;
-////            if(units.attackUnit(attackX, attackY, tmpTower->attack, unit))
-//            if(tmpTower->bullets.size() == 0) {
-//                qDebug() << "createBulletAndShot(" << attackX << ", " << attackY << ");";
-//                int pxlsX = mainCoorMapX + tmpTower->currX*sizeCell;
-//                int pxlsY = mainCoorMapY + tmpTower->currY*sizeCell;
-//                int bullet_grafCoorX = tmpTower->currX*sizeCell + (sizeCell/3) + abs(mainCoorMapX);
-//                int bullet_grafCoorY = tmpTower->currY*sizeCell + (sizeCell/3) + abs(mainCoorMapY);
-//                tmpTower->createBulletAndShot(unit, pxlsX, pxlsY);
-//            } else {
-//                if(!tmpTower->bullets[0].flying) {
-//                    tmpTower->bullets.clear();
-//                }
-//            }
-//            if(unit->takeDamage(tmpTower->attack)) {
-////                qDebug() << "unit: " << unit;
-////                if(unit != NULL)
-////                    qDebug() << "unit->hp: " << unit->hp;
-//                if(getCell(attackX, attackY)->clearUnit(unit)) { //clearUnit(attackX, attackY, unit))
-//                    qDebug() << "Dead!";
-//                }
-//            } else {
-//                tmpTower->attackX = attackX;
-//                tmpTower->attackY = attackY;
-//            }
-//        }
     }
     return true;
 }
@@ -390,7 +321,7 @@ void Field::waveAlgorithm(int x, int y) {
 void Field::waveStep(int x, int y, int step)
 {
 #ifdef CIRCLET8
-    //------------3*3----------------
+
     bool mass[3][3];
     int nextStep = step+1;
 
@@ -403,7 +334,7 @@ void Field::waveStep(int x, int y, int step)
             if(mass[tmpX+1][tmpY+1])
                 waveStep(x + tmpX, y + tmpY, nextStep);
 #else
-    //------------2*2----------------
+
     bool mass[4];
     int nextStep = step+1;
     int x1 = x-1, x2 = x, x3 = x+1;
@@ -441,7 +372,7 @@ bool Field::getMousePress(int x, int y)
 }
 
 bool Field::isSetSpawnPoint(int x, int y) {
-//    qDebug() << "Field::isSetSpawnPoint(" << x << ", " << y << "); -- spawnPointX: " << spawnPointX << " spawnPointY: " << spawnPointY;
+
     if(spawnPointX != -1 && spawnPointY != -1)
         if((x == spawnPointX && y == spawnPointY) || (x == -1 && y == -1))
             return true;
@@ -458,7 +389,7 @@ bool Field::isSetExitPoint(int x, int y) {
 }
 
 int Field::stepAllUnits() {
-//    qDebug() << "Field::stepAllUnits(); -- ";
+
     bool allDead = true;
     for(int k = 0; k < unitsManager.getAmount(); k++) {
         int result = stepOneUnit(k);
@@ -480,7 +411,7 @@ int Field::stepAllUnits() {
             return 4;
         }
     }
-//    qDebug() << "Field::stepAllUnits(); -- allDead:" << allDead;
+
     if(allDead) {
         return 2;
     } else {
@@ -489,27 +420,25 @@ int Field::stepAllUnits() {
 }
 
 int Field::stepOneUnit(int num) {
-//    qDebug() << "Field::stepOneUnit(); -- ";
+
     Unit* tmpUnit = unitsManager.getUnit(num);
     if(tmpUnit->alive) {
         if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter) {
-//            qDebug() << "tmpUnit->animationCurrIter: " << tmpUnit << "->" << tmpUnit->animationCurrIter;
+
             tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
-//            tmpUnit->animationCurrIter = tmpUnit->animationCurrIter+1;
+
         } else {
             int currX = tmpUnit->coorByCellX;
             int currY = tmpUnit->coorByCellY;
             int exitX = currX, exitY = currY;
-//            qDebug() << "Field::stepOneUnit(); -- exitX: " << exitX << " exitY: " << exitY;
-//            qDebug() << "Field::stepOneUnit(); -- currX: " << currX << " currY: " << currY;
-//            qDebug() << "Field::stepOneUnit(); -- exitPointX: " << exitPointX << " exitPointY: " << exitPointY;
+
 
             if (!tmpUnit->path.empty()) {
                 AStar::Vec2i point = tmpUnit->path.back();
                 tmpUnit->path.pop_back();
                 exitX = point.x;
                 exitY = point.y;
-//                qDebug() << "Field::stepOneUnit(); -- exitX:" << exitX << " exitY:" << exitY;
+
             }
             if(tmpUnit->type == 0) {
                 if (currX == exitPointX && currY == exitPointY) {
@@ -520,15 +449,13 @@ int Field::stepOneUnit(int num) {
                 if (getCell(currX, currY)->getHero() != NULL) {
                     qDebug() << "Field::stepOneUnit(); -- Hero contact with Enemy!";
                     unitsManager.attackUnit(currX, currY, 9999);//, getCell(currX, currY)->getHero()); // Magic number 9999
-//                    return 4;
+
                 } else if (getCell(exitX, exitY)->getHero() != NULL) {
                     qDebug() << "Field::stepOneUnit(); -- Hero contact with Enemy!";
                     unitsManager.attackUnit(exitX, exitY, 9999);//, getCell(exitX, exitY)->getHero()); // Magic number 9999
-//                    return 4;
+
                 }
-//                if (getCell(tmpUnit->lastX, tmpUnit->lastY)->isTerrain()) {
-//                    getCell(tmpUnit->lastX, tmpUnit->lastY)->removeTerrain();
-//                }
+
                 if (getCell(currX, currY)->isTerrain()) {
                     getCell(currX, currY)->removeTerrain(true);
                     updatePathFinderWalls();
@@ -537,39 +464,9 @@ int Field::stepOneUnit(int num) {
                     int randomX = rand()%sizeX;
                     int randomY = rand()%sizeY;
                     tmpUnit->path = pathFinder.findPath({tmpUnit->coorByCellX, tmpUnit->coorByCellY}, {randomX, randomY});
-//                    if (getCell(currX, currY)->isTerrain()) {
-//                        getCell(currX, currY)->removeTerrain();
-//                    }
-                }
-//                int min = getNumStep(currX,currY);
-//                if(min == 1)
-//                    return 1;
-//                if(min == 0)
-//                    return -1;
 
-//                int defaultStep = min;
-//                //--------------Looking specific cell-----------------------
-//                for(int tmpY = -1; tmpY < 2; tmpY++) {
-//                    for(int tmpX = -1; tmpX < 2; tmpX++) {
-//                        if(!(tmpX == 0 && tmpY == 0)) {
-//                            int num = getNumStep(currX + tmpX, currY + tmpY);
-//                            if(num <= min && num != 0) {
-//                                if(num == min) {
-//                                    if(rand()%2) {
-//                                        exitX = currX + tmpX;
-//                                        exitY = currY + tmpY;
-//                                    }
-//                                } else if(num == defaultStep-1) {
-//                                    exitX = currX + tmpX;
-//                                    exitY = currY + tmpY;
-//                                    min = num;
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//                //-----------------------------------------------------------
-//                tmpUnit->number = min;
+                }
+
             }
 
             if(exitX != currX || exitY != currY) {
@@ -648,7 +545,7 @@ int Field::stepOneUnit(int num) {
                         tmpUnit->direction = DirectionDown;
                     }
                 }
-//                qDebug() << "tmpUnit->animationMaxIter: " << tmpUnit << "->" << tmpUnit->animationMaxIter;
+
                 tmpUnit->pixmap = tmpUnit->activePixmaps[0];
                 tmpUnit->animationCurrIter = 0;
                 getCell(exitX, exitY)->setUnit(tmpUnit);
@@ -661,9 +558,9 @@ int Field::stepOneUnit(int num) {
         }
     } else if(tmpUnit->preDeath) {
         if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter) {
-//            qDebug() << "tmpUnit->animationCurrIter: " << tmpUnit << "->" << tmpUnit->animationCurrIter;
+
             tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
-//            tmpUnit->animationCurrIter = tmpUnit->animationCurrIter+1;
+
         } else {
             tmpUnit->preDeath = false;
             return 4;
@@ -714,22 +611,6 @@ void Field::clearStepCell(int x, int y)
     field[sizeX*y + x].unitStepWA = 0;
 }
 
-//Unit* Field::getUnit(int x, int y)
-//{
-//    if(!field[sizeX*y + x].units.empty())
-//        return field[sizeX*y + x].units.front();
-//    else
-//        return NULL;
-////    return field[sizeX*y + x].unit;
-//}
-
-//std::vector<Unit*> Field::getUnits(int x, int y)
-//{
-////    if(!field[sizeX*y + x].units.empty())
-//        return field[sizeX*y + x].units;
-////    else
-////        return NULL;
-//}
 
 int Field::getUnitHpInCell(int x, int y)
 {
@@ -774,19 +655,6 @@ std::vector<Tower*> Field::getAllTowers()
     return exitTowers;
 }
 
-//bool Field::containEmpty(int x, int y) {
-//    return field[sizeX*y + x].empty;
-//}
-
-//bool Field::isTerrain(int x, int y) {
-//    return field[sizeX*y + x].isTerrain();
-//}
-
-//bool Field::containTower(int x, int y)
-//{
-////    return (field[sizeX*y + x].tower != NULL);
-//    return field[sizeX*y + x].tower;
-//}
 
 int Field::containUnit(int x, int y, Unit *unit)
 {
@@ -800,22 +668,10 @@ int Field::containUnit(int x, int y, Unit *unit)
                 if(field[sizeX*y + x].units[k] == unit)
                     return k+1;
     }
-//    if(field[sizeX*y + x].unit != NULL)
-//        if(field[sizeX*y + x].unit->alive)
-//            return true;
+
     return 0;
 }
 
-//bool Field::setTower(int x, int y) {
-//    if(field[sizeX*y + x].empty) {
-//        if(!isSetExitPoint(x, y) && !isSetSpawnPoint(x, y)) {
-//            field[sizeX*y + x].tower = towersManager.createTower(x, y);
-//            field[sizeX*y + x].empty = false;
-//            return true;
-//        }
-//    }
-//    return false;
-//}
 
 bool Field::setTower(int x, int y, DefaultTower* defTower) {
     int size = defTower->size;
@@ -834,16 +690,7 @@ bool Field::setTower(int x, int y, DefaultTower* defTower) {
                 }
             }
         }
-//                if(containEmpty(tmpX+x, tmpY+y)) {
-//                    if(!isSetExitPoint(x, y) && !isSetSpawnPoint(x, y)) // BAGS!!!!!!!!!!!!! {
-//                        field[sizeX*(tmpY+y) + (tmpX+x)].tower = tower;
-//                        field[sizeX*(tmpY+y) + (tmpX+x)].empty = false;
-//                        return true;
-//                    }
-//                } else {
-//                    towers.deleteTower(x, y);
-//                    return false;
-//                }
+
         return true;
     }
     return false;
@@ -856,9 +703,7 @@ bool Field::spawnHeroInSpawnPoint() { //Unit* unit, int type)
 }
 
 Unit* Field::createUnit(int x, int y, int type) {
-//    if(x == -1 && y == -1)
-//        return createUnit(spawnPointX, spawnPointY, unit);//, type);
-//    qDebug() << "Field::createUnit(" << x << ", " << y << ", " << type << "); -- ";
+
     int coorByMapX, coorByMapY;
     if(!getIsometric()) {
         coorByMapX = mainCoorMapX + spaceWidget + x*sizeCell;
@@ -874,7 +719,7 @@ Unit* Field::createUnit(int x, int y, int type) {
     Unit* unit;
     if (type == 0) {
         unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(0)); //, type);
-//        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(1), type);
+
         updateHeroDestinationPoint(exitPointX, exitPointY);
     } else /*if (type == 1)*/ {
         unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById((1+(rand()%(faction->units.size()-1)))), type);
@@ -890,54 +735,6 @@ Unit* Field::createUnit(int x, int y, int type) {
     getCell(x, y)->setUnit(unit);
 }
 
-//bool Field::clearBusy(int x, int y)
-//{
-//    if(!field[sizeX*y + x].empty)
-//    {
-//        if(isTerrain(x,y))
-//        {
-//            field[sizeX*y + x].busy = false;
-//            field[sizeX*y + x].empty = true;
-//            return true;
-//        }
-//    }
-
-//    return false;
-//}
-
-//bool Field::clearTower(int x, int y)
-//{
-//    if(!containEmpty(x, y))
-//    {
-//        if(containTower(x,y))
-//        {
-//            field[sizeX*y + x].tower = NULL;
-//            field[sizeX*y + x].empty = true;
-//            return true;
-//        }
-//    }
-//    return false;
-//}
-
-//bool Field::clearUnit(int x, int y, Unit *unit)
-//{
-//    if(!field[sizeX*y + x].empty)
-//    {
-//        if(unit == NULL)
-//            field[sizeX*y + x].units.clear();
-//        else if(int num = containUnit(x, y, unit))
-//        {
-//            field[sizeX*y + x].units.erase(field[sizeX*y + x].units.begin()+(num-1));
-////            field[sizeX*y + x].unit = NULL;
-//        }
-
-//        if(field[sizeX*y + x].units.empty())
-//            field[sizeX*y + x].empty = true;
-
-//        return true;
-//    }
-//    return false;
-//}
 
 bool Field::deleteTower(int x, int y) {
     Tower* tower = towersManager.getTower(x, y);
@@ -956,37 +753,3 @@ bool Field::deleteTower(int x, int y) {
     return false;
 }
 
-//void Field::setPixmapInCell(int x, int y, QPixmap pixmap)
-//{
-//    field[sizeX*y + x].backgroundPixmap = pixmap;
-//}
-
-//void Field::setPixmapForUnit(QPixmap pixmap)
-//{
-//    unitsManager.setDefaulPixmapForUnit(pixmap);
-//}
-
-//void Field::setPixmapForTower(QPixmap pixmap)
-//{
-//    towersManager.setDefaulPixmapForTower(pixmap);
-//}
-
-//QPixmap Field::getBusyPixmapOfCell(int x, int y)
-//{
-//    return field[sizeX*y + x].busyPixmap;
-//}
-
-//QPixmap Field::getPixmapOfCell(int x, int y)
-//{
-//    return field[sizeX*y + x].backgroundPixmap;
-//}
-
-//QPixmap Field::getUnitPixmap(int x, int y)
-//{
-//    return unitsManager.getUnitPixmap(x, y);
-//}
-
-//QPixmap Field::getTowerPixmap(int x, int y)
-//{
-//    return towersManager.getTowerPixmap(x, y);
-//}

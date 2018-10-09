@@ -10,20 +10,7 @@ Cell::Cell() {
 
         hero = false;
         tower = NULL;
-//        tower = false;
-//        units = NULL;
 
-//        backgroundPixmap = NULL;
-//        busyPixmap = NULL;
-//        Gdx.app.log("Cell::Cell()", "-- ");
-//        this.backgroundTiles = new Array<TiledMapTile>();
-//        this.foregroundTiles = new Array<TiledMapTile>();
-//        this.trees = new Array<Tree>();
-//        this.empty = true;
-// //        this.terrain = false;
-//        this.tower = NULL;
-//        this.creeps = NULL;
-//        setGraphicCoordinates(cellX, cellY, halfSizeCellX, halfSizeCellY);
 }
 
 bool Cell::isEmpty() {
@@ -108,7 +95,7 @@ Unit* Cell::getUnit() {
 
 bool Cell::setUnit(Unit* unit) {
     if (empty) {
-//        creeps = new Array<Creep>();
+
         units.push_back(unit);
         empty = false;
         return true;
@@ -158,7 +145,7 @@ int Cell::removeUnit(Unit* unit) {
             units.erase(units.begin()+(num-1));
         }
         if (units.size() == 0) {
-//            creeps = NULL;
+
             empty = true;
             return 0;
         }
@@ -167,25 +154,3 @@ int Cell::removeUnit(Unit* unit) {
     return -1;
 }
 
-//void Cell::dispose() {
-//    backgroundTiles.clear();
-//    foregroundTiles.clear();
-//    backgroundTiles = NULL;
-//    foregroundTiles = NULL;
-//    tower = NULL;
-//    creeps.clear();
-//    creeps = NULL;
-//}
-
-//QString Cell::toString() {
-//    StringBuilder sb = new StringBuilder();
-//    sb.append("Cell[");
-//    sb.append("cellX:" + cellX);
-//    sb.append("," + "cellY:" + cellY);
-//    sb.append("," + "empty:" + empty);
-//    sb.append("," + "terrain:" + terrain);
-//    sb.append("," + "tower:" + tower);
-//    sb.append("," + "creeps:" + creeps);
-//    sb.append("]");
-//    return sb.toString();
-//}

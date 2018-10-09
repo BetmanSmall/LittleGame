@@ -8,16 +8,6 @@
 #include "tower.h"
 #include "unit.h"
 
-//class Tree {
-//    TextureRegion textureRegion;
-//    int width, height;
-
-//    Tree(TextureRegion textureRegion, int width, int height) {
-//        this.textureRegion = textureRegion;
-//        this.width = width;
-//        this.height = height;
-//    }
-//}
 
 /**
  * @brief Ячейка
@@ -30,37 +20,26 @@ public:
     bool removableTerrain;
     bool terrain;
     Tower* tower;
-//    bool tower;
+
     std::vector<Unit*> units;
 
     bool spawn;
     bool exit;
 
-//    QPixmap backgroundPixmap;
-//    QPixmap busyPixmap;
     std::vector<QPixmap> backgroundTiles;
     std::vector<QPixmap> terrainTiles;
     std::vector<QPixmap> foregroundTiles;
-//        Array<Tree> trees;
-//        private bool empty;
-// //        private bool terrain;
-//        private Tower tower;
-//        private Array<Creep> creeps;
-//        int cellX, cellY;
-//        Vector2 graphicCoordinatesBottom, graphicCoordinatesRight, graphicCoordinatesTop, graphicCoordinatesLeft;
+
 public:
     Cell();
 
-//    void setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, float halfSizeCellY);
-//    Vector2 getGraphicCoordinates(int map);
-//    void addTiledMapTile(TiledMapTile tiledMapTile);
 
     bool isEmpty();
     bool isTerrain();
     bool setTerrain(QPixmap pixmap = QPixmap(), bool removable = true);
     bool removeTerrain(bool force = false);
     bool isPassable();
-//    bool getTower();
+
     Tower* getTower();
     bool setTower(Tower* tower);
     bool removeTower();

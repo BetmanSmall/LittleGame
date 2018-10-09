@@ -21,19 +21,16 @@ class Field
 {
 public: // we are friendly!
     AStar::PathFinder pathFinder;
-//private:
+
     Cell* field;
     TowersManager towersManager;
     UnitsManager unitsManager;
     Faction* faction;
 
-//    bool unitSet;
 
     int gameOverLimitUnits;
     int currentFinishedUnits;
 
-//    int sizeWidgetWidth;
-//    int sizeWidgetHeight;
 
     int sizeX, sizeY;
 
@@ -43,7 +40,7 @@ public: // we are friendly!
 
     bool isometric;
     int tileMapWidth, tileMapHeight;
-//    int tileMapWidth, tileMapHeight;
+
 
     int mouseX, mouseY;
     int spawnPointX, spawnPointY;
@@ -344,13 +341,7 @@ public:
      * @return True/False установил/не установил
      */
     bool setBusy(int x, int y, QPixmap pixmap);
-//    /**
-//     * @brief Устаревшая
-//     * @param x
-//     * @param y
-//     * @return Шнягу какую-то...
-//     */
-//    bool setTower(int x, int y);//, int type = 0);
+
     /**
      * @brief Устанавливает башню на основе Стандартной Башни из фракции
      * @param x
@@ -374,16 +365,7 @@ public:
      * @return Unit* - указатель на созданого юнита
      */
     Unit* createUnit(int x, int y, int type = -1);
-//    /**
-//     * @brief Устанавливает криппа в данную клетку
-//     * @param x
-//     * @param y
-//     * @param unit - указатель на юнита
-//     * @param type - тип юнита 0 = hero, 1 = guardian
-//     * @return True - Установил; False - Не установил (True/False)
-//     * @return True/False установил/не установил
-//     */
-//    bool setUnit(int x, int y, Unit* unit = NULL);//, int type = -1);
+
 
     /**
      * @brief Очищяет 'занятость' / Убирает рельеф
@@ -416,52 +398,6 @@ public:
      */
     bool deleteTower(int x = -1, int y = -1);
 
-//    /**
-//     * @brief Устарело
-//     * @param x
-//     * @param y
-//     * @param pixmap
-//     */
-//    void setPixmapInCell(int x, int y, QPixmap pixmap);
-//    /**
-//     * @brief Устарело
-//     * @param pixmap
-//     */
-//    void setPixmapForUnit(QPixmap pixmap);
-//    /**
-//     * @brief Устарело
-//     * @param pixmap
-//     */
-//    void setPixmapForTower(QPixmap pixmap);
-
-//    /**
-//     * @brief Устарело
-//     * @param x
-//     * @param y
-//     * @return
-//     */
-//    QPixmap getBusyPixmapOfCell(int x, int y);
-//    /**
-//     * @brief Устарело
-//     * @param x
-//     * @param y
-//     * @return
-//     */
-//    QPixmap getPixmapOfCell(int x, int y);
-//    /**
-//     * @brief Устарело
-//     * @param x
-//     * @param y
-//     * @return
-//     */
-//    QPixmap getUnitPixmap(int x, int y);
-//    /**
-//     * @brief Устарело
-//     * @param x
-//     * @param y
-//     * @return
-//     */
-//    QPixmap getTowerPixmap(int x, int y);
 };
 
 #endif // FIELD_H

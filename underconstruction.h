@@ -8,7 +8,7 @@
 class UnderConstruction
 {
 public:
-//    UnderConstruction();
+
     UnderConstruction(DefaultTower* tower);
     UnderConstruction(int startX, int startY, DefaultTower* tower);
 

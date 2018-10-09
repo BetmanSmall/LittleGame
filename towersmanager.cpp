@@ -56,13 +56,7 @@ Tower* TowersManager::createTower(int x, int y, int type)
 {
     if(amount < size)
     {
-//        Tower tower;
-//        tower.attack = 5;
-//        tower.currX = x;
-//        tower.currY = y;
-//        tower.radius = 1;
-//        tower.type = type;
-//        towers.push_back(tower);
+
 
         towers[amount].attack = 5;
         towers[amount].currX = x;

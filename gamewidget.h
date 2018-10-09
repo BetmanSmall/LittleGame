@@ -1,16 +1,12 @@
 #ifndef GAMEWIDGET_H
 #define GAMEWIDGET_H
 
-//#include <iostream>
-//#include <fstream>
-//#include <unistd.h>
 #include <time.h>
 
 #include <QDesktopWidget>
 #include <QDebug>
 #include <QWidget>
-//#include <QGLWidget>
-//#include <QOpenGLWidget>
+
 #include <QPaintEvent>
 #include <QPainter>
 #include <QString>
@@ -72,7 +68,6 @@ public:
      */
     void keyPressEvent(QKeyEvent* event);
 
-//    QRect screenSize;
     QPainter painter;
     void paintEvent(QPaintEvent* event);
     void drawFullField();
@@ -80,7 +75,7 @@ public:
     void drawBackGround();
     void drawGround();
     void drawForeGround();
-//    void drawTowersByField();
+
     void drawTowersByTowers();
     void drawUnits();
     void drawBlackTiles();
@@ -104,9 +99,7 @@ public:
     void mouseReleaseEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
-//    void leaveEvent(QEvent* event);
-//    void keyPressEvent(QKeyEvent* event);
-//    void keyReleaseEvent(QKeyEvent* event);
+
 
     /**
      * @brief Загрузка карты
@@ -118,10 +111,6 @@ public:
     bool gamePause;
     bool mapLoad;
 
-//    bool setUpBuildTower;
-//    UnderConstruction* underConstruction;
-//    DefaultTower* towersUnderConstruction;
-//    int towersStartUnderConstructionX, towersStartUnderConstructionY;
 
     int pixelsShiftMap;
 
@@ -132,23 +121,22 @@ public:
     int defaultNumCreateUnits;
 
     int timeOfGame;
-//    Timers
+
     int unitsMove_TimerMilliSec;
     int towersAttack_TimerMilliSec;
     int scanMouseMove_TimerMilliSec;
-//    int bulletsFly_TimerMilliSec;
+
 
     int unitsMove_TimerId;
     int towersAttack_TimerId;
     int scanMouseMove_TimerId;
-//    int bulletsFly_TimerId;
+
 
     int test;
     Field field;
-//    Faction faction;
+
     vector<TileSet> tileSets;
 
-//    Test Zone!
     QPixmap global_pixmap;
     QPixmap global_pixmap_PathPoint;
     QPixmap global_pixmap_EnemyPathPoint;

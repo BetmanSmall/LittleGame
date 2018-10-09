@@ -23,10 +23,7 @@ void UnitsManager::createMass(int newSize) {
 }
 
 void UnitsManager::deleteMass() {
-//    if (hero != NULL) {
-//        delete hero;
-//        hero = NULL;
-//    }
+
     if(units != NULL) {
         delete[] units;
         units = NULL;
@@ -53,7 +50,7 @@ int UnitsManager::getHP(int x, int y) {
 }
 
 bool UnitsManager::attackUnit(int x, int y, int damage) {//, Unit *unit) {
-//    foreach (Unit* unit, units) {
+
     for(int k = 0; k < amount; k++) {
         Unit* unit = &units[k];
         if(!unit->alive) {
@@ -98,9 +95,9 @@ bool UnitsManager::attackUnit(int x, int y, int damage) {//, Unit *unit) {
                 }
                 unit->animationMaxIter += unit->defUnit->explosion.size();
                 unit->activePixmaps.insert(unit->activePixmaps.end(), unit->defUnit->explosion.begin(), unit->defUnit->explosion.end());
-//                qDebug() << "tmpUnit->animationMaxIter: " << tmpUnit << "->" << tmpUnit->animationMaxIter;
+
                 unit->pixmap = unit->activePixmaps[0];
-//                unit = &units[k];
+
                 return true;
             } else {
                 unit->hp = localHP;
@@ -127,8 +124,7 @@ Unit* UnitsManager::getUnit(int x, int y) {
 }
 
 Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit) {
-//    qDebug() << "UnitsManager::createHero(); -- " << coorByCellX << ", " << coorByCellY << ", " << coorByMapX << ", " << coorByMapY;
-//    qDebug() << "UnitsManager::createHero(); -- unit:" << unit << " hero:" << hero;
+
     if (hero == NULL) {
         hero = createUnit(coorByCellX, coorByCellY, coorByMapX, coorByMapY, unit, 0);
     }
@@ -136,7 +132,7 @@ Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX,
 }
 
 Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type){
-//    qDebug() << "UnitsManager::createUnit(); -- unit:" << unit;
+
     if(amount < size) {
         units[amount].hp = 100;
         units[amount].alive = true;
@@ -149,7 +145,6 @@ Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX,
         units[amount].lastX = coorByCellX;
         units[amount].lastY = coorByCellY;
 
-//        units[amount].speed = speed;
         units[amount].type = type;
 
         units[amount].animationCurrIter = 0;

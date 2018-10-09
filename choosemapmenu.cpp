@@ -19,7 +19,6 @@ ChooseMapMenu::ChooseMapMenu(QWidget *parent) :
     ui->loadMap2Button->setIcon(QIcon(ASSETS_PATH + "images/button2v2.png"));
     ui->loadMap3Button->setIcon(QIcon(ASSETS_PATH + "images/button3v2.png"));
 
-//    qDebug() << "ChooseMapMenu: X: " << width() << " Y: " << height();
 }
 
 ChooseMapMenu::~ChooseMapMenu() {
@@ -31,25 +30,25 @@ void ChooseMapMenu::on_returnButton_clicked() {
 }
 
 void ChooseMapMenu::on_loadMap1Button_clicked() {
-//    signal_loadMap1();
+
 }
 
 void ChooseMapMenu::on_loadMap2Button_clicked() {
-//    signal_loadMap2();
+
 }
 
 void ChooseMapMenu::on_loadMap3Button_clicked() {
-//    signal_loadMap3();
+
 }
 
 void ChooseMapMenu::on_loadMap4Button_clicked() {
-//    signal_loadMap4();
+
 }
 
 void ChooseMapMenu::on_loadMap5Button_clicked() {
-//    signal_loadMap5();
+
 }
 
 void ChooseMapMenu::on_loadMap6Button_clicked() {
-//    signal_loadMap6();
+
 }

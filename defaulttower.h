@@ -30,23 +30,6 @@ public:
     std::vector<QPixmap> bullet_fly_left;
     std::vector<QPixmap> bullet_fly_up_left;
 
-//    QPixmap idle_up;
-//    QPixmap idle_up_right;
-//    QPixmap idle_right;
-//    QPixmap idle_down_right;
-//    QPixmap idle_down;
-//    QPixmap idle_down_left;
-//    QPixmap idle_left;
-//    QPixmap idle_up_left;
-
-//    std::vector<QPixmap> attack_up;
-//    std::vector<QPixmap> attack_up_right;
-//    std::vector<QPixmap> attack_right;
-//    std::vector<QPixmap> attack_down_right;
-//    std::vector<QPixmap> attack_down;
-//    std::vector<QPixmap> attack_down_left;
-//    std::vector<QPixmap> attack_left;
-//    std::vector<QPixmap> attack_up_left;
 
     DefaultTower();
     ~DefaultTower();

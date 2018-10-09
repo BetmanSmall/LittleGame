@@ -18,7 +18,6 @@ public:
     Faction();
     ~Faction();
 
-//    void creatyNewTower(int type, int radius, int attack, QPixmap pixmap);
     void addTower(DefaultTower* tower);
     void addUnit(DefaultUnit* unit);
 

@@ -30,7 +30,7 @@ public:
     bool alive;
     bool preDeath;
     int number;
-//    int speed;
+
     int type;
     AStar::CoordinateList path;
 
@@ -48,7 +48,7 @@ public:
     Unit();
     ~Unit();
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
-//    bool takeDamage(int damage);
+
 };
 
 #endif // UNIT_H

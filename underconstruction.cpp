@@ -1,8 +1,5 @@
 #include "underconstruction.h"
 
-//UnderConstruction::UnderConstruction() {
-//    this->state = 0;
-//}
 
 UnderConstruction::UnderConstruction(DefaultTower *tower) {
     this->state = -1;

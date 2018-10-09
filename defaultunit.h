@@ -13,7 +13,7 @@ public:
     QString name;
     int healtPoint;
     int type;
-//    int speed;
+
 
     QPixmap pixmap;
 

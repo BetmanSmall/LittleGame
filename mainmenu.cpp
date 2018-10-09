@@ -2,7 +2,7 @@
 #include "ui_mainmenu.h"
 
 #include <QDebug>
-//#include <QPainter>
+
 
 MainMenu::MainMenu(QWidget *parent) :
     QWidget(parent),
