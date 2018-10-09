@@ -2,8 +2,6 @@
 #define OPTIONMENU_H
 
 #include <QWidget>
-//#include <QGLWidget>
-//#include <QOpenGLWidget>
 #include <QMediaPlayer>
 
 namespace Ui {

@@ -4,8 +4,6 @@
 #include <QWidget>
 #include <QKeyEvent>
 #include <QPainter>
-//#include <QGLWidget>
-//#include <QOpenGLWidget>
 
 namespace Ui {
 class MainMenu;
@@ -39,7 +37,6 @@ protected:
 
 signals:
     void signal_playNormalMap();
-//    void signal_openChooseMapMenu();
     void signal_openOptionMenu();
     void signal_exit();
 };

@@ -15,19 +15,6 @@ MainMenu::MainMenu(QWidget *parent) :
 #else
     ASSETS_PATH = "./assets/";
 #endif
-
-//    ui->labelGameRecord->
-//    ui->labelGameStatus->setTextFormat(Qt::RichText);
-//    ui->labelGameStatus->setText("<img src=':/assets/images/best.png'>Hello!");
-//    ui->playButton->setIcon(QIcon(ASSETS_PATH + "images/Play.png"));
-//    ui->optionsButton->setIcon(QIcon(ASSETS_PATH + "images/Options.png"));
-//    ui->exitButton->setIcon(QIcon(ASSETS_PATH + "images/Exit.png"));
-
-//    qDebug() << "MainMenu: X: " << width() << " Y: " << height();
-//    ui->labelGameRecord->setParent(this);
-//    ui->labelGameRecord->move(width()/2, height()/2);
-//    ui->labelGameRecord->setGeometry(width()/2, height()/2, 50, 20);
-//    ui->playButton->move(width()/2, height()/2);
 }
 
 MainMenu::~MainMenu() {
@@ -36,59 +23,27 @@ MainMenu::~MainMenu() {
 
 void MainMenu::paintEvent(QPaintEvent *) {
     qDebug() << "MainMenu::paintEvent(); -- ";
-//    p.begin(this);
-//    p.fillRect(0, 0, width(), height(), QColor(255, 0, 0));
-//    QPoint newLabelGameRecordPos = ui->labelGameStatus->pos();// + QPoint(ui->labelGameStatus->width()/2, ui->labelGameStatus->height()/2);
-//    p.drawText(newLabelGameRecordPos.x(), newLabelGameRecordPos.y()+40, ui->labelGameRecord->text());
-//    p.end();
-//    ui->labelGameStatus->setVisible(false);
-//    ui->labelGameRecord->move(width()/2, height()/2);
-//    ui->playButton->move(qrand()%width(), qrand()%height());
 }
 
 void MainMenu::showEvent(QShowEvent*) {
     qDebug() << "MainMenu::showEvent(); -- ";
-//    ui->labelGameRecord->move(qrand()%width(), qrand()%height());
-//    ui->playButton->move(qrand()%width(), qrand()%height());
-//    ui->labelGameRecord->move(width()/2, height()/2);
-//    update();
 }
 
 void MainMenu::updateGameStatus(bool win) {
-//    ui->labelGameStatus->setVisible(true);
-//    ui->labelGameRecord->setVisible(true);
     if (win) {
         ui->labelGameStatus->setPixmap(QPixmap(":/assets/images/statusWin.png"));
-//        ui->labelGameStatus->setStyleSheet("QLabel { color : green; }");
-//        ui->labelGameStatus->setText( "You WiN!" );
     } else {
         ui->labelGameStatus->setPixmap(QPixmap(":/assets/images/statusLose.png"));
-//        ui->labelGameStatus->setStyleSheet("QLabel { color : red; }");
-//        ui->labelGameStatus->setText( "You Lose!" );
     }
 }
 
 void MainMenu::updateRecords(QList<int> recordsList, int timeOfGame) {
-//    ui->labelGameStatus->setVisible(false);
-//    ui->labelGameRecord->setVisible(false);
     if (!recordsList.empty()) {
-//        ui->gameRecordsListWidget->clear();
-//        foreach (int record, recordsList) {
-//            ui->gameRecordsListWidget->addItem(QString("%1").arg(record));
-//        }
-//        ui->gameRecordsListWidget->sortItems(Qt::SortOrder::);
         if (timeOfGame != -1) {
             ui->labelYourTime->setText( QString("Твоё время: %1 секунд").arg(timeOfGame/1000) );
         }
         ui->labelGameRecord->setText("Лучшее время: " + QString("%1").arg(recordsList.first()/1000) + " секунд");
-//    } else {
     }
-//    for (int w = 0; w < ui->gameRecordsVerticalLayout->count(); w++) {
-//        QWidget* widget = ui->gameRecordsVerticalLayout->itemAt(w)->widget();
-//        if (widget != NULL) {
-//            widget->setVisible(!recordsList.empty());
-//        }
-//    }
 }
 
 void MainMenu::on_playButton_clicked() {
@@ -115,10 +70,5 @@ void MainMenu::keyPressEvent(QKeyEvent* event) {
         signal_openOptionMenu();
     } else if (key == Qt::Key_3) {
         signal_exit();
-//    } else if (event->key() == Qt::Key_Space) {
-//        QRect rec = QApplication::desktop()->screenGeometry();
-//        move(0, 0);
-//        this->setMaximumWidth(rec.width());
-//        this->setMaximumHeight(rec.height());
     }
 }

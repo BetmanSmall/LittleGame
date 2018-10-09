@@ -15,7 +15,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     srand(time(0));
 
-//    QRect rec = QApplication::desktop()->screenGeometry();
     WidgetController w;
     w.move(0, 0);
     w.show();

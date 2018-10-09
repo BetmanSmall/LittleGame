@@ -31,8 +31,7 @@ SOURCES += main.cpp\
     unitsmanager.cpp \
     towersmanager.cpp \
     astar.cpp \
-    cell.cpp \
-    gamescreen.cpp
+    cell.cpp
 
 HEADERS  += \
     field.h \
@@ -51,8 +50,7 @@ HEADERS  += \
     unitsmanager.h \
     towersmanager.h \
     astar.h \
-    cell.h \
-    gamescreen.h
+    cell.h
 
 FORMS    += \
     mainmenu.ui \

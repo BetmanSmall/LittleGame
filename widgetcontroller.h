@@ -6,8 +6,6 @@
 #include <QDirIterator>
 #include <QDesktopWidget>
 #include <QWidget>
-//#include <QGLWidget>
-//#include <QOpenGLWidget>
 #include <QMediaPlayer>
 #include <QStackedWidget>
 #include <QVBoxLayout>
@@ -34,7 +32,6 @@ private:
     QPixmap mainMenuBackground;
     QStackedWidget* stackedWidget;
 
-//    std::vector<QString> campaingMaps;
     MainMenu* mainMenu;
     int enemyCount, difficultyLevel, towersCount;
     bool panMidMouseButtonBool;
@@ -48,18 +45,10 @@ private slots:
 
     void loadRandomMap();
     void loadNormalMap();
-//    void showChooseMapMenu();
     void showOptionMenu();
-//    void loadNextCampaingMaps();
     void showGameWidget(QString mapPath);
     void changeWindowState();
 
-//    void loadMap1();
-//    void loadMap2();
-//    void loadMap3();
-//    void loadMap4();
-//    void loadMap5();
-//    void loadMap6();
     void enemyCountChanged(int value);
     void difficultyLevelChanged(int value);
     void towersCountChanged(int value);
