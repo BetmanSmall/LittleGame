@@ -210,7 +210,7 @@
    <property name="size" value="1"/>
    <property name="type" value="1"/>
   </properties>
-  <image source="textures/warcraft2/tilesets/winter/human/buildings/scout_tower_3.png" trans="ff00ff" width="192" height="192"/>
+  <image source="textures/warcraft2/tilesets/winter/human/buildings/scout_tower.png" trans="ff00ff" width="192" height="192"/>
   <terraintypes>
    <terrain name="idle_up" tile="0"/>
    <terrain name="bullet_fly_up" tile="1"/>
