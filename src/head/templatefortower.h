@@ -1,15 +1,15 @@
-#ifndef DEFAULTTOWER_H
-#define DEFAULTTOWER_H
+#ifndef TEMPLATEFORTOWER_H
+#define TEMPLATEFORTOWER_H
 
 #include <QDebug>
 #include <QPixmap>
 
-#include "src/head/libs/tinyxml2.h"
+//#include "src/head/libs/tinyxml2.h"
 
 /**
- * @brief The DefaultTower class - класс, описывающий все реализации определенного типа Башни.
+ * @brief The TemplateForTower class - класс, описывающий все реализации определенного типа Башни.
  */
-class DefaultTower
+class TemplateForTower
 {
 public:
     QString name;
@@ -32,8 +32,8 @@ public:
     std::vector<QPixmap> bullet_fly_left;
     std::vector<QPixmap> bullet_fly_up_left;
 
-    DefaultTower();
-    ~DefaultTower();
+    TemplateForTower();
+    ~TemplateForTower();
 };
 
-#endif // DEFAULTTOWER_H
+#endif // TEMPLATEFORTOWER_H

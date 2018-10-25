@@ -1,6 +1,6 @@
 #include "src/head/bullet.h"
 
-Bullet::Bullet(int currCellX, int currCellY, Direction direction, DefaultTower* defTower) {
+Bullet::Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower* defTower) {
     this->flying = true;
     this->currCellX = currCellX;
     this->currCellY = currCellY;

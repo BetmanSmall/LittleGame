@@ -5,19 +5,8 @@
 #include <QPixmap>
 
 #include "src/head/libs/astar.h"
-#include "src/head/defaultunit.h"
-
-enum Direction {
-    DirectionIdle,
-    DirectionUp,
-    DirectionUpRight,
-    DirectionRight,
-    DirectionDownRight,
-    DirectionDown,
-    DirectionDownLeft,
-    DirectionLeft,
-    DirectionUpLeft
-};
+#include "src/head/direction.h"
+#include "src/head/templateforunit.h"
 
 /**
  * @brief The Unit class - класс, описывающий общие характеристики юнита.
@@ -36,13 +25,13 @@ public:
     int lastX, lastY;
     int coorByCellX, coorByCellY;
     int coorByMapX, coorByMapY;
-    Direction direction;
+    Direction::type direction;
     int animationLastAliveIter;
     int animationCurrIter;
     int animationMaxIter;
     QPixmap pixmap;
     std::vector<QPixmap> activePixmaps;
-    DefaultUnit* defUnit;
+    TemplateForUnit* defUnit;
 
     Unit();
     ~Unit();

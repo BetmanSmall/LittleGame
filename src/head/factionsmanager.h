@@ -8,11 +8,19 @@
 
 class FactionsManager
 {
-    std::vector<Faction> factions;
+#ifdef QT_DEBUG
+    QString ASSETS_PATH = "../../LittleGame/assets/";
+#else
+    QString ASSETS_PATH = "./assets/";
+#endif
+
+    std::vector<Faction*> factions;
 public:
     FactionsManager();
+    ~FactionsManager();
+
     void loadFactions();
-    void loadFaction(QFile factionFile);
+    void loadFaction(QString factionFile);
 };
 
 #endif // FACTIONSMANAGER_H

@@ -204,28 +204,28 @@ bool Field::towersAttack(int deltaTime) {
                 tmpBullet->pixmap = tmpBullet->activePixmaps[tmpBullet->animationCurrIter++];
             } else {
                 int exitX = currX, exitY = currY;
-                if (tmpBullet->direction == DirectionUp) {
+                if (tmpBullet->direction == Direction::type::UP) {
                     exitX = currX-1;
                     exitY = currY-1;
-                } else if (tmpBullet->direction == DirectionUpRight) {
+                } else if (tmpBullet->direction == Direction::UP_RIGHT) {
                     exitX = currX;
                     exitY = currY-1;
-                } else if (tmpBullet->direction == DirectionRight) {
+                } else if (tmpBullet->direction == Direction::RIGHT) {
                     exitX = currX+1;
                     exitY = currY-1;
-                } else if (tmpBullet->direction == DirectionUpLeft) {
+                } else if (tmpBullet->direction == Direction::UP_LEFT) {
                     exitX = currX-1;
                     exitY = currY;
-                } else if (tmpBullet->direction == DirectionDownRight) {
+                } else if (tmpBullet->direction == Direction::DOWN_RIGHT) {
                     exitX = currX+1;
                     exitY = currY;
-                } else if (tmpBullet->direction == DirectionLeft) {
+                } else if (tmpBullet->direction == Direction::LEFT) {
                     exitX = currX-1;
                     exitY = currY+1;
-                } else if (tmpBullet->direction == DirectionDownLeft) {
+                } else if (tmpBullet->direction == Direction::DOWN_LEFT) {
                     exitX = currX;
                     exitY = currY+1;
-                } else if (tmpBullet->direction == DirectionDown) {
+                } else if (tmpBullet->direction == Direction::DOWN) {
                     exitX = currX+1;
                     exitY = currY+1;
                 }
@@ -238,35 +238,35 @@ bool Field::towersAttack(int deltaTime) {
                         if(exitX < currX && exitY < currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_up.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_up;
-                            tmpBullet->direction = DirectionUp;
+                            tmpBullet->direction = Direction::UP;
                         } else if(exitX == currX && exitY < currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_up_right.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_up_right;
-                            tmpBullet->direction = DirectionUpRight;
+                            tmpBullet->direction = Direction::UP_RIGHT;
                         } else if(exitX > currX && exitY < currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_right.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_right;
-                            tmpBullet->direction = DirectionRight;
+                            tmpBullet->direction = Direction::RIGHT;
                         } else if(exitX < currX && exitY == currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_up_left.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_up_left;
-                            tmpBullet->direction = DirectionUpLeft;
+                            tmpBullet->direction = Direction::UP_LEFT;
                         } else if(exitX > currX && exitY == currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_down_right.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_down_right;
-                            tmpBullet->direction = DirectionDownRight;
+                            tmpBullet->direction = Direction::DOWN_RIGHT;
                         } else if(exitX < currX && exitY > currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_left.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_left;
-                            tmpBullet->direction = DirectionLeft;
+                            tmpBullet->direction = Direction::LEFT;
                         } else if(exitX == currX && exitY > currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_down_left.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_down_left;
-                            tmpBullet->direction = DirectionDownLeft;
+                            tmpBullet->direction = Direction::DOWN_LEFT;
                         } else if(exitX > currX && exitY > currY) {
                             tmpBullet->animationMaxIter = tmpBullet->defTower->bullet_fly_down.size();
                             tmpBullet->activePixmaps = tmpBullet->defTower->bullet_fly_down;
-                            tmpBullet->direction = DirectionDown;
+                            tmpBullet->direction = Direction::DOWN;
                         }
                     }
                     if (tmpBullet->activePixmaps.empty() && !tmpBullet->defTower->bullet.empty()) {
@@ -443,69 +443,69 @@ int Field::stepOneUnit(int num) {
                     if(exitX < currX && exitY < currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_left;
-                        tmpUnit->direction = DirectionUpLeft;
+                        tmpUnit->direction = Direction::type::UP_LEFT;
                     } else if(exitX == currX && exitY < currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up;
-                        tmpUnit->direction = DirectionUp;
+                        tmpUnit->direction = Direction::UP;
                     } else if(exitX > currX && exitY < currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_right.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_right;
-                        tmpUnit->direction = DirectionUpRight;
+                        tmpUnit->direction = Direction::UP_RIGHT;
                     } else if(exitX < currX && exitY == currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_left.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_left;
-                        tmpUnit->direction = DirectionLeft;
+                        tmpUnit->direction = Direction::LEFT;
                     } else if(exitX > currX && exitY == currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_right.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_right;
-                        tmpUnit->direction = DirectionRight;
+                        tmpUnit->direction = Direction::RIGHT;
                     } else if(exitX < currX && exitY > currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_left.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_left;
-                        tmpUnit->direction = DirectionDownLeft;
+                        tmpUnit->direction = Direction::DOWN_LEFT;
                     } else if(exitX == currX && exitY > currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down;
-                        tmpUnit->direction = DirectionDown;
+                        tmpUnit->direction = Direction::DOWN;
                     } else if(exitX > currX && exitY > currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_right.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_right;
-                        tmpUnit->direction = DirectionDownRight;
+                        tmpUnit->direction = Direction::DOWN_RIGHT;
                     }
                 } else {
                     if(exitX < currX && exitY < currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up;
-                        tmpUnit->direction = DirectionUp;
+                        tmpUnit->direction = Direction::UP;
                     } else if(exitX == currX && exitY < currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_right.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_right;
-                        tmpUnit->direction = DirectionUpRight;
+                        tmpUnit->direction = Direction::UP_RIGHT;
                     } else if(exitX > currX && exitY < currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_right.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_right;
-                        tmpUnit->direction = DirectionRight;
+                        tmpUnit->direction = Direction::RIGHT;
                     } else if(exitX < currX && exitY == currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_left;
-                        tmpUnit->direction = DirectionUpLeft;
+                        tmpUnit->direction = Direction::UP_LEFT;
                     } else if(exitX > currX && exitY == currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_right.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_right;
-                        tmpUnit->direction = DirectionDownRight;
+                        tmpUnit->direction = Direction::DOWN_RIGHT;
                     } else if(exitX < currX && exitY > currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_left.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_left;
-                        tmpUnit->direction = DirectionLeft;
+                        tmpUnit->direction = Direction::LEFT;
                     } else if(exitX == currX && exitY > currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_left.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_left;
-                        tmpUnit->direction = DirectionDownLeft;
+                        tmpUnit->direction = Direction::DOWN_LEFT;
                     } else if(exitX > currX && exitY > currY) {
                         tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down.size();
                         tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down;
-                        tmpUnit->direction = DirectionDown;
+                        tmpUnit->direction = Direction::DOWN;
                     }
                 }
                 tmpUnit->pixmap = tmpUnit->activePixmaps[0];
@@ -514,7 +514,7 @@ int Field::stepOneUnit(int num) {
             } else {
                 tmpUnit->animationMaxIter = tmpUnit->defUnit->idle.size();
                 tmpUnit->activePixmaps = tmpUnit->defUnit->idle;
-                tmpUnit->direction = DirectionIdle;
+                tmpUnit->direction = Direction::IDLE;
                 tmpUnit->pixmap = tmpUnit->activePixmaps[0];
             }
         }
@@ -623,7 +623,7 @@ int Field::containUnit(int x, int y, Unit *unit) {
     return 0;
 }
 
-bool Field::setTower(int x, int y, DefaultTower* defTower) {
+bool Field::setTower(int x, int y, TemplateForTower* defTower) {
     int size = defTower->size;
     for(int tmpX = 0; tmpX < size; tmpX++)
         for(int tmpY = 0; tmpY < size; tmpY++)

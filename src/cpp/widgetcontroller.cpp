@@ -66,11 +66,11 @@ void WidgetController::showMainMenu() {
 }
 
 void WidgetController::loadRandomMap() {
-    showGameWidget("maps/randomMap.tmx");
+    loadMap("maps/randomMap.tmx");
 }
 
 void WidgetController::loadNormalMap() {
-    showGameWidget("maps/island.tmx");
+    loadMap("maps/island.tmx");
 }
 
 void WidgetController::showOptionMenu() {
@@ -93,27 +93,28 @@ void WidgetController::showOptionMenu() {
     stackedWidget->setCurrentWidget(optionMenu);
 }
 
-void WidgetController::loadMap(GameWidget* gameWidget) {
-    qDebug() << "WidgetController::loadMap(GameWidget* gameWidget)";
+void WidgetController::loadMap(QString mapPath) {
+    qDebug() << "WidgetController::loadMap(); -- mapPath:" << mapPath;
+    GameWidget* gameWidget = new GameWidget(this);
+    gameWidget->setMinimumWidth(1024);
+    gameWidget->setMinimumHeight(768);
+
+    gameWidget->loadMap(ASSETS_PATH + mapPath, enemyCount, towersCount);
+    gameWidget->field.towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
+    gameWidget->panMidMouseButton = panMidMouseButtonBool;
+    showGameWidget(gameWidget);
+    exit(0);
+    qDebug() << "WidgetController::showGameWidget(); -- END";
+}
+
+void WidgetController::showGameWidget(GameWidget* gameWidget) {
+    qDebug() << "WidgetController::showGameWidget(); -- gameWidget:" << gameWidget;
     connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
     connect(gameWidget, SIGNAL(signal_changeWindowState()), this, SLOT(changeWindowState()));
     connect(gameWidget, SIGNAL(signal_closeWidgetGameFinished(bool,int)), this, SLOT(closeWidgetGameFinished(bool,int)));
     stackedWidget->addWidget(gameWidget);
     stackedWidget->setCurrentWidget(gameWidget);
-    qDebug() << "WidgetController::loadMap(); -- end";
-}
-
-void WidgetController::showGameWidget(QString mapPath) {
-    qDebug() << "WidgetController::showGameWidget(); -- mapPath:" << mapPath;
-    GameWidget* gameWidget = new GameWidget(this);
-    gameWidget->setMinimumWidth(1024);
-    gameWidget->setMinimumHeight(768);
-
-    loadMap(gameWidget);
-    gameWidget->loadMap(ASSETS_PATH + mapPath, enemyCount, towersCount);
-    gameWidget->field.towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
-    gameWidget->panMidMouseButton = panMidMouseButtonBool;
-    qDebug() << "WidgetController::showGameWidget(); -- END";
+    qDebug() << "WidgetController::showGameWidget(); -- end";
 }
 
 void WidgetController::changeWindowState() {

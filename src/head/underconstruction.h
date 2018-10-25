@@ -3,13 +3,13 @@
 
 #include <QDebug>
 
-#include "src/head/defaulttower.h"
+#include "src/head/templatefortower.h"
 
 class UnderConstruction
 {
 public:
-    UnderConstruction(DefaultTower* tower);
-    UnderConstruction(int startX, int startY, DefaultTower* tower);
+    UnderConstruction(TemplateForTower* tower);
+    UnderConstruction(int startX, int startY, TemplateForTower* tower);
 
     bool setStartCoors(int startX, int startY);
     bool setEndCoors(int endX, int endY);
@@ -19,7 +19,7 @@ public:
     int startX, startY;
     int endX, endY;
 
-    DefaultTower* tower;
+    TemplateForTower* tower;
 
     std::vector<int> coorsX;
     std::vector<int> coorsY;

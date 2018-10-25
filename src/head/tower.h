@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <QPixmap>
 
-#include "src/head/defaulttower.h"
 #include "src/head/bullet.h"
+#include "src/head/templatefortower.h"
 
 /**
  * @brief The Tower class - класс, описывающий общие характеристики башни.
@@ -23,7 +23,7 @@ public:
     int currX, currY;
 
     QPixmap pixmap;
-    DefaultTower* defTower;
+    TemplateForTower* defTower;
     std::vector<Bullet*> bullets;
 
     Tower();

@@ -1,18 +1,34 @@
-#ifndef DEFAULTUNIT_H
-#define DEFAULTUNIT_H
+#ifndef TEMPLATEFORUNIT_H
+#define TEMPLATEFORUNIT_H
 
 #include <QDebug>
 #include <QPixmap>
+#include <QtXml>
+
+#include "src/head/mapEditor/maploader.h"
+#include "src/head/mapEditor/animatedtile.h"
+#include "src/head/mapEditor/tile.h"
+#include "src/head/direction.h"
 
 /**
- * @brief The DefaultUnit class - класс, описывающий все реализации определенного типа Юнита.
+ * @brief The TemplateForUnit class - класс, описывающий все реализации определенного типа Юнита.
  */
-class DefaultUnit
+class TemplateForUnit
 {
 public:
+//    Faction* faction;
+    QString templateName;
+
+//    Float bounty;
+//    Float cost;
+    QString factionName;
+    float healthPoints;
     QString name;
-    int healtPoint;
-    int type;
+    float speed;
+//    QString type;
+
+    QMap<QString, AnimatedTile*> animations;
+    AnimatedTile idleTile;
 
     QPixmap pixmap;
     QPixmap idle_up;
@@ -54,9 +70,17 @@ public:
 
     std::vector<QPixmap> explosion;
 
-    DefaultUnit();
-    ~DefaultUnit();
+    TemplateForUnit(QString templateFile);
+    ~TemplateForUnit();
     void clearVectors();
+
+private:
+    AnimatedTile* flipAnimatedTiledMapTile(AnimatedTile* animatedTiledMapTile);
+//    void validate();
+
+public:
+    QString toString();
+    QString toString(bool full);
 };
 
-#endif // DEFAULTUNIT_H
+#endif // TEMPLATEFORUNIT_H

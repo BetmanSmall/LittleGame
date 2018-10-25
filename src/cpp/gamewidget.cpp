@@ -39,6 +39,7 @@ GameWidget::GameWidget(QWidget *parent) :
     ui->clearMap->setHidden(true);
     ui->goUnits->setHidden(true);
     ui->closeWidget->setHidden(true);
+//    factionsManager = FactionsManager();
 }
 
 GameWidget::~GameWidget() {
@@ -196,7 +197,7 @@ void GameWidget::paintEvent(QPaintEvent* event) {
 
 void GameWidget::drawFullField() {
     if(field.getIsometric()) {
-        QPixmap pixmap = tileSets[0].tiles[85]; // draw water2
+        QPixmap pixmap = tileSets[0].tiles[85]->getPixmap(); // draw water2
         int sizeCellX = field.getSizeCell();
         int sizeCellY = sizeCellX/2;
         int sizeX = (width()/sizeCellX)+1;
@@ -585,7 +586,7 @@ void GameWidget::drawPaths() {
 }
 
 
-void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, DefaultTower *tower) {
+void GameWidget::drawTowerUnderConstruction(int buildX, int buildY, TemplateForTower *tower) {
     int mainCoorMapX = field.getMainCoorMapX();
     int mainCoorMapY = field.getMainCoorMapY();
     int spaceWidget = field.getSpaceWidget();
@@ -694,7 +695,7 @@ void GameWidget::stopTimer_UnitsMoveAndTowerAttack() {
 void GameWidget::buildTower(int x, int y) {
     if (x == -1 && y == -1) {
         qDebug() << "GameWidget:1:buildTower(" << x << ", " << y << "); -- ";
-        vector<DefaultTower*> towers = field.faction->getFirstTowers();
+        std::vector<TemplateForTower*> towers = field.faction->getFirstTowers();
         int size = towers.size();
         QMessageBox msgBox;
         msgBox.setText("Какую башню ты хочешь построить?");
@@ -747,7 +748,7 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
                 if (cell != NULL) {
                     if(cell->isEmpty()) {
                         int randNumber = ( 124+(rand()%2) );
-                        QPixmap pixmap = tileSets[0].tiles[randNumber];
+                        QPixmap pixmap = tileSets[0].tiles[randNumber]->getPixmap();
                         cell->setTerrain(pixmap);
                     } else if (cell->isTerrain()) {
                         cell->removeTerrain();
@@ -840,455 +841,455 @@ void GameWidget::loadMap(QString mapName, int enemyCount, int towersCount) {
         qDebug() << "Can't load map: " << mapName;
         return;
     }
-    QXmlStreamReader xmlReader(file);
-    int mapSizeX, mapSizeY;
-    int tileMapWidth, tileMapHeight;
-    Faction* faction = new Faction();
-    TileSet tileSet;
-    QString layerName;
-    int x = 0;
-    int y = 0;
-    while(!xmlReader.atEnd() && !xmlReader.hasError()) {
-        if(xmlReader.isStartElement()) {
-            QString nameElement = xmlReader.name().toString();
-            if(nameElement == "map") {
-                QString orientation = xmlReader.attributes().value("orientation").toString();
-                mapSizeX = xmlReader.attributes().value("width").toInt();
-                mapSizeY = xmlReader.attributes().value("height").toInt();
-                tileMapWidth = xmlReader.attributes().value("tilewidth").toInt();
-                tileMapHeight = xmlReader.attributes().value("tileheight").toInt();
-                qDebug() << "mapSizeX: " << mapSizeX;
-                qDebug() << "mapSizeY: " << mapSizeY;
-                qDebug() << "tileMapWidth: " << tileMapWidth;
-                qDebug() << "tileMapHeight: " << tileMapHeight;
-                field.createField(mapSizeX, mapSizeY);
-                if(orientation == "isometric") {
-                    qDebug() << "GameWidget::loadMap(); -- field.setIsometric(true);";
-                    field.setIsometric(true);
-                    field.setTileMapSize(tileMapWidth, tileMapHeight);
-                    field.setSizeCell(tileMapWidth);
-                }
-            } else if (nameElement == "tileset") {
-                tileSet.firstTileID = xmlReader.attributes().value("firstgid").toInt();
-                tileSet.name = xmlReader.attributes().value("name").toString();
-                tileSet.spacing = xmlReader.attributes().value("spacing").toInt();
-                tileSet.margin = xmlReader.attributes().value("margin").toInt();
-                tileSet.tileWidth = xmlReader.attributes().value("tilewidth").toInt();
-                tileSet.tileHeight = xmlReader.attributes().value("tileheight").toInt();
-                qDebug() << "tileSet.name: " << tileSet.name;
-                qDebug() << "tileSet.tileWidth: " << tileSet.tileWidth;
-                qDebug() << "tileSet.tileHeight: " << tileSet.tileHeight;
-                if (tileSet.name.contains("tower")) {
-                    DefaultTower* tower = new DefaultTower();
-                    xmlReader.readNext(); // <tileset "empty">
-                    xmlReader.readNext(); // <properties>
-                    xmlReader.readNext(); // <properties "empty">
-                    xmlReader.readNext(); // <property
-                    while(xmlReader.name().toString() == "property") {
-                        if(xmlReader.attributes().value("name").toString() == "attack")
-                            tower->attack = xmlReader.attributes().value("value").toInt();
-                        else if(xmlReader.attributes().value("name").toString() == "name")
-                            tower->name = xmlReader.attributes().value("value").toString();
-                        else if(xmlReader.attributes().value("name").toString() == "radius")
-                            tower->radius = xmlReader.attributes().value("value").toInt();
-                        else if(xmlReader.attributes().value("name").toString() == "size")
-                            tower->size = xmlReader.attributes().value("value").toInt();
+//    QXmlStreamReader xmlReader(file);
+//    int mapSizeX, mapSizeY;
+//    int tileMapWidth, tileMapHeight;
+//    Faction* faction = new Faction("test1");
+//    TileSet tileSet;
+//    QString layerName;
+//    int x = 0;
+//    int y = 0;
+//    while(!xmlReader.atEnd() && !xmlReader.hasError()) {
+//        if(xmlReader.isStartElement()) {
+//            QString nameElement = xmlReader.name().toString();
+//            if(nameElement == "map") {
+//                QString orientation = xmlReader.attributes().value("orientation").toString();
+//                mapSizeX = xmlReader.attributes().value("width").toInt();
+//                mapSizeY = xmlReader.attributes().value("height").toInt();
+//                tileMapWidth = xmlReader.attributes().value("tilewidth").toInt();
+//                tileMapHeight = xmlReader.attributes().value("tileheight").toInt();
+//                qDebug() << "mapSizeX: " << mapSizeX;
+//                qDebug() << "mapSizeY: " << mapSizeY;
+//                qDebug() << "tileMapWidth: " << tileMapWidth;
+//                qDebug() << "tileMapHeight: " << tileMapHeight;
+//                field.createField(mapSizeX, mapSizeY);
+//                if(orientation == "isometric") {
+//                    qDebug() << "GameWidget::loadMap(); -- field.setIsometric(true);";
+//                    field.setIsometric(true);
+//                    field.setTileMapSize(tileMapWidth, tileMapHeight);
+//                    field.setSizeCell(tileMapWidth);
+//                }
+//            } else if (nameElement == "tileset") {
+//                tileSet.firstTileID = xmlReader.attributes().value("firstgid").toInt();
+//                tileSet.name = xmlReader.attributes().value("name").toString();
+//                tileSet.spacing = xmlReader.attributes().value("spacing").toInt();
+//                tileSet.margin = xmlReader.attributes().value("margin").toInt();
+//                tileSet.tileWidth = xmlReader.attributes().value("tilewidth").toInt();
+//                tileSet.tileHeight = xmlReader.attributes().value("tileheight").toInt();
+//                qDebug() << "tileSet.name: " << tileSet.name;
+//                qDebug() << "tileSet.tileWidth: " << tileSet.tileWidth;
+//                qDebug() << "tileSet.tileHeight: " << tileSet.tileHeight;
+//                if (tileSet.name.contains("tower")) {
+//                    TemplateForTower* tower = new TemplateForTower();
+//                    xmlReader.readNext(); // <tileset "empty">
+//                    xmlReader.readNext(); // <properties>
+//                    xmlReader.readNext(); // <properties "empty">
+//                    xmlReader.readNext(); // <property
+//                    while(xmlReader.name().toString() == "property") {
+//                        if(xmlReader.attributes().value("name").toString() == "attack")
+//                            tower->attack = xmlReader.attributes().value("value").toInt();
+//                        else if(xmlReader.attributes().value("name").toString() == "name")
+//                            tower->name = xmlReader.attributes().value("value").toString();
+//                        else if(xmlReader.attributes().value("name").toString() == "radius")
+//                            tower->radius = xmlReader.attributes().value("value").toInt();
+//                        else if(xmlReader.attributes().value("name").toString() == "size")
+//                            tower->size = xmlReader.attributes().value("value").toInt();
 
-                        else if(xmlReader.attributes().value("name").toString() == "height")
-                            tower->height = xmlReader.attributes().value("value").toInt();
-                        else if(xmlReader.attributes().value("name").toString() == "type")
-                            tower->type = xmlReader.attributes().value("value").toInt();
-                        xmlReader.readNext(); // </property>
-                        xmlReader.readNext(); // </property "empty">
-                        xmlReader.readNext(); // <property> - </properties>
-                    }
-                    xmlReader.readNext(); // </properties "empty">
-                    xmlReader.readNext(); // <image>
-                    if(xmlReader.name().toString() == "image") {
-                        QString imagePath = xmlReader.attributes().value("source").toString();
-                        imagePath.prepend(ASSETS_PATH + "maps/");
-                        if(!tileSet.img.load(imagePath)) {
-                            qDebug() << "Failed to load tile sheet.";
-                            return;
-                        }
-                        int columns = tileSet.img.width() / tileSet.tileWidth;
-                        int rows = tileSet.img.height() / tileSet.tileHeight;
-                        for (int y = 0; y < rows; y++) {
-                            for (int x = 0; x < columns; x++) {
-                                QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
-                                tileSet.subRects.push_back(rect);
-                            }
-                        }
-                    }
-                    xmlReader.readNext(); // </image>
-                    xmlReader.readNext(); // </image "empty">
-                    xmlReader.readNext(); // <terraintypes>
-                    xmlReader.readNext(); // <terraintypes "empty">
-                    xmlReader.readNext(); // <terrain>
-                    while(xmlReader.name().toString() == "terrain") {
-                        QString name = xmlReader.attributes().value("name").toString();
-                        int tileGID = xmlReader.attributes().value("tile").toInt();
-                        QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
-                        if(name == "idle_up") {
-                            tower->pixmap = pixmap;
-                        } else if(name.contains("bullet")) {
-                            tower->bullet.push_back(pixmap);
-                        }
-                        xmlReader.readNext(); // </terrain>
-                        xmlReader.readNext(); // </terrain "empty">
-                        xmlReader.readNext(); // <terrain> - </terraintypes>
-                    }
-                    foreach (TileSet tileSetTmp, tileSets) {
-                        if (tileSetTmp.name == "fireball_0") {
-                            for (int tPk = 0; tPk < tileSetTmp.tilesNames.size(); tPk++) {
-                                QString tileName = tileSetTmp.tilesNames[tPk];
-                                int tileId = tileSetTmp.firstTileID+tPk-1;
-                                if (tileName == "fireball_left") {
-                                    tower->bullet_fly_left.push_back(tileSetTmp.tiles[tileId]);
-                                } else if (tileName == "fireball_up_left") {
-                                    tower->bullet_fly_up_left.push_back(tileSetTmp.tiles[tileId]);
-                                } else if (tileName == "fireball_up") {
-                                    tower->bullet_fly_up.push_back(tileSetTmp.tiles[tileId]);
-                                } else if (tileName == "fireball_up_right") {
-                                    tower->bullet_fly_up_right.push_back(tileSetTmp.tiles[tileId]);
-                                } else if (tileName == "fireball_right") {
-                                    tower->bullet_fly_right.push_back(tileSetTmp.tiles[tileId]);
-                                } else if (tileName == "fireball_down_right") {
-                                    tower->bullet_fly_down_right.push_back(tileSetTmp.tiles[tileId]);
-                                } else if (tileName == "fireball_down") {
-                                    tower->bullet_fly_down.push_back(tileSetTmp.tiles[tileId]);
-                                } else if (tileName == "fireball_down_left") {
-                                    tower->bullet_fly_down_left.push_back(tileSetTmp.tiles[tileId]);
-                                }
-                            }
-                            tower->bullet.clear();
-                        }
-                    }
-                    qDebug() << "faction.creatyNewTower(tower);";
-                    faction->addTower(tower);
-                } else if(tileSet.name.contains("unit")) {
-                    DefaultUnit* unit = new DefaultUnit();
-                    xmlReader.readNext(); // <tileset "empty">
-                    xmlReader.readNext(); // <properties>
-                    xmlReader.readNext(); // <properties "empty">
-                    xmlReader.readNext(); // <property>
-                    while(xmlReader.name().toString() == "property") {
-                        if(xmlReader.attributes().value("name").toString() == "health_point") {
-                            unit->healtPoint = xmlReader.attributes().value("value").toInt();
-                        } else if(xmlReader.attributes().value("name").toString() == "name") {
-                            unit->name = xmlReader.attributes().value("value").toString();
-                        }
-                        xmlReader.readNext(); // </property>
-                        xmlReader.readNext(); // </property "empty">
-                        xmlReader.readNext(); // <property> - </properties>
-                    }
-                    xmlReader.readNext(); // </properties "empty">
-                    xmlReader.readNext(); // <image>
-                    if(xmlReader.name().toString() == "image") {
-                        QString imagePath = xmlReader.attributes().value("source").toString();
-                        imagePath.prepend(ASSETS_PATH + "maps/");
+//                        else if(xmlReader.attributes().value("name").toString() == "height")
+//                            tower->height = xmlReader.attributes().value("value").toInt();
+//                        else if(xmlReader.attributes().value("name").toString() == "type")
+//                            tower->type = xmlReader.attributes().value("value").toInt();
+//                        xmlReader.readNext(); // </property>
+//                        xmlReader.readNext(); // </property "empty">
+//                        xmlReader.readNext(); // <property> - </properties>
+//                    }
+//                    xmlReader.readNext(); // </properties "empty">
+//                    xmlReader.readNext(); // <image>
+//                    if(xmlReader.name().toString() == "image") {
+//                        QString imagePath = xmlReader.attributes().value("source").toString();
+//                        imagePath.prepend(ASSETS_PATH + "maps/");
+//                        if(!tileSet.img.load(imagePath)) {
+//                            qDebug() << "Failed to load tile sheet.";
+//                            return;
+//                        }
+//                        int columns = tileSet.img.width() / tileSet.tileWidth;
+//                        int rows = tileSet.img.height() / tileSet.tileHeight;
+//                        for (int y = 0; y < rows; y++) {
+//                            for (int x = 0; x < columns; x++) {
+//                                QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
+//                                tileSet.subRects.push_back(rect);
+//                            }
+//                        }
+//                    }
+//                    xmlReader.readNext(); // </image>
+//                    xmlReader.readNext(); // </image "empty">
+//                    xmlReader.readNext(); // <terraintypes>
+//                    xmlReader.readNext(); // <terraintypes "empty">
+//                    xmlReader.readNext(); // <terrain>
+//                    while(xmlReader.name().toString() == "terrain") {
+//                        QString name = xmlReader.attributes().value("name").toString();
+//                        int tileGID = xmlReader.attributes().value("tile").toInt();
+//                        QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
+//                        if(name == "idle_up") {
+//                            tower->pixmap = pixmap;
+//                        } else if(name.contains("bullet")) {
+//                            tower->bullet.push_back(pixmap);
+//                        }
+//                        xmlReader.readNext(); // </terrain>
+//                        xmlReader.readNext(); // </terrain "empty">
+//                        xmlReader.readNext(); // <terrain> - </terraintypes>
+//                    }
+//                    foreach (TileSet tileSetTmp, tileSets) {
+//                        if (tileSetTmp.name == "fireball_0") {
+//                            for (int tPk = 0; tPk < tileSetTmp.tilesNames.size(); tPk++) {
+//                                QString tileName = tileSetTmp.tilesNames[tPk];
+//                                int tileId = tileSetTmp.firstTileID+tPk-1;
+//                                if (tileName == "fireball_left") {
+//                                    tower->bullet_fly_left.push_back(tileSetTmp.tiles[tileId]);
+//                                } else if (tileName == "fireball_up_left") {
+//                                    tower->bullet_fly_up_left.push_back(tileSetTmp.tiles[tileId]);
+//                                } else if (tileName == "fireball_up") {
+//                                    tower->bullet_fly_up.push_back(tileSetTmp.tiles[tileId]);
+//                                } else if (tileName == "fireball_up_right") {
+//                                    tower->bullet_fly_up_right.push_back(tileSetTmp.tiles[tileId]);
+//                                } else if (tileName == "fireball_right") {
+//                                    tower->bullet_fly_right.push_back(tileSetTmp.tiles[tileId]);
+//                                } else if (tileName == "fireball_down_right") {
+//                                    tower->bullet_fly_down_right.push_back(tileSetTmp.tiles[tileId]);
+//                                } else if (tileName == "fireball_down") {
+//                                    tower->bullet_fly_down.push_back(tileSetTmp.tiles[tileId]);
+//                                } else if (tileName == "fireball_down_left") {
+//                                    tower->bullet_fly_down_left.push_back(tileSetTmp.tiles[tileId]);
+//                                }
+//                            }
+//                            tower->bullet.clear();
+//                        }
+//                    }
+//                    qDebug() << "faction.creatyNewTower(tower);";
+//                    faction->addTower(tower);
+//                } else if(tileSet.name.contains("unit")) {
+//                    TemplateForUnit* unit = new TemplateForUnit("test");
+//                    xmlReader.readNext(); // <tileset "empty">
+//                    xmlReader.readNext(); // <properties>
+//                    xmlReader.readNext(); // <properties "empty">
+//                    xmlReader.readNext(); // <property>
+//                    while(xmlReader.name().toString() == "property") {
+//                        if(xmlReader.attributes().value("name").toString() == "health_point") {
+//                            unit->healthPoints = xmlReader.attributes().value("value").toInt();
+//                        } else if(xmlReader.attributes().value("name").toString() == "name") {
+//                            unit->templateName = xmlReader.attributes().value("value").toString();
+//                        }
+//                        xmlReader.readNext(); // </property>
+//                        xmlReader.readNext(); // </property "empty">
+//                        xmlReader.readNext(); // <property> - </properties>
+//                    }
+//                    xmlReader.readNext(); // </properties "empty">
+//                    xmlReader.readNext(); // <image>
+//                    if(xmlReader.name().toString() == "image") {
+//                        QString imagePath = xmlReader.attributes().value("source").toString();
+//                        imagePath.prepend(ASSETS_PATH + "maps/");
 
-                        if(!tileSet.img.load(imagePath)) {
-                            qDebug() << "Failed to load tile sheet.";
-                            return;
-                        }
-                        int columns = tileSet.img.width() / tileSet.tileWidth;
-                        int rows = tileSet.img.height() / tileSet.tileHeight;
+//                        if(!tileSet.img.load(imagePath)) {
+//                            qDebug() << "Failed to load tile sheet.";
+//                            return;
+//                        }
+//                        int columns = tileSet.img.width() / tileSet.tileWidth;
+//                        int rows = tileSet.img.height() / tileSet.tileHeight;
 
-                        qDebug() << "GameWidget::loadMap(); -- unit : columnsPixmap: " << columns;
-                        qDebug() << "GameWidget::loadMap(); -- unit : rowsPixmap: " << rows;
+//                        qDebug() << "GameWidget::loadMap(); -- unit : columnsPixmap: " << columns;
+//                        qDebug() << "GameWidget::loadMap(); -- unit : rowsPixmap: " << rows;
 
-                        for(int y = 0; y < rows; y++) {
-                            for(int x = 0; x < columns; x++) {
-                                QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
-                                tileSet.subRects.push_back(rect);
-                            }
-                        }
-                    }
-                    xmlReader.readNext(); // </image>
-                    xmlReader.readNext(); // </image "empty">
-                    xmlReader.readNext(); // <terraintypes>
-                    xmlReader.readNext(); // <terraintypes "empty">
-                    xmlReader.readNext(); // <terrain>
-                    while(xmlReader.name().toString() == "terrain") {
-                        QString name = xmlReader.attributes().value("name").toString();
-                        int tileGID = xmlReader.attributes().value("tile").toInt();
-                        QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
-                        if(name == "idle_up") {
-                            unit->idle_up = pixmap;
-                            unit->idle.push_back(pixmap);
-                        } else if(name == "idle_up_right") {
-                            unit->idle_up_right = pixmap;
-                            unit->idle.push_back(pixmap);
-                            unit->idle_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                            unit->idle.push_back(unit->idle_up_left);
-                        } else if(name == "idle_right") {
-                            unit->idle_right = pixmap;
-                            unit->idle.push_back(pixmap);
-                            unit->idle_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                            unit->idle.push_back(unit->idle_left);
-                        } else if(name == "idle_down_right") {
-                            unit->idle_down_right = pixmap;
-                            unit->idle.push_back(pixmap);
-                            unit->idle_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
-                            unit->idle.push_back(unit->idle_down_left);
-                        } else if(name == "idle_down") {
-                            unit->idle_down = pixmap;
-                            unit->idle.push_back(pixmap);
-                        } else if(name.contains("walk")) {
-                            if(name.contains("up")) {
-                                if(!name.contains("right")) {
-                                    unit->walk_up.push_back(pixmap);
-                                } else {
-                                    unit->walk_up_right.push_back(pixmap);
-                                    unit->walk_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            } else if(name.contains("right")) {
-                                if(!name.contains("down")) {
-                                    unit->walk_right.push_back(pixmap);
-                                    unit->walk_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                } else {
-                                    unit->walk_down_right.push_back(pixmap);
-                                    unit->walk_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            } else if(name.contains("down")) {
-                                if(!name.contains("right"))
-                                    unit->walk_down.push_back(pixmap);
-                            }
-                        } else if(name.contains("attack")) {
-                            if(name.contains("up")) {
-                                if(!name.contains("right")) {
-                                    unit->attack_up.push_back(pixmap);
-                                }
-                                else {
-                                    unit->attack_up_right.push_back(pixmap);
-                                    unit->attack_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            }
-                            else if(name.contains("right")) {
-                                if(!name.contains("down")) {
-                                    unit->attack_right.push_back(pixmap);
-                                    unit->attack_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                } else {
-                                    unit->attack_down_right.push_back(pixmap);
-                                    unit->attack_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            } else if(name.contains("down")) {
-                                if(!name.contains("right")) {
-                                    unit->attack_down.push_back(pixmap);
-                                }
-                            }
-                        } else if(name.contains("death")) {
-                            if(name.contains("up")) {
-                                if(!name.contains("right")) {
-                                    unit->death_up.push_back(pixmap);
-                                } else {
-                                    unit->death_up_right.push_back(pixmap);
-                                    unit->death_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            } else if(name.contains("right")) {
-                                if(!name.contains("down")) {
-                                    unit->death_right.push_back(pixmap);
-                                    unit->death_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                } else {
-                                    unit->death_down_right.push_back(pixmap);
-                                    unit->death_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
-                                }
-                            } else if(name.contains("down")) {
-                                if(!name.contains("right")) {
-                                    unit->death_down.push_back(pixmap);
-                                }
-                            }
-                        }
-                        xmlReader.readNext(); // </terrain>
-                        xmlReader.readNext(); // </terrain "empty">
-                        xmlReader.readNext(); // <terrain> - </terraintypes>
-                    }
-                    foreach (TileSet tileSetTmp, tileSets) {
-                        if (tileSetTmp.name == "explosion") {
-                            for (int tPk = 0; tPk < tileSetTmp.subRects.size(); tPk++) {
-                                int tileId = tileSetTmp.firstTileID+tPk-1;
-                                unit->explosion.push_back(tileSetTmp.tiles[tileId]);
-                            }
-                            qDebug() << "GameWidget::loadMap(); -- unit->explosion.size():" << unit->explosion.size();
-                        }
-                    }
-                    qDebug() << "unit.walk_down.size(): " << &unit << "->" << unit->walk_down.size();
-                    qDebug() << "faction.creatyNewUnit(unit);";
-                    faction->addUnit(unit);
-                }
-            } else if(nameElement == "image") {
-                QString imagePath = xmlReader.attributes().value("source").toString();
-                imagePath.prepend(ASSETS_PATH + "maps/");
-                if(!tileSet.img.load(imagePath)) {
-                    qDebug() << "Failed to load tile sheet.";
-                    return;
-                }
-                int columns = tileSet.img.width() / tileSet.tileWidth;
-                int rows = tileSet.img.height() / tileSet.tileHeight;
-                qDebug() << "columnsPixmap: " << columns;
-                qDebug() << "rowsPixmap: " << rows;
-                for(int y = 0; y < rows; y++) {
-                    for(int x = 0; x < columns; x++) {
-                        QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
-                        tileSet.subRects.push_back(rect);
-                        tileSet.tiles.push_back(tileSet.img.copy(rect));
-                    }
-                }
-            } else if(nameElement == "terrain") {
-                if (tileSet.name == "fireball_0") {
-                    QString name = xmlReader.attributes().value("name").toString();
-                    tileSet.tilesNames.push_back(name);
-                }
-            } else if(nameElement == "layer") {
-                layerName = xmlReader.attributes().value("name").toString();
-                x = 0;
-                y = 0;
-            } else if(nameElement == "tile") {
-                if (!layerName.isEmpty()) {
-                    int num = 0;
-                    int tileGID = xmlReader.attributes().value("gid").toInt();
-                    int size = tileSets.size();
-                    for(int k = 0; k < size; k++)
-                        if(tileGID >= tileSets[k].firstTileID)
-                            num = k;
-                    int subRectToUse = tileGID - tileSets[num].firstTileID;
-                    if (subRectToUse >= 0) {
-                        Cell* cell = field.getCell(x, y);
-                        QPixmap pixmap = tileSets[num].img;
-                        pixmap = pixmap.copy(tileSets[num].subRects[subRectToUse]);
-                        if(layerName == "ground" || layerName == "entity") {
-                            cell->setTerrain(pixmap, false);
-                        } else if (layerName == "removeground") {
-                            cell->setTerrain(pixmap);
-                        } else if (layerName == "towers") {
-                            cell->removeTerrain(true);
-                            qDebug() << "GameWidget::loadMap(); -- faction:" << faction->getFirstTowers()[0];
-                            field.setTower(x, y, faction->getFirstTowers()[0]);
-                        } else if (layerName == "background"){
-                            cell->backgroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap);
-                        } else if (layerName == "entityimg") {
-                            cell->foregroundTiles.push_back(pixmap);
-                        } else {
-                            cell->foregroundTiles.push_back(pixmap);
-                        }
-                    }
-                    x++;
-                    if (x >= mapSizeX) {
-                        x = 0;
-                        y++;
-                        if(y >= mapSizeY) {
-                            y = 0;
-                        }
-                    }
-                }
-            } else if(nameElement == "object") {
-                QString name = xmlReader.attributes().value("name").toString();
-                int num = 0;
-                int tileGID = xmlReader.attributes().value("gid").toInt();
-                int size = tileSets.size();
-                for(int k = 0; k < size; k++)
-                    if(tileGID >= tileSets[k].firstTileID)
-                        num = k;
+//                        for(int y = 0; y < rows; y++) {
+//                            for(int x = 0; x < columns; x++) {
+//                                QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
+//                                tileSet.subRects.push_back(rect);
+//                            }
+//                        }
+//                    }
+//                    xmlReader.readNext(); // </image>
+//                    xmlReader.readNext(); // </image "empty">
+//                    xmlReader.readNext(); // <terraintypes>
+//                    xmlReader.readNext(); // <terraintypes "empty">
+//                    xmlReader.readNext(); // <terrain>
+//                    while(xmlReader.name().toString() == "terrain") {
+//                        QString name = xmlReader.attributes().value("name").toString();
+//                        int tileGID = xmlReader.attributes().value("tile").toInt();
+//                        QPixmap pixmap = tileSet.img.copy(tileSet.subRects[tileGID]);
+//                        if(name == "idle_up") {
+//                            unit->idle_up = pixmap;
+//                            unit->idle.push_back(pixmap);
+//                        } else if(name == "idle_up_right") {
+//                            unit->idle_up_right = pixmap;
+//                            unit->idle.push_back(pixmap);
+//                            unit->idle_up_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+//                            unit->idle.push_back(unit->idle_up_left);
+//                        } else if(name == "idle_right") {
+//                            unit->idle_right = pixmap;
+//                            unit->idle.push_back(pixmap);
+//                            unit->idle_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+//                            unit->idle.push_back(unit->idle_left);
+//                        } else if(name == "idle_down_right") {
+//                            unit->idle_down_right = pixmap;
+//                            unit->idle.push_back(pixmap);
+//                            unit->idle_down_left = QPixmap::fromImage(pixmap.toImage().mirrored(true, false));
+//                            unit->idle.push_back(unit->idle_down_left);
+//                        } else if(name == "idle_down") {
+//                            unit->idle_down = pixmap;
+//                            unit->idle.push_back(pixmap);
+//                        } else if(name.contains("walk")) {
+//                            if(name.contains("up")) {
+//                                if(!name.contains("right")) {
+//                                    unit->walk_up.push_back(pixmap);
+//                                } else {
+//                                    unit->walk_up_right.push_back(pixmap);
+//                                    unit->walk_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                }
+//                            } else if(name.contains("right")) {
+//                                if(!name.contains("down")) {
+//                                    unit->walk_right.push_back(pixmap);
+//                                    unit->walk_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                } else {
+//                                    unit->walk_down_right.push_back(pixmap);
+//                                    unit->walk_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                }
+//                            } else if(name.contains("down")) {
+//                                if(!name.contains("right"))
+//                                    unit->walk_down.push_back(pixmap);
+//                            }
+//                        } else if(name.contains("attack")) {
+//                            if(name.contains("up")) {
+//                                if(!name.contains("right")) {
+//                                    unit->attack_up.push_back(pixmap);
+//                                }
+//                                else {
+//                                    unit->attack_up_right.push_back(pixmap);
+//                                    unit->attack_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                }
+//                            }
+//                            else if(name.contains("right")) {
+//                                if(!name.contains("down")) {
+//                                    unit->attack_right.push_back(pixmap);
+//                                    unit->attack_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                } else {
+//                                    unit->attack_down_right.push_back(pixmap);
+//                                    unit->attack_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                }
+//                            } else if(name.contains("down")) {
+//                                if(!name.contains("right")) {
+//                                    unit->attack_down.push_back(pixmap);
+//                                }
+//                            }
+//                        } else if(name.contains("death")) {
+//                            if(name.contains("up")) {
+//                                if(!name.contains("right")) {
+//                                    unit->death_up.push_back(pixmap);
+//                                } else {
+//                                    unit->death_up_right.push_back(pixmap);
+//                                    unit->death_up_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                }
+//                            } else if(name.contains("right")) {
+//                                if(!name.contains("down")) {
+//                                    unit->death_right.push_back(pixmap);
+//                                    unit->death_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                } else {
+//                                    unit->death_down_right.push_back(pixmap);
+//                                    unit->death_down_left.push_back(QPixmap::fromImage(pixmap.toImage().mirrored(true, false)));
+//                                }
+//                            } else if(name.contains("down")) {
+//                                if(!name.contains("right")) {
+//                                    unit->death_down.push_back(pixmap);
+//                                }
+//                            }
+//                        }
+//                        xmlReader.readNext(); // </terrain>
+//                        xmlReader.readNext(); // </terrain "empty">
+//                        xmlReader.readNext(); // <terrain> - </terraintypes>
+//                    }
+//                    foreach (TileSet tileSetTmp, tileSets) {
+//                        if (tileSetTmp.name == "explosion") {
+//                            for (int tPk = 0; tPk < tileSetTmp.subRects.size(); tPk++) {
+//                                int tileId = tileSetTmp.firstTileID+tPk-1;
+//                                unit->explosion.push_back(tileSetTmp.tiles[tileId]);
+//                            }
+//                            qDebug() << "GameWidget::loadMap(); -- unit->explosion.size():" << unit->explosion.size();
+//                        }
+//                    }
+//                    qDebug() << "unit.walk_down.size(): " << &unit << "->" << unit->walk_down.size();
+//                    qDebug() << "faction.creatyNewUnit(unit);";
+//                    faction->addUnit(unit);
+//                }
+//            } else if(nameElement == "image") {
+//                QString imagePath = xmlReader.attributes().value("source").toString();
+//                imagePath.prepend(ASSETS_PATH + "maps/");
+//                if(!tileSet.img.load(imagePath)) {
+//                    qDebug() << "Failed to load tile sheet.";
+//                    return;
+//                }
+//                int columns = tileSet.img.width() / tileSet.tileWidth;
+//                int rows = tileSet.img.height() / tileSet.tileHeight;
+//                qDebug() << "columnsPixmap: " << columns;
+//                qDebug() << "rowsPixmap: " << rows;
+//                for(int y = 0; y < rows; y++) {
+//                    for(int x = 0; x < columns; x++) {
+//                        QRect rect(tileSet.margin + (tileSet.spacing * x) + (x * tileSet.tileWidth), tileSet.margin + (tileSet.spacing * y) + (y * tileSet.tileHeight), tileSet.tileWidth, tileSet.tileHeight);
+//                        tileSet.subRects.push_back(rect);
+//                        tileSet.tiles.push_back(tileSet.img.copy(rect));
+//                    }
+//                }
+//            } else if(nameElement == "terrain") {
+//                if (tileSet.name == "fireball_0") {
+//                    QString name = xmlReader.attributes().value("name").toString();
+//                    tileSet.tilesNames.push_back(name);
+//                }
+//            } else if(nameElement == "layer") {
+//                layerName = xmlReader.attributes().value("name").toString();
+//                x = 0;
+//                y = 0;
+//            } else if(nameElement == "tile") {
+//                if (!layerName.isEmpty()) {
+//                    int num = 0;
+//                    int tileGID = xmlReader.attributes().value("gid").toInt();
+//                    int size = tileSets.size();
+//                    for(int k = 0; k < size; k++)
+//                        if(tileGID >= tileSets[k].firstTileID)
+//                            num = k;
+//                    int subRectToUse = tileGID - tileSets[num].firstTileID;
+//                    if (subRectToUse >= 0) {
+//                        Cell* cell = field.getCell(x, y);
+//                        QPixmap pixmap = tileSets[num].img;
+//                        pixmap = pixmap.copy(tileSets[num].subRects[subRectToUse]);
+//                        if(layerName == "ground" || layerName == "entity") {
+//                            cell->setTerrain(pixmap, false);
+//                        } else if (layerName == "removeground") {
+//                            cell->setTerrain(pixmap);
+//                        } else if (layerName == "towers") {
+//                            cell->removeTerrain(true);
+//                            qDebug() << "GameWidget::loadMap(); -- faction:" << faction->getFirstTowers()[0];
+//                            field.setTower(x, y, faction->getFirstTowers()[0]);
+//                        } else if (layerName == "background"){
+//                            cell->backgroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap);
+//                        } else if (layerName == "entityimg") {
+//                            cell->foregroundTiles.push_back(pixmap);
+//                        } else {
+//                            cell->foregroundTiles.push_back(pixmap);
+//                        }
+//                    }
+//                    x++;
+//                    if (x >= mapSizeX) {
+//                        x = 0;
+//                        y++;
+//                        if(y >= mapSizeY) {
+//                            y = 0;
+//                        }
+//                    }
+//                }
+//            } else if(nameElement == "object") {
+//                QString name = xmlReader.attributes().value("name").toString();
+//                int num = 0;
+//                int tileGID = xmlReader.attributes().value("gid").toInt();
+//                int size = tileSets.size();
+//                for(int k = 0; k < size; k++)
+//                    if(tileGID >= tileSets[k].firstTileID)
+//                        num = k;
 
-                int tileObjectID = tileGID - tileSets[num].firstTileID;
-                int x = xmlReader.attributes().value("x").toInt();
-                int y = xmlReader.attributes().value("y").toInt();
-                if(!field.getIsometric()) {
-                    x = x / tileMapWidth; // В файле кординаты графические. Поэтому преобразуем в игровые.
-                    y = (y - tileMapWidth) / tileMapWidth;
-                }
-                QPixmap pixmap = tileSets[num].img;
-                pixmap = pixmap.copy(tileSets[num].subRects[tileObjectID]);
-                if(name == "spawnPoint") {
-                    qDebug() << "GameWidget::loadMap(); -- createSpawnPoint(" << defaultNumCreateUnits << ", " << x << ", " << y << ");";
-                    field.getCell(x, y)->foregroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap); // need fix
-                    field.setMousePress(x, y);
-                    field.createSpawnPoint(defaultNumCreateUnits, x, y);
-                } else if(name == "exitPoint") {
-                    qDebug() << "GameWidget::loadMap(); -- createExitPoint(" << x << ", " << y << ");";
-                    field.getCell(x, y)->foregroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap); // need fix
-                    field.createExitPoint(x, y);
+//                int tileObjectID = tileGID - tileSets[num].firstTileID;
+//                int x = xmlReader.attributes().value("x").toInt();
+//                int y = xmlReader.attributes().value("y").toInt();
+//                if(!field.getIsometric()) {
+//                    x = x / tileMapWidth; // В файле кординаты графические. Поэтому преобразуем в игровые.
+//                    y = (y - tileMapWidth) / tileMapWidth;
+//                }
+//                QPixmap pixmap = tileSets[num].img;
+//                pixmap = pixmap.copy(tileSets[num].subRects[tileObjectID]);
+//                if(name == "spawnPoint") {
+//                    qDebug() << "GameWidget::loadMap(); -- createSpawnPoint(" << defaultNumCreateUnits << ", " << x << ", " << y << ");";
+//                    field.getCell(x, y)->foregroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap); // need fix
+//                    field.setMousePress(x, y);
+//                    field.createSpawnPoint(defaultNumCreateUnits, x, y);
+//                } else if(name == "exitPoint") {
+//                    qDebug() << "GameWidget::loadMap(); -- createExitPoint(" << x << ", " << y << ");";
+//                    field.getCell(x, y)->foregroundTiles.push_back(pixmap);//setPixmapInCell(x, y, pixmap); // need fix
+//                    field.createExitPoint(x, y);
 
-                }
-            }
-        } else if(xmlReader.isEndElement()) {
-            QString nameElement = xmlReader.name().toString();
-            if(nameElement == "tileset") {
-                tileSets.push_back(tileSet);
-                tileSet.subRects.clear();
-            } else if(nameElement == "layer") {
-                layerName.clear();
-            }
-        }
-        xmlReader.readNext();
-    }
-    if(xmlReader.hasError()) {
-        qDebug() << "Error: " << xmlReader.errorString();
-    } else {
-        qDebug() << "GameWidget::loadMap(); -- Completed load map.";
-    }
-    field.setFaction(faction);
-    qDebug() << "GameWidget::loadMap(); -- towersCount:" << towersCount;
-    int terrainType = rand()%2;
-    if (mapName.contains("randomMap")) {
-        for (int x = 0; x < mapSizeX; x++) {
-            for (int y = 0; y < mapSizeY; y++) {
-                if( (rand()%100) < 30 ) {
-                    int randNumber = tileSets[1].firstTileID-1+( 42+(rand()%4) );
-                    QPixmap pixmap = tileSets[1].tiles[randNumber];
-                    field.getCell(x, y)->setTerrain(pixmap);
+//                }
+//            }
+//        } else if(xmlReader.isEndElement()) {
+//            QString nameElement = xmlReader.name().toString();
+//            if(nameElement == "tileset") {
+//                tileSets.push_back(tileSet);
+//                tileSet.subRects.clear();
+//            } else if(nameElement == "layer") {
+//                layerName.clear();
+//            }
+//        }
+//        xmlReader.readNext();
+//    }
+//    if(xmlReader.hasError()) {
+//        qDebug() << "Error: " << xmlReader.errorString();
+//    } else {
+//        qDebug() << "GameWidget::loadMap(); -- Completed load map.";
+//    }
+//    field.setFaction(faction);
+//    qDebug() << "GameWidget::loadMap(); -- towersCount:" << towersCount;
+//    int terrainType = rand()%2;
+//    if (mapName.contains("randomMap")) {
+//        for (int x = 0; x < mapSizeX; x++) {
+//            for (int y = 0; y < mapSizeY; y++) {
+//                if( (rand()%100) < 30 ) {
+//                    int randNumber = tileSets[1].firstTileID-1+( 42+(rand()%4) );
+//                    QPixmap pixmap = tileSets[1].tiles[randNumber];
+//                    field.getCell(x, y)->setTerrain(pixmap);
 
-                }
-            }
-        }
-    } else {
-        for (int x = 0; x < mapSizeX; x++) {
-            for (int y = 0; y < mapSizeY; y++) {
-                if( (rand()%100) < 10 ) {
-                    if (field.getCell(x, y)->isEmpty()) {
-                        int randNumber = ( 124+(rand()%2) );
-                        QPixmap pixmap = tileSets[0].tiles[randNumber];
-                        field.getCell(x, y)->setTerrain(pixmap);
-                    }
-                }
-            }
-        }
-    }
+//                }
+//            }
+//        }
+//    } else {
+//        for (int x = 0; x < mapSizeX; x++) {
+//            for (int y = 0; y < mapSizeY; y++) {
+//                if( (rand()%100) < 10 ) {
+//                    if (field.getCell(x, y)->isEmpty()) {
+//                        int randNumber = ( 124+(rand()%2) );
+//                        QPixmap pixmap = tileSets[0].tiles[randNumber];
+//                        field.getCell(x, y)->setTerrain(pixmap);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    field.pathFinder.setWorldSize({mapSizeX, mapSizeY});
-    field.pathFinder.setHeuristic(AStar::Heuristic::euclidean);
-    field.pathFinder.setDiagonalMovement(false);
-    field.updatePathFinderWalls();
-    global_pixmap = tileSet.tiles[7];
-    global_pixmap_PathPoint = tileSet.tiles[8];
-    global_pixmap_EnemyPathPoint = tileSet.tiles[9];
-    global_pixmap_ExitPoint = tileSet.tiles[18];
-    global_pixmap_DestinationPoint = tileSet.tiles[19];
+//    field.pathFinder.setWorldSize({mapSizeX, mapSizeY});
+//    field.pathFinder.setHeuristic(AStar::Heuristic::euclidean);
+//    field.pathFinder.setDiagonalMovement(false);
+//    field.updatePathFinderWalls();
+//    global_pixmap = tileSet.tiles[7];
+//    global_pixmap_PathPoint = tileSet.tiles[8];
+//    global_pixmap_EnemyPathPoint = tileSet.tiles[9];
+//    global_pixmap_ExitPoint = tileSet.tiles[18];
+//    global_pixmap_DestinationPoint = tileSet.tiles[19];
 
-    mapLoad = true;
-    tileSet.subRects.clear();
-    tileSet.tiles.clear();
+//    mapLoad = true;
+//    tileSet.subRects.clear();
+//    tileSet.tiles.clear();
 
-    file->close();
-    for (int k = 0; k < towersCount; k++) {
-        int randomX = rand()%mapSizeX;
-        int randomY = rand()%mapSizeY;
-        field.setTower(randomX, randomY, field.faction->getFirstTowers()[0]);
-    }
-    field.spawnHeroInSpawnPoint();
+//    file->close();
+//    for (int k = 0; k < towersCount; k++) {
+//        int randomX = rand()%mapSizeX;
+//        int randomY = rand()%mapSizeY;
+//        field.setTower(randomX, randomY, field.faction->getFirstTowers()[0]);
+//    }
+//    field.spawnHeroInSpawnPoint();
 
-    qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
-    int randomEnemyCount = enemyCount;
-    for (int k = 0; k < randomEnemyCount; k++) {
-        int randomX = rand()%mapSizeX;
-        int randomY = rand()%mapSizeY;
-        if (field.getCell(randomX, randomY)->isEmpty()) {
-            field.createUnit(randomX, randomY); // magic numbers need fix
-        } else {
-            k--;
-        }
-    }
+//    qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
+//    int randomEnemyCount = enemyCount;
+//    for (int k = 0; k < randomEnemyCount; k++) {
+//        int randomX = rand()%mapSizeX;
+//        int randomY = rand()%mapSizeY;
+//        if (field.getCell(randomX, randomY)->isEmpty()) {
+//            field.createUnit(randomX, randomY); // magic numbers need fix
+//        } else {
+//            k--;
+//        }
+//    }
     startTimer_UnitsMoveAndTowerAttack();
     qDebug() << "GameWidget::loadMap(); -- END";
 }

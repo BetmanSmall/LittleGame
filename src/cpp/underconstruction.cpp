@@ -1,11 +1,11 @@
 #include "src/head/underconstruction.h"
 
-UnderConstruction::UnderConstruction(DefaultTower *tower) {
+UnderConstruction::UnderConstruction(TemplateForTower *tower) {
     this->state = -1;
     this->tower = tower;
 }
 
-UnderConstruction::UnderConstruction(int startX, int startY, DefaultTower *tower) {
+UnderConstruction::UnderConstruction(int startX, int startY, TemplateForTower *tower) {
     this->state = 1;
     this->startX = startX;
     this->startY = startY;

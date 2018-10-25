@@ -1,7 +1,18 @@
 #include "src/head/factionsmanager.h"
 
+#include "src/head/mapEditor/maploader.h"
+
 FactionsManager::FactionsManager() {
+    qDebug() << "FactionsManager::FactionsManager(); -- ";
 //    factions = new Array<Faction>();
+    loadFactions();
+}
+
+FactionsManager::~FactionsManager() {
+    qDebug() << "FactionsManager::~FactionsManager(); -- ";
+    if (factions.size()) {
+        factions.clear();
+    }
 }
 
 //public void addUnitToFaction(TemplateForUnit unit) {
@@ -129,7 +140,7 @@ FactionsManager::FactionsManager() {
 //}
 
 void FactionsManager::loadFactions() {
-//    Array<FileHandle> factions = new Array<FileHandle>();
+    std::vector<QString> factions;
 //    if(Gdx.app.getType() == Application.ApplicationType.Android) {
 //        Gdx.app.log("FactionsManager::loadFactions()", "-- ApplicationType.Android");
 //        FileHandle factionsDir = Gdx.files.internal("maps/factions");
@@ -144,31 +155,50 @@ void FactionsManager::loadFactions() {
 //        FileHandle factionsDir = Gdx.files.internal("maps/factions");
 //        Gdx.app.log("FactionsManager::loadFactions()", "-- factionsDir.length:" + factionsDir.list().length);
 //        if(factionsDir.list().length == 0) {
-//            factions.add(Gdx.files.internal("maps/factions/humans_faction.fac"));
-//            factions.add(Gdx.files.internal("maps/factions/orcs_faction.fac"));
-////                factions.add(Gdx.files.internal("!!!add new faction in the future!!!"));
+            factions.push_back(ASSETS_PATH + "maps/factions/humans_faction.fac");
+            factions.push_back(ASSETS_PATH + "maps/factions/orcs_faction.fac");
+//                factions.add(Gdx.files.internal("!!!add new faction in the future!!!"));
 //        } else {
 //            factions.addAll(factionsDir.list());
 //        }
-//    }
-//    Gdx.app.log("FactionsManager::loadFactions()", "-- factions.size:" + factions.size);
-//    for (FileHandle factionFile : factions) {
-//        if (factionFile.extension().equals("fac")) {
-//            loadFaction(factionFile);
-//        }
-//    }
+//    }.
+    qDebug() << "FactionsManager::loadFactions(); -- factions.size:" << factions.size();
+    foreach (QString factionFile, factions) {
+        if (factionFile.contains("fac")) {
+            loadFaction(factionFile);
+        }
+    }
 }
 
-void FactionsManager::loadFaction(QFile factionFile) {
+void FactionsManager::loadFaction(QString factionFile) {
 //    if (factionFile != NULL && factionFile.isOpen()) {
-//        Gdx.app.log("FactionsManager::loadFaction(" + factionFile + ")", "-- absolutePath:" + factionFile.file().getAbsolutePath());
+        qDebug() << "FactionsManager::loadFaction(); -- factionFile:" << factionFile;
+        QDomDocument* domDocument = MapLoader::loadDomDocument(factionFile);
+        qDebug() << "FactionsManager::loadFaction(); -- domDocument:" << domDocument;
 //        try {
 //            XmlReader xmlReader = new XmlReader();
 //            Element root = xmlReader.parse(factionFile);
-//            String factionName = root.getAttribute("name", null);
-//            if (factionName != null) {
-//                Faction faction = new Faction(factionName);
+        QDomElement rootElement = domDocument->documentElement();
+        QString factionName = rootElement.attribute("name", NULL);
+        qDebug() << "FactionsManager::loadFaction(); -- factionName:" << factionName;
+            if (factionName != NULL) {
+                Faction* faction = new Faction(factionName);
+                QDomNodeList templateForUnitElements = rootElement.elementsByTagName("templateForUnit");
+                qDebug() << "FactionsManager::loadFaction(); -- templateForUnitElements.length():" << templateForUnitElements.length();
 //                Array<Element> templateForUnitElements = root.getChildrenByName("templateForUnit");
+                for(int k = 0; k < templateForUnitElements.length(); k++) {
+                    QDomNode tileSetNode = templateForUnitElements.item(k);
+                    QString source = tileSetNode.toElement().attribute("source", NULL);
+                    qDebug() << "FactionsManager::loadFaction(); -- source:" << source;
+                    if (source != NULL) {
+                        QString templateFile = MapLoader::findFile(factionFile, source);
+                        qDebug() << "FactionsManager::loadFaction(); -- templateFile:" << templateFile;
+                        TemplateForUnit* templateForUnit = new TemplateForUnit(templateFile);
+//                        templateForUnit->setFaction(faction);
+//                        templateForUnit->healthPoints = templateForUnit->healthPoints*levelOfDifficulty; // simple level of difficulty
+                        faction->units.push_back(templateForUnit);
+                    }
+                }
 //                for (Element templateForUnitElement : templateForUnitElements) {
 //                    String source = templateForUnitElement.getAttribute("source", null);
 //                    if (source != null) {
@@ -190,7 +220,7 @@ void FactionsManager::loadFaction(QFile factionFile) {
 //                    }
 //                }
 //                factions.add(faction);
-//            }
+            }
 //        } catch (Exception exp) {
 //            Gdx.app.error("FactionsManager::loadFaction()", "-- Could not load Faction! Exp:" + exp);
 //        }
@@ -198,17 +228,3 @@ void FactionsManager::loadFaction(QFile factionFile) {
 //        Gdx.app.error("FactionsManager::loadFaction()", "-- Could not load Faction! (factionFile == null) or (factionFile.isDirectory() == true)");
 //    }
 }
-
-//protected static FileHandle getRelativeFileHandle(FileHandle file, String path) {
-//    StringTokenizer tokenizer = new StringTokenizer(path, "\\/");
-//    FileHandle result = file.parent();
-//    while (tokenizer.hasMoreElements()) {
-//        String token = tokenizer.nextToken();
-//        if (token.equals(".."))
-//            result = result.parent();
-//        else {
-//            result = result.child(token);
-//        }
-//    }
-//    return result;
-//}

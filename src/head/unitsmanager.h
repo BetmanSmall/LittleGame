@@ -1,9 +1,9 @@
 #ifndef CREEPS_H
 #define CREEPS_H
 
+#include <QDebug>
 #include <stdlib.h>
 #include <QPixmap>
-#include <qdebug.h>
 
 #include "src/head/unit.h"
 
@@ -95,7 +95,7 @@ public:
      */
     Unit* getUnit(int x, int y);
 
-    Unit* createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit);
+    Unit* createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, TemplateForUnit* unit);
     /**
      * @brief createUnit - Если переменная size позволяет создать ещё крипа, то инициализирует нового крипа.
      * @param coorByCellX - координаты, где нужно создать крипа по оси x << Trouble
@@ -105,7 +105,7 @@ public:
      * @param unit - реализация крипа по-умолчанию (уровень модификации, тип, и т. д.)
      * @return - возвращает указатель на созданного крипа [и увеличивает количесвто созданных крипов на 1].
      */
-    Unit* createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type);
+    Unit* createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, TemplateForUnit* unit, int type);
 
     /**
      * @brief setDefaulPixmapForUnit - устанавливает картинку крипа по-умолчанию.

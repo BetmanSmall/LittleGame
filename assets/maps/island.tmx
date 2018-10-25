@@ -234,7 +234,7 @@
    <property name="health_point" value="100"/>
    <property name="name" value="Footman"/>
   </properties>
-  <image source="textures/warcraft2/humans/units/footman.png" trans="ff00ff" width="360" height="864"/>
+  <image source="textures/warcraft2/human/units/footman.png" trans="ff00ff" width="360" height="864"/>
   <terraintypes>
    <terrain name="idle_up" tile="0"/>
    <terrain name="idle_up_right" tile="1"/>

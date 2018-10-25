@@ -65,29 +65,29 @@ bool UnitsManager::attackUnit(int x, int y, int damage) {//, Unit *unit) {
                 unit->preDeath = true;
                 unit->animationLastAliveIter = unit->animationCurrIter;
                 unit->animationCurrIter = 0;
-                Direction direction = unit->direction;
-                if(direction == DirectionUpLeft) {
+                Direction::type direction = unit->direction;
+                if(direction == Direction::type::UP_LEFT) {
                     unit->animationMaxIter = unit->defUnit->death_up_left.size();
                     unit->activePixmaps = unit->defUnit->death_up_left;
-                } else if(direction == DirectionUp) {
+                } else if(direction == Direction::type::UP) {
                     unit->animationMaxIter = unit->defUnit->death_up.size();
                     unit->activePixmaps = unit->defUnit->death_up;
-                } else if(direction == DirectionUpRight) {
+                } else if(direction == Direction::type::UP_RIGHT) {
                     unit->animationMaxIter = unit->defUnit->death_up_right.size();
                     unit->activePixmaps = unit->defUnit->death_up_right;
-                } else if(direction == DirectionLeft) {
+                } else if(direction == Direction::type::LEFT) {
                     unit->animationMaxIter = unit->defUnit->death_left.size();
                     unit->activePixmaps = unit->defUnit->death_left;
-                } else if(direction == DirectionRight) {
+                } else if(direction == Direction::type::RIGHT) {
                     unit->animationMaxIter = unit->defUnit->death_right.size();
                     unit->activePixmaps = unit->defUnit->death_right;
-                } else if(direction == DirectionDownLeft) {
+                } else if(direction == Direction::type::DOWN_LEFT) {
                     unit->animationMaxIter = unit->defUnit->death_down_left.size();
                     unit->activePixmaps = unit->defUnit->death_down_left;
-                } else if(direction == DirectionDown) {
+                } else if(direction == Direction::type::DOWN) {
                     unit->animationMaxIter = unit->defUnit->death_down.size();
                     unit->activePixmaps = unit->defUnit->death_down;
-                } else if(direction == DirectionDownRight) {
+                } else if(direction == Direction::type::DOWN_RIGHT) {
                     unit->animationMaxIter = unit->defUnit->death_down_right.size();
                     unit->activePixmaps = unit->defUnit->death_down_right;
                 }
@@ -119,14 +119,14 @@ Unit* UnitsManager::getUnit(int x, int y) {
     return NULL;
 }
 
-Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit) {
+Unit* UnitsManager::createHero(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, TemplateForUnit* unit) {
     if (hero == NULL) {
         hero = createUnit(coorByCellX, coorByCellY, coorByMapX, coorByMapY, unit, 0);
     }
     return hero;
 }
 
-Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, DefaultUnit* unit, int type){
+Unit* UnitsManager::createUnit(int coorByCellX, int coorByCellY, int coorByMapX, int coorByMapY, TemplateForUnit* unit, int type){
     if(amount < size) {
         units[amount].hp = 100;
         units[amount].alive = true;

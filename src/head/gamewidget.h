@@ -17,32 +17,19 @@
 //#include "assets/libs/tinyxml2.h"
 #include "src/head/libs/astar.h"
 #include "src/head/field.h"
-#include "src/head/faction.h"
+#include "src/head/factionsmanager.h"
+//#include "src/head/faction.h"
 #include "src/head/underconstruction.h"
+
+#include "src/head/mapEditor/tileset.h"
 
 #include "ui_gamewidget.h"
 
-using namespace std;
+//using namespace std;
 
 namespace Ui {
     class GameWidget;
 }
-
-/**
- * @brief Данная структура отвечает за набор Tilов
- */
-struct TileSet {
-    int firstTileID; /// jdfklsdjfsdjf
-    QString name;
-    int spacing;
-    int margin;
-    int tileWidth;
-    int tileHeight;
-    QPixmap img;
-    vector<QRect> subRects;
-    vector<QString> tilesNames; // fireball specific load
-    vector<QPixmap> tiles;
-};
 
 /**
  * @brief Класс отвечает за игровую сессию
@@ -82,7 +69,7 @@ public:
     void drawBlackTiles();
     void drawPaths();
     void drawTowersUnderConstruction();
-    void drawTowerUnderConstruction(int buildX, int buildY, DefaultTower* tower);
+    void drawTowerUnderConstruction(int buildX, int buildY, TemplateForTower* tower);
 
     /**
      * @brief Переводит графические координаты в игровые
@@ -101,7 +88,6 @@ public:
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
 
-
     /**
      * @brief Загрузка карты
      * @param mapName
@@ -111,7 +97,6 @@ public:
     bool gameStart;
     bool gamePause;
     bool mapLoad;
-
 
     int pixelsShiftMap;
 
@@ -127,24 +112,23 @@ public:
     int towersAttack_TimerMilliSec;
     int scanMouseMove_TimerMilliSec;
 
-
     int unitsMove_TimerId;
     int towersAttack_TimerId;
     int scanMouseMove_TimerId;
 
-
     int test;
+    FactionsManager factionsManager;
     Field field;
 
-    vector<TileSet> tileSets;
+    std::vector<TileSet> tileSets;
 
     QPixmap global_pixmap;
     QPixmap global_pixmap_PathPoint;
     QPixmap global_pixmap_EnemyPathPoint;
     QPixmap global_pixmap_DestinationPoint;
     QPixmap global_pixmap_ExitPoint;
-    string global_text;
-    string global_text2;
+    std::string global_text;
+    std::string global_text2;
 
     bool panMidMouseButton;
     bool pan = false;

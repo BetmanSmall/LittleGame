@@ -1,12 +1,12 @@
-#include "src/head/defaulttower.h"
+#include "src/head/templatefortower.h"
 
-DefaultTower::DefaultTower() {
-    qDebug() << "DefaultTower::DefaultTower(); -- ";
+TemplateForTower::TemplateForTower() {
+    qDebug() << "TemplateForTower::TemplateForTower(); -- ";
     this->reloadTime = 3000;
 }
 
-DefaultTower::~DefaultTower() {
-    qDebug() << "DefaultTower::~DefaultTower(); -- ";
+TemplateForTower::~TemplateForTower() {
+    qDebug() << "TemplateForTower::~TemplateForTower(); -- ";
     bullet.clear();
 
     bullet_fly_up.clear();

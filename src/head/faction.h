@@ -3,26 +3,25 @@
 
 #include <QDebug>
 
-#include "src/head/tower.h"
-#include "src/head/defaultunit.h"
-#include "src/head/defaulttower.h"
-
-using namespace std;
+//#include "src/head/tower.h"
+#include "src/head/templatefortower.h"
+#include "src/head/templateforunit.h"
 
 class Faction {
 public:
-    vector<DefaultTower*> towers;
-    vector<DefaultUnit*> units;
+    QString name;
+    std::vector<TemplateForTower*> towers;
+    std::vector<TemplateForUnit*> units;
 
-public:
-    Faction();
+//public:
+    Faction(QString name);
     ~Faction();
 
-    void addTower(DefaultTower* tower);
-    void addUnit(DefaultUnit* unit);
+    void addTower(TemplateForTower* tower);
+    void addUnit(TemplateForUnit* unit);
 
-    vector<DefaultTower*> getFirstTowers();
-    DefaultUnit* getDefaultUnitById(int id);
+    std::vector<TemplateForTower*> getFirstTowers();
+    TemplateForUnit* getDefaultUnitById(int id);
 };
 
 #endif // FACTION_H

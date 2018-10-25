@@ -8,8 +8,6 @@
 
 #include "src/head/tower.h"
 
-using namespace std;
-
 /**
  * @brief The Towers class
  */
@@ -92,7 +90,7 @@ public:
      * @param tower - реализация башни по-умолчанию (уровень модификации, тип, и т. д.)
      * @return - возвращает указатель на созданную башню [и увеличивает количесвто созданных башен на 1].
      */
-    Tower* createTower(int x, int y, DefaultTower* tower);
+    Tower* createTower(int x, int y, TemplateForTower* tower);
     /**
      * @brief deleteTower - удаляет башню по координатам. Если x = -1; y = -1,
      * то параметры в функцию не передались, приравниваем x и y к координатам предыдущей созданной башни,

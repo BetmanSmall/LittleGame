@@ -3,8 +3,9 @@
 
 #include <QPixmap>
 
-#include "src/head/defaulttower.h"
-#include "src/head/unit.h"
+//#include "src/head/unit.h"
+#include "src/head/templatefortower.h"
+#include "src/head/direction.h"
 
 class Bullet {
 public:
@@ -13,20 +14,20 @@ public:
     int lastCellX, lastCellY;
     int currCellX, currCellY;
 
-    Direction direction;
+    Direction::type direction;
     int animationCurrIter;
     int animationMaxIter;
     QPixmap pixmap;
     std::vector<QPixmap> activePixmaps;
 
-    DefaultTower* defTower;
+    TemplateForTower* defTower;
 
-    Bullet(int currCellX, int currCellY, Direction direction, DefaultTower* defTower);
+    Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower* defTower);
     void setSpeed(int speed);
     void setCurrCellCoordinate(int currCellX, int currCellY);
     QPixmap getAnimationInformation(int *lastCellX, int *lastCellY, int *animationCurrIter, int *animationMaxIter);
 
-    void setUnit(Unit* unit);
+//    void setUnit(Unit* unit);
     void setPixmap(QPixmap pixmap);
     int getSpeed();
     int getCurrCellX();
@@ -34,7 +35,7 @@ public:
 
     QPixmap getPixmap();
 
-public slots:
+//public slots:
 
 };
 

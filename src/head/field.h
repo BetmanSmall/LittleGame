@@ -5,7 +5,7 @@
 #include <iostream>
 #include <QPixmap>
 
-#include "src/head/libs/astar.h"
+//#include "src/head/libs/astar.h"
 #include "src/head/unitsmanager.h"
 #include "src/head/towersmanager.h"
 #include "src/head/faction.h"
@@ -345,7 +345,7 @@ public:
      * @return True - Установил; False - Не установил (True/False)
      * @return True/False установил/не установил
      */
-    bool setTower(int x, int y, DefaultTower* defTower);
+    bool setTower(int x, int y, TemplateForTower* defTower);
     /**
      * @brief Создать криппа в spawnPoint'e
      * @return True - Создал; False - Не создал (True/False)
@@ -392,7 +392,6 @@ public:
      * @return True - Удалил; False - Не удалил (True/False)
      */
     bool deleteTower(int x = -1, int y = -1);
-
 };
 
 #endif // FIELD_H

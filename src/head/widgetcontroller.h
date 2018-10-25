@@ -37,7 +37,7 @@ private:
 
     QPainter painter;
     void paintEvent(QPaintEvent* );
-    void loadMap(GameWidget *gameWidget);
+    void loadMap(QString mapPath);
 
 private slots:
     void showMainMenu();
@@ -45,7 +45,7 @@ private slots:
     void loadRandomMap();
     void loadNormalMap();
     void showOptionMenu();
-    void showGameWidget(QString mapPath);
+    void showGameWidget(GameWidget *gameWidget);
     void changeWindowState();
 
     void enemyCountChanged(int value);

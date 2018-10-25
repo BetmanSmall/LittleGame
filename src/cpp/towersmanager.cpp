@@ -54,7 +54,7 @@ Tower* TowersManager::createTower(int x, int y, int type) {
     return NULL;
 }
 
-Tower* TowersManager::createTower(int x, int y, DefaultTower* tower) {
+Tower* TowersManager::createTower(int x, int y, TemplateForTower* tower) {
     if (amount < size) {
         towers[amount].name = tower->name;
         towers[amount].attack = tower->attack;
