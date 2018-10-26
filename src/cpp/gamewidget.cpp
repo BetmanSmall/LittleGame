@@ -25,6 +25,7 @@ GameWidget::GameWidget(QWidget *parent) :
     defaultNumCreateUnits = 30;
 
     timeOfGame = 0;
+
     unitsMove_TimerMilliSec = 100;
     towersAttack_TimerMilliSec = 50;
     scanMouseMove_TimerMilliSec = 100;
@@ -35,11 +36,12 @@ GameWidget::GameWidget(QWidget *parent) :
     scanMouseMove_TimerId = startTimer(scanMouseMove_TimerMilliSec);
 
     test = 0;
+//    field = new Field();
+
     ui->loadMaps->setHidden(true);
     ui->clearMap->setHidden(true);
     ui->goUnits->setHidden(true);
     ui->closeWidget->setHidden(true);
-//    factionsManager = FactionsManager();
 }
 
 GameWidget::~GameWidget() {
@@ -695,7 +697,7 @@ void GameWidget::stopTimer_UnitsMoveAndTowerAttack() {
 void GameWidget::buildTower(int x, int y) {
     if (x == -1 && y == -1) {
         qDebug() << "GameWidget:1:buildTower(" << x << ", " << y << "); -- ";
-        std::vector<TemplateForTower*> towers = field.faction->getFirstTowers();
+        std::vector<TemplateForTower*> towers = field.factionsManager->getAllTemplateForTowers();
         int size = towers.size();
         QMessageBox msgBox;
         msgBox.setText("Какую башню ты хочешь построить?");

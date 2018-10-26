@@ -4,7 +4,9 @@
 #include <QDebug>
 #include <QtXml>
 
-#include <src/head/faction.h>
+#include "src/head/faction.h"
+#include "src/head/mapEditor/maploader.h"
+#include "simpletemplate.h"
 
 class FactionsManager
 {
@@ -14,10 +16,26 @@ class FactionsManager
     QString ASSETS_PATH = "./assets/";
 #endif
 
+public:
+    Template* fireball_0;
+    Template* explosion;
+
+private:
     std::vector<Faction*> factions;
+
 public:
     FactionsManager();
     ~FactionsManager();
+
+    TemplateForUnit* getRandomTemplateForUnitFromFirstFaction();
+    TemplateForTower* getRandomTemplateForTowerFromFirstFaction();
+    TemplateForTower* getRandomTemplateForTowerFromAllFaction();
+    TemplateForUnit* getTemplateForUnitFromFirstFactionByIndex(int index);
+    TemplateForUnit* getTemplateForUnitFromFirstFactionByName(QString templateName);
+    TemplateForUnit* getTemplateForUnitByName(QString templateName);
+//    std::vector<TemplateForTower*> getAllFirstTowersFromFirstFaction();
+    std::vector<TemplateForTower*> getAllTemplateForTowers();
+    std::vector<TemplateForUnit*> getAllTemplateForUnits();
 
     void loadFactions();
     void loadFaction(QString factionFile);

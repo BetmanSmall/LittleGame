@@ -45,7 +45,8 @@ SOURCES += src/cpp/main.cpp\
     src/cpp/mapEditor/tileset_back.cpp \
     src/cpp/mapEditor/tilesets.cpp \
     src/cpp/mapEditor/tilelayercell.cpp \
-    template.cpp
+    template.cpp \
+    simpletemplate.cpp
 
 HEADERS  += \
     src/head/field.h \
@@ -78,7 +79,8 @@ HEADERS  += \
     src/head/mapEditor/tileset_back.h \
     src/head/mapEditor/tilesets.h \
     src/head/mapEditor/tilelayercell.h \
-    template.h
+    template.h \
+    simpletemplate.h
 
 FORMS    += \
     src/uis/mainmenu.ui \

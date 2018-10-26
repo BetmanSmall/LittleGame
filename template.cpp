@@ -1,6 +1,11 @@
 #include "template.h"
 
 //Template::Template() {
+//    qDebug() << "Template::Template(); -- ";
+//}
+
+//Template::~Template() {
+//    qDebug() << "Template::~Template(); -- ";
 //}
 
 void Template::loadBasicTemplate(QString templateFile) {

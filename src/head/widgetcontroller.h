@@ -15,6 +15,7 @@
 #include "src/head/mainmenu.h"
 #include "src/head/optionmenu.h"
 #include "src/head/gamewidget.h"
+#include "src/head/factionsmanager.h"
 
 class WidgetController : public QWidget
 {
@@ -31,6 +32,7 @@ private:
     QPixmap mainMenuBackground;
     QStackedWidget* stackedWidget;
 
+    FactionsManager* factionsManager;
     MainMenu* mainMenu;
     int enemyCount, difficultyLevel, towersCount;
     bool panMidMouseButtonBool;

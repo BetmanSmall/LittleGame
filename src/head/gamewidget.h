@@ -17,7 +17,7 @@
 //#include "assets/libs/tinyxml2.h"
 #include "src/head/libs/astar.h"
 #include "src/head/field.h"
-#include "src/head/factionsmanager.h"
+//#include "src/head/factionsmanager.h"
 //#include "src/head/faction.h"
 #include "src/head/underconstruction.h"
 
@@ -31,29 +31,13 @@ namespace Ui {
     class GameWidget;
 }
 
-/**
- * @brief Класс отвечает за игровую сессию
- * Вся игра проходит, полностью в этом классе
- */
 class GameWidget : public QWidget {
     Q_OBJECT
 
 public:
-    /**
-     * @brief Конструктор GameWidget
-     * @param parent - родительский QWidget
-     */
     explicit GameWidget(QWidget *parent = 0);
     ~GameWidget();
-    /**
-     * @brief Обработчик всех таймеров
-     * @param Евент таймера
-     */
     void timerEvent(QTimerEvent* event);
-    /**
-     * @brief Обработчик нажатия клавиш на клавиатуре
-     * @param Евент нажатия клавиши
-     */
     void keyPressEvent(QKeyEvent* event);
 
     QPainter painter;
@@ -71,12 +55,6 @@ public:
     void drawTowersUnderConstruction();
     void drawTowerUnderConstruction(int buildX, int buildY, TemplateForTower* tower);
 
-    /**
-     * @brief Переводит графические координаты в игровые
-     * @param mouseX
-     * @param mouseY
-     * @return False - не смогли перевести. Возможно за пределами игрового поля.
-     */
     bool whichCell(int &mouseX, int &mouseY);
 
     void startTimer_UnitsMoveAndTowerAttack();
@@ -88,15 +66,11 @@ public:
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
 
-    /**
-     * @brief Загрузка карты
-     * @param mapName
-     */
     void loadMap(QString mapName, int enemyCount, int towersCount);
 
     bool gameStart;
     bool gamePause;
-    bool mapLoad;
+//    bool mapLoad;
 
     int pixelsShiftMap;
 
@@ -117,9 +91,7 @@ public:
     int scanMouseMove_TimerId;
 
     int test;
-    FactionsManager factionsManager;
     Field field;
-
     std::vector<TileSet> tileSets;
 
     QPixmap global_pixmap;

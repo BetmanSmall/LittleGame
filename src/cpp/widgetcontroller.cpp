@@ -9,6 +9,8 @@ WidgetController::WidgetController(QWidget *parent) :
     ASSETS_PATH = "./assets/";
 #endif
 
+    factionsManager = new FactionsManager();
+
     setWindowState(Qt::WindowMaximized);
 
     gameRecordsFile = new QFile(ASSETS_PATH + "gameRecords.txt");
@@ -99,11 +101,11 @@ void WidgetController::loadMap(QString mapPath) {
     gameWidget->setMinimumWidth(1024);
     gameWidget->setMinimumHeight(768);
 
+    gameWidget->field.factionsManager = factionsManager;
     gameWidget->loadMap(ASSETS_PATH + mapPath, enemyCount, towersCount);
     gameWidget->field.towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
     gameWidget->panMidMouseButton = panMidMouseButtonBool;
     showGameWidget(gameWidget);
-    exit(0);
     qDebug() << "WidgetController::showGameWidget(); -- END";
 }
 

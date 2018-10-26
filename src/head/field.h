@@ -8,7 +8,7 @@
 //#include "src/head/libs/astar.h"
 #include "src/head/unitsmanager.h"
 #include "src/head/towersmanager.h"
-#include "src/head/faction.h"
+#include "src/head/factionsmanager.h"
 #include "src/head/bullet.h"
 #include "src/head/cell.h"
 
@@ -21,10 +21,12 @@ class Field
 public: // we are friendly!
     AStar::PathFinder pathFinder;
 
+    Map* map;
     Cell* field;
+    FactionsManager* factionsManager;
     TowersManager towersManager;
     UnitsManager unitsManager;
-    Faction* faction;
+//    Faction* faction;
 
     int gameOverLimitUnits;
     int currentFinishedUnits;
@@ -43,11 +45,8 @@ public: // we are friendly!
     int exitPointX, exitPointY;
 
 public:
-    /**
-     * @brief Конструктор. Сразу же в .h устанавливает указатель на массив из ячеек как NULL
-     */
-    Field():field(NULL) {}
-    ~Field() {deleteField();}
+    Field();
+    ~Field();
     Cell* getCell(int x, int y);
 
     /**
@@ -61,11 +60,11 @@ public:
      */
     void deleteField();
 
-    /**
-     * @brief Временная функция, устанавливает Фракцию
-     * @param faction - Указатель на фракцию
-     */
-    void setFaction(Faction *faction);
+//    /**
+//     * @brief Временная функция, устанавливает Фракцию
+//     * @param faction - Указатель на фракцию
+//     */
+//    void setFaction(Faction *faction);
 
     /**
      * @brief Устанавливает точку спавна на поле

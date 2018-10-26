@@ -1,6 +1,12 @@
 #include "src/head/field.h"
 
-using namespace std;
+Field::Field() {
+    qDebug() << "Field::Field(); -- ";
+}
+
+Field::~Field() {
+    qDebug() << "Field::~Field(); -- ";
+}
 
 void Field::createField(int newSizeX, int newSizeY) {
     if(field == NULL) {
@@ -38,7 +44,7 @@ void Field::deleteField() {
         field = NULL;
         towersManager.deleteField();
         unitsManager.deleteMass();
-        delete faction;
+//        delete faction;
     }
 }
 
@@ -51,9 +57,9 @@ Cell* Field::getCell(int x, int y) {
     return NULL;
 }
 
-void Field::setFaction(Faction* faction) {
-    this->faction = faction;
-}
+//void Field::setFaction(Faction* faction) {
+//    this->faction = faction;
+//}
 
 bool Field::createSpawnPoint(int num, int x, int y){
     for(int k = 0; k < unitsManager.getAmount(); k++) {
@@ -666,10 +672,10 @@ Unit* Field::createUnit(int x, int y, int type) {
     }
     Unit* unit;
     if (type == 0) {
-        unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById(0)); //, type);
+        unit = unitsManager.createHero(x, y, coorByMapX, coorByMapY, factionsManager->getTemplateForUnitByName("unit3_footman"));//faction->getDefaultUnitById(0)); //, type);
         updateHeroDestinationPoint(exitPointX, exitPointY);
     } else /*if (type == 1)*/ {
-        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, faction->getDefaultUnitById((1+(rand()%(faction->units.size()-1)))), type);
+        unit = unitsManager.createUnit(x, y, coorByMapX, coorByMapY, factionsManager->getRandomTemplateForUnitFromFirstFaction(), type);
         if (unit != NULL) { //
             int randomX = rand()%sizeX;
             int randomY = rand()%sizeY;
