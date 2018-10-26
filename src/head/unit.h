@@ -11,14 +11,16 @@
 class Unit
 {
 public:
+    AStar::CoordinateList path;
+    int lastX, lastY;
+    int coorByCellX, coorByCellY;
     int hp;
+    float speed;
+
     bool alive;
     bool preDeath;
     int number;
     int type;
-    AStar::CoordinateList path;
-    int lastX, lastY;
-    int coorByCellX, coorByCellY;
     int coorByMapX, coorByMapY;
     Direction::type direction;
     int animationLastAliveIter;

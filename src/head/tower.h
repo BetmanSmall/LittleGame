@@ -10,20 +10,17 @@
 class Tower
 {
 public:
-    QString name;
-    int attack;
-    int radius;
-    int size;
-    int type;
-    int elapsedReloadTime;
-
     int currX, currY;
+    int elapsedReloadTime;
+    TemplateForTower* templateForTower;
 
-    QPixmap pixmap;
-    TemplateForTower* defTower;
+//    int player;
+//    int capacity;
     std::vector<Bullet*> bullets;
+    int radius;
+    QPixmap pixmap;
 
-    Tower();
+    Tower(int x, int y, TemplateForTower* templateForTower);
     bool recharge(float delta);
     void createBullets(int difficultyLevel);
 };

@@ -1,9 +1,16 @@
 #include "src/head/field.h"
 
-Field::Field(QString mapPath, int enemyCount, int towersCount) {
-    qDebug() << "Field::Field(); -- ";
-    towersManager = new TowersManager();//.createField(newSizeX*newSizeY);
-    unitsManager= new UnitsManager();//.createMass(32);
+Field::Field(QString mapFile, FactionsManager* factionsManager, int enemyCount, int difficultyLevel, int towersCount) {
+    qDebug() << "Field::Field(); -- mapPath:" << mapFile;
+    qDebug() << "Field::Field(); -- enemyCount:" << enemyCount;
+    qDebug() << "Field::Field(); -- towersCount:" << towersCount;
+    qDebug() << "Field::Field(); -- map:" << map;
+    this->map = (new MapLoader())->load(mapFile);
+    qDebug() << "Field::Field(); -- map:" << map;
+    this->factionsManager = factionsManager;
+    this->towersManager = new TowersManager(difficultyLevel);
+    this->unitsManager = new UnitsManager();
+    qDebug() << "Field::Field(); -end- ";
 }
 
 Field::~Field() {
@@ -190,8 +197,7 @@ int Field::getTileMapHeight() {
 }
 
 bool Field::towersAttack(int deltaTime) {
-    for(int k = 0; k < towersManager->getAmount(); k++) {
-        Tower* tmpTower = towersManager->getTowerById(k);
+    foreach (Tower* tmpTower, towersManager->towers) {
         if (tmpTower->recharge(deltaTime)) {
             tmpTower->createBullets(towersManager->difficultyLevel);
         }
@@ -605,15 +611,6 @@ Unit* Field::getUnitWithLowHP(int x, int y) {
     return NULL;
 }
 
-std::vector<Tower*> Field::getAllTowers() {
-    std::vector<Tower*> exitTowers;
-    for(int k = 0; k < towersManager->getAmount(); k++) {
-        exitTowers.push_back(towersManager->getTowerById(k));
-    }
-    return exitTowers;
-}
-
-
 int Field::containUnit(int x, int y, Unit *unit) {
     if(!field[sizeX*y + x].units.empty()) {
         int size = field[sizeX*y + x].units.size();
@@ -695,7 +692,7 @@ bool Field::deleteTower(int x, int y) {
     if (tower != NULL) {
         int towerX = tower->currX;
         int towerY = tower->currY;
-        int size = tower->defTower->size;
+        int size = tower->templateForTower->size;
         towersManager->deleteTower(towerX, towerY);
         for (int tmpX = 0; tmpX < size; tmpX++) {
             for (int tmpY = 0; tmpY < size; tmpY++) {

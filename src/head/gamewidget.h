@@ -76,7 +76,9 @@ public:
 // option screen -4--
 
 public:
-    explicit GameWidget(QString mapPath, int enemyCount, int towersCount, QWidget *parent = 0);
+    explicit GameWidget(QString mapPath, FactionsManager* factionsManager,
+                        int enemyCount, int difficultyLevel, int towersCount,
+                        QWidget *parent = 0);
     ~GameWidget();
 
     void timerEvent(QTimerEvent* event);

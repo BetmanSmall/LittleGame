@@ -10,27 +10,17 @@
 
 class TowersManager {
 public: // we are friendly to all!
-    Tower* towers;
-//    std::vector<Tower*> towers;
-    QPixmap defaultPixmapForTower;
+    std::vector<Tower*> towers;
     int difficultyLevel;
-    int size;
-    int amount;
 
 public:
-    TowersManager():towers(NULL) {}
-    ~TowersManager() {deleteField();}
-    void createField(int size);
-    void deleteField();
-    int getSize();
-    int getAmount();
-    Tower* getTowerById(int number);
-    Tower* getTower(int x = -1, int y = -1);
-    Tower* createTower(int x, int y, int type = 0);
-    Tower* createTower(int x, int y, TemplateForTower* tower);
+    TowersManager(int difficultyLevel);
+    ~TowersManager();
+    Tower* createTower(int x, int y, TemplateForTower* templateForTower);
+    bool removeTower(Tower* tower);
     bool deleteTower(int &x, int &y);
-    void setDefaulPixmapForTower(QPixmap pixmap);
-    QPixmap getTowerPixmap(int x, int y);
+    Tower* getTower(int number);
+    Tower* getTower(int x = -1, int y = -1);
 };
 
 #endif // TOWERS_H

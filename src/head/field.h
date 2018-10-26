@@ -18,9 +18,9 @@ public: // we are friendly!
     AStar::PathFinder pathFinder;
     Map* map;
     Cell* field;
+    FactionsManager* factionsManager;
     TowersManager* towersManager;
     UnitsManager* unitsManager;
-    FactionsManager* factionsManager;
     int sizeX, sizeY;
     int sizeCell;
     int mouseX, mouseY;
@@ -34,7 +34,7 @@ public: // we are friendly!
     int currentFinishedUnits;
 
 public:
-    Field(QString mapPath, int enemyCount, int towersCount);
+    Field(QString mapFile, FactionsManager* factionsManager, int enemyCount, int difficultyLevel, int towersCount);
     ~Field();
     Cell* getCell(int x, int y);
     void createField(int newSizeX, int newSizeY);

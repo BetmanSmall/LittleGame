@@ -1,6 +1,8 @@
 #include "src/head/gamewidget.h"
 
-GameWidget::GameWidget(QString mapFile, int enemyCount, int towersCount, QWidget *parent) :
+GameWidget::GameWidget(QString mapFile, FactionsManager* factionsManager,
+                       int enemyCount, int difficultyLevel, int towersCount,
+                       QWidget *parent):
     QWidget(parent),
     ui(new Ui::GameWidget)
 {
@@ -25,7 +27,7 @@ GameWidget::GameWidget(QString mapFile, int enemyCount, int towersCount, QWidget
     scanMouseMove_TimerId = startTimer(scanMouseMove_TimerMilliSec);
 
     test = 0;
-    field = new Field(mapFile, enemyCount, towersCount);
+    field = new Field(mapFile, factionsManager, enemyCount, difficultyLevel, towersCount);
 
 //    ui->loadMaps->setHidden(true);
 //    ui->clearMap->setHidden(true);
@@ -357,17 +359,14 @@ void GameWidget::drawTowersByTowers() {
     int sizeCell = field->getSizeCell();
     int sizeCellX = sizeCell;
     int sizeCellY = sizeCellX/2;
-    std::vector<Tower*> towers = field->getAllTowers();
-    int size = towers.size();
-    for (int k = 0; k < size; k++) {
-        Tower* tmpTower = towers[k];
+    foreach (Tower* tmpTower, field->towersManager->towers) {
         if (tmpTower != NULL) {
             int towerX = tmpTower->currX;
             int towerY = tmpTower->currY;
-            int size = tmpTower->defTower->size;
+            int size = tmpTower->templateForTower->size;
             if(!field->getIsometric()) {
             } else {
-                int height = tmpTower->defTower->height;
+                int height = tmpTower->templateForTower->height;
                 int isometricSpaceX = (field->getSizeY()-towerY)*(sizeCellX/2);
                 int isometricSpaceY = towerY*(sizeCellY/2);
                 int pxlsX = mainCoorMapX + isometricSpaceX+spaceWidget + towerX*(sizeCellX/2);

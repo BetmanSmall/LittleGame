@@ -41,10 +41,8 @@ void WidgetController::paintEvent(QPaintEvent *) {
 
 void WidgetController::loadMap(QString mapPath) {
     qDebug() << "WidgetController::loadMap(); -- mapPath:" << mapPath;
-    gameWidget = new GameWidget(ASSETS_PATH + mapPath, enemyCount, towersCount, this);
+    gameWidget = new GameWidget(ASSETS_PATH + mapPath, factionsManager, enemyCount, difficultyLevel, towersCount, this);
 
-    gameWidget->field->factionsManager = factionsManager;
-    gameWidget->field->towersManager->difficultyLevel = difficultyLevel; // not good | unsafe
     gameWidget->panMidMouseButton = panMidMouseButtonBool;
 
     gameWidget->setMinimumWidth(1024);
