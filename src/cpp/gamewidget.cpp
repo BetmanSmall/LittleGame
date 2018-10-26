@@ -1,41 +1,42 @@
 #include "src/head/gamewidget.h"
 
-GameWidget::GameWidget(QWidget *parent) :
+GameWidget::GameWidget(QString mapFile, int enemyCount, int towersCount, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
-
-    gameStart = true;
-    gamePause = false;
+//    gameStart = true;
+//    gamePause = false;
 //    mapLoad = false;
 
+    // camera need
     pixelsShiftMap = 32;
-
     zoomSizeCell = 8;
     zoomMaxSizeCell = 256;
     zoomMinSizeCell = 48;
 
-    defaultNumCreateUnits = 30;
-
     timeOfGame = 0;
-
     unitsMove_TimerMilliSec = 100;
     towersAttack_TimerMilliSec = 50;
     scanMouseMove_TimerMilliSec = 100;
-
     unitsMove_TimerId = 0;
     towersAttack_TimerId = 0;
     scanMouseMove_TimerId = 0;
     scanMouseMove_TimerId = startTimer(scanMouseMove_TimerMilliSec);
 
     test = 0;
-    field = new Field();
+    field = new Field(mapFile, enemyCount, towersCount);
 
-    ui->loadMaps->setHidden(true);
-    ui->clearMap->setHidden(true);
-    ui->goUnits->setHidden(true);
-    ui->closeWidget->setHidden(true);
+//    ui->loadMaps->setHidden(true);
+//    ui->clearMap->setHidden(true);
+//    ui->goUnits->setHidden(true);
+//    ui->closeWidget->setHidden(true);
+    qDebug() << "GameWidget::loadMap(); -- mapFile:" << mapFile;
+    qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
+    qDebug() << "GameWidget::loadMap(); -- towersCount:" << towersCount;
+    qDebug() << "GameWidget::loadMap(); -- field:" << field;
+    qDebug() << "GameWidget::loadMap(); -- field->map:" << field->map;
+    qDebug() << "GameWidget::GameWidget(); -END- -END-";
 }
 
 GameWidget::~GameWidget() {
@@ -49,7 +50,7 @@ GameWidget::~GameWidget() {
 void GameWidget::timerEvent(QTimerEvent *event) {
     int timerId = event->timerId();
     if (timerId == unitsMove_TimerId) {
-        if (!gamePause) {
+//        if (!gamePause) {
             timeOfGame += unitsMove_TimerMilliSec;
             if (int result = field->stepAllUnits()) {
                 if(result == 4) {
@@ -72,11 +73,11 @@ void GameWidget::timerEvent(QTimerEvent *event) {
                     }
                 }
             }
-        }
+//        }
     } else if (timerId == towersAttack_TimerId) {
-        if (!gamePause) {
+//        if (!gamePause) {
             field->towersAttack(towersAttack_TimerMilliSec);
-        }
+//        }
     } else if(timerId == scanMouseMove_TimerId) {
         int curX = cursor().pos().x();
         int curY = cursor().pos().y();
@@ -139,8 +140,8 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
     } else if(key == Qt::Key_8) {
         ui->drawTowersByTowers_checkBox->toggle();
     } else if(key == Qt::Key_Space || key == Qt::Key_Escape) {
-        gamePause = !gamePause;
-        qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
+//        gamePause = !gamePause;
+//        qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
     } else if (event->key() == Qt::Key_Enter) {
         signal_closeWidget();
         return;
@@ -167,7 +168,7 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
 
 void GameWidget::paintEvent(QPaintEvent* event) {
     painter.begin(this);
-    if (gameStart) {
+//    if (gameStart) {
             drawFullField();
             if(ui->drawBackGround_checkBox->isChecked())
                 drawBackGround();
@@ -187,13 +188,13 @@ void GameWidget::paintEvent(QPaintEvent* event) {
             if(ui->drawGrid_checkBox->isChecked())
                 drawGrid();
             painter.drawText(10, 20, QString("timeOfGame:%1").arg(timeOfGame));
-    }
+//    }
     painter.end();
 }
 
 void GameWidget::drawFullField() {
     if(field->getIsometric()) {
-        QPixmap pixmap = tileSets[0].tiles[85]->getPixmap(); // draw water2
+        QPixmap pixmap = field->map->tileSets.getTile(85)->getPixmap(); // draw water2
         int sizeCellX = field->getSizeCell();
         int sizeCellY = sizeCellX/2;
         int sizeX = (width()/sizeCellX)+1;
@@ -554,8 +555,8 @@ void GameWidget::drawPaths() {
     painter.setPen(QColor(255,0,0));
 
     QPixmap pixmapPathPoint;
-    for (int u = 0; u < field->unitsManager.getAmount(); u++) {
-        Unit* tmpUnit = field->unitsManager.getUnit(u);
+    for (int u = 0; u < field->unitsManager->getAmount(); u++) {
+        Unit* tmpUnit = field->unitsManager->getUnit(u);
         if (tmpUnit->type == 0) {
             pixmapPathPoint = global_pixmap_PathPoint;
         } else {
@@ -744,7 +745,7 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
                 if (cell != NULL) {
                     if(cell->isEmpty()) {
                         int randNumber = ( 124+(rand()%2) );
-                        QPixmap pixmap = tileSets[0].tiles[randNumber]->getPixmap();
+                        QPixmap pixmap = field->map->tileSets.getTileSet(0)->tiles[randNumber]->getPixmap();
                         cell->setTerrain(pixmap);
                     } else if (cell->isTerrain()) {
                         cell->removeTerrain();
@@ -823,52 +824,6 @@ void GameWidget::wheelEvent(QWheelEvent* event) {
     }
 }
 
-void GameWidget::loadMap(QString mapFile, int enemyCount, int towersCount) {
-    qDebug() << "GameWidget::loadMap(); -- mapFile:" << mapFile;
-    qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
-    qDebug() << "GameWidget::loadMap(); -- towersCount:" << towersCount;
-    qDebug() << "GameWidget::loadMap(); -- field:" << field;
-    qDebug() << "GameWidget::loadMap(); -- field->map:" << field->map;
-    if (field != NULL) {
-        if (field->map == NULL) {
-            qDebug() << "GameWidget::loadMap(); -- MapLoader.load(mapFile);:" << mapFile;
-            MapLoader* mapLoader = new MapLoader();
-            field->map = mapLoader->load(mapFile);
-        }
-
-    }
-//    if (field->map) {
-//        mapLoad = false;
-//    }
-//    if (unitsMove_TimerId) {
-//        killTimer(unitsMove_TimerId);
-//        unitsMove_TimerId = 0;
-//    }
-//    startTimer_UnitsMoveAndTowerAttack();
-    qDebug() << "GameWidget::loadMap(); -- END";
-}
-
-void GameWidget::on_loadMaps_clicked() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "../LittleGame/maps/", tr("Maps (*.xml)"));
-    loadMap(fileName, 0 , 0);
-}
-
-void GameWidget::on_clearMap_clicked() {
-    for(int x = 0; x < field->getSizeX(); x++) {
-        for(int y = 0; y < field->getSizeY(); y++) {
-            field->deleteTower(x, y);
-            field->getCell(x, y)->removeTerrain(true);
-        }
-    }
-    update();
-}
-
 void GameWidget::on_closeWidget_clicked() {
     signal_closeWidget();
-}
-
-void GameWidget::on_goUnits_clicked() {
-    field->waveAlgorithm();
-    field->createSpawnPoint(defaultNumCreateUnits);
-    startTimer_UnitsMoveAndTowerAttack();
 }

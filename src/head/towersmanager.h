@@ -11,6 +11,7 @@
 class TowersManager {
 public: // we are friendly to all!
     Tower* towers;
+//    std::vector<Tower*> towers;
     QPixmap defaultPixmapForTower;
     int difficultyLevel;
     int size;

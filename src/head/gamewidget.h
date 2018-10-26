@@ -21,11 +21,9 @@
 //#include "src/head/faction.h"
 #include "src/head/underconstruction.h"
 
-#include "src/head/mapEditor/tileset.h"
+//#include "src/head/mapEditor/tileset.h"
 
 #include "ui_gamewidget.h"
-
-//using namespace std;
 
 namespace Ui {
     class GameWidget;
@@ -38,10 +36,49 @@ class GameWidget : public QWidget {
 #else
     QString ASSETS_PATH = "./assets/";
 #endif
+public:
+//    bool gameStart;
+//    bool gamePause;
+//    bool mapLoad;
+    // camera need
+    int pixelsShiftMap;
+    int zoomSizeCell;
+    int zoomMaxSizeCell;
+    int zoomMinSizeCell;
+
+    int timeOfGame;
+    int unitsMove_TimerMilliSec;
+    int towersAttack_TimerMilliSec;
+    int scanMouseMove_TimerMilliSec;
+    int unitsMove_TimerId;
+    int towersAttack_TimerId;
+    int scanMouseMove_TimerId;
+
+    int test;
+    Field* field;
+//    std::vector<TileSet> tileSets;
+
+// test screen ---1
+    QPixmap global_pixmap;
+    QPixmap global_pixmap_PathPoint;
+    QPixmap global_pixmap_EnemyPathPoint;
+    QPixmap global_pixmap_DestinationPoint;
+    QPixmap global_pixmap_ExitPoint;
+    std::string global_text;
+    std::string global_text2;
+// test screen ---2
+// option screen -3--
+    bool panMidMouseButton;
+    bool pan = false;
+    int prevMouseX, prevMouseY;
+    int prevMouseCellX, prevMouseCellY;
+    int prevGlobalMouseX, prevGlobalMouseY;
+// option screen -4--
 
 public:
-    explicit GameWidget(QWidget *parent = 0);
+    explicit GameWidget(QString mapPath, int enemyCount, int towersCount, QWidget *parent = 0);
     ~GameWidget();
+
     void timerEvent(QTimerEvent* event);
     void keyPressEvent(QKeyEvent* event);
 
@@ -71,56 +108,11 @@ public:
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
 
-    void loadMap(QString mapPath, int enemyCount, int towersCount);
-
-    bool gameStart;
-    bool gamePause;
-//    bool mapLoad;
-
-    int pixelsShiftMap;
-
-    int zoomSizeCell;
-    int zoomMaxSizeCell;
-    int zoomMinSizeCell;
-
-    int defaultNumCreateUnits;
-
-    int timeOfGame;
-
-    int unitsMove_TimerMilliSec;
-    int towersAttack_TimerMilliSec;
-    int scanMouseMove_TimerMilliSec;
-
-    int unitsMove_TimerId;
-    int towersAttack_TimerId;
-    int scanMouseMove_TimerId;
-
-    int test;
-    Field* field;
-    std::vector<TileSet> tileSets;
-
-    QPixmap global_pixmap;
-    QPixmap global_pixmap_PathPoint;
-    QPixmap global_pixmap_EnemyPathPoint;
-    QPixmap global_pixmap_DestinationPoint;
-    QPixmap global_pixmap_ExitPoint;
-    std::string global_text;
-    std::string global_text2;
-
-    bool panMidMouseButton;
-    bool pan = false;
-    int prevMouseX, prevMouseY;
-    int prevMouseCellX, prevMouseCellY;
-    int prevGlobalMouseX, prevGlobalMouseY;
-
 private:
     Ui::GameWidget *ui;
 
 private slots:
-    void on_loadMaps_clicked();
-    void on_clearMap_clicked();
     void on_closeWidget_clicked();
-    void on_goUnits_clicked();
 
 signals:
     void signal_changeWindowState();

@@ -3,10 +3,20 @@
 WidgetController::WidgetController(QWidget *parent) :
     QWidget(parent)
 {
-    factionsManager = new FactionsManager();
-
     setWindowState(Qt::WindowMaximized);
 
+    stackedWidget = new QStackedWidget;
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setMargin(0);
+    layout->addWidget(stackedWidget);
+    setLayout(layout);
+
+    mediaPlayer = new QMediaPlayer();
+    mediaPlayer->setMedia(QUrl::fromLocalFile(ASSETS_PATH + "music/mainmenu2.mp3"));
+    mediaPlayer->setVolume(0);
+    mediaPlayer->play();
+
+    factionsManager = new FactionsManager();
     gameRecordsFile = new QFile(ASSETS_PATH + "gameRecords.txt");
     if (!gameRecordsFile->exists()) {
         qDebug() << "WidgetController::WidgetController(); -- gameRecords->exists():" << gameRecordsFile->exists();
@@ -20,26 +30,6 @@ WidgetController::WidgetController(QWidget *parent) :
            gameRecordsFile->close();
         }
     }
-    mediaPlayer = new QMediaPlayer();
-    mediaPlayer->setMedia(QUrl::fromLocalFile(ASSETS_PATH + "music/mainmenu2.mp3"));
-    mediaPlayer->setVolume(0);
-    mediaPlayer->play();
-
-    std::vector<QString> menuImgs;
-    QDirIterator it(":/assets/images/mainmenu/", QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        menuImgs.push_back(it.next());
-    }
-    mainMenuBackground = QPixmap(menuImgs[rand()%menuImgs.size()]);
-
-    stackedWidget = new QStackedWidget;
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->setMargin(0);
-    layout->addWidget(stackedWidget);
-    setLayout(layout);
-
-    enemyCount = 16, difficultyLevel = 0, towersCount = 0;
-    panMidMouseButtonBool = true;
     showMainMenu();
 }
 
@@ -49,8 +39,23 @@ void WidgetController::paintEvent(QPaintEvent *) {
     painter.end();
 }
 
+void WidgetController::loadMap(QString mapPath) {
+    qDebug() << "WidgetController::loadMap(); -- mapPath:" << mapPath;
+    gameWidget = new GameWidget(ASSETS_PATH + mapPath, enemyCount, towersCount, this);
+
+    gameWidget->field->factionsManager = factionsManager;
+    gameWidget->field->towersManager->difficultyLevel = difficultyLevel; // not good | unsafe
+    gameWidget->panMidMouseButton = panMidMouseButtonBool;
+
+    gameWidget->setMinimumWidth(1024);
+    gameWidget->setMinimumHeight(768);
+    showGameWidget(gameWidget);
+    qDebug() << "WidgetController::showGameWidget(); -- END";
+}
+
 void WidgetController::showMainMenu() {
     qDebug() << "WidgetController::showMainMenu(); -- ";
+
     mainMenu = new MainMenu();
     connect(mainMenu, SIGNAL(signal_playNormalMap()), this, SLOT(loadNormalMap()));
     connect(mainMenu, SIGNAL(signal_openOptionMenu()), this, SLOT(showOptionMenu()));
@@ -59,6 +64,11 @@ void WidgetController::showMainMenu() {
     mainMenu->updateRecords(gameRecords);
     stackedWidget->addWidget(mainMenu);
     stackedWidget->setCurrentWidget(mainMenu);
+
+    QDirIterator it(":/assets/images/mainmenu/", QDirIterator::Subdirectories);
+    std::vector<QString> menuImgs;
+    while (it.hasNext()) { menuImgs.push_back(it.next()); }
+    mainMenuBackground = QPixmap(menuImgs[rand()%menuImgs.size()]);
 }
 
 void WidgetController::loadRandomMap() {
@@ -68,11 +78,25 @@ void WidgetController::loadRandomMap() {
 void WidgetController::loadNormalMap() {
     loadMap("maps/island.tmx");
 }
+void WidgetController::showGameWidget(GameWidget* gameWidget) {
+    qDebug() << "WidgetController::showGameWidget(); -- gameWidget:" << gameWidget;
+    connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
+    connect(gameWidget, SIGNAL(signal_changeWindowState()), this, SLOT(changeWindowState()));
+    connect(gameWidget, SIGNAL(signal_closeWidgetGameFinished(bool,int)), this, SLOT(closeWidgetGameFinished(bool,int)));
+    stackedWidget->addWidget(gameWidget);
+    stackedWidget->setCurrentWidget(gameWidget);
+    qDebug() << "WidgetController::showGameWidget(); -- end";
+}
+
+void WidgetController::changeWindowState() {
+    qDebug() << "WidgetController::changeWindowState(); -- ";
+    setWindowState(windowState() ^ Qt::WindowFullScreen);
+}
 
 void WidgetController::showOptionMenu() {
     qDebug() << "WidgetController::showChooseMapMenu(); -- ";
 
-    OptionMenu* optionMenu = new OptionMenu();
+    optionMenu = new OptionMenu();
     optionMenu->setMediaPlayer(mediaPlayer);
 
     connect(optionMenu, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
@@ -87,35 +111,6 @@ void WidgetController::showOptionMenu() {
     optionMenu->updateRecords(gameRecords);
     stackedWidget->addWidget(optionMenu);
     stackedWidget->setCurrentWidget(optionMenu);
-}
-
-void WidgetController::loadMap(QString mapPath) {
-    qDebug() << "WidgetController::loadMap(); -- mapPath:" << mapPath;
-    GameWidget* gameWidget = new GameWidget(this);
-    gameWidget->setMinimumWidth(1024);
-    gameWidget->setMinimumHeight(768);
-
-    gameWidget->field->factionsManager = factionsManager;
-    gameWidget->loadMap(ASSETS_PATH + mapPath, enemyCount, towersCount);
-    gameWidget->field->towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
-    gameWidget->panMidMouseButton = panMidMouseButtonBool;
-    showGameWidget(gameWidget);
-    qDebug() << "WidgetController::showGameWidget(); -- END";
-}
-
-void WidgetController::showGameWidget(GameWidget* gameWidget) {
-    qDebug() << "WidgetController::showGameWidget(); -- gameWidget:" << gameWidget;
-    connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
-    connect(gameWidget, SIGNAL(signal_changeWindowState()), this, SLOT(changeWindowState()));
-    connect(gameWidget, SIGNAL(signal_closeWidgetGameFinished(bool,int)), this, SLOT(closeWidgetGameFinished(bool,int)));
-    stackedWidget->addWidget(gameWidget);
-    stackedWidget->setCurrentWidget(gameWidget);
-    qDebug() << "WidgetController::showGameWidget(); -- end";
-}
-
-void WidgetController::changeWindowState() {
-    qDebug() << "WidgetController::changeWindowState(); -- ";
-    setWindowState(windowState() ^ Qt::WindowFullScreen);
 }
 
 void WidgetController::enemyCountChanged(int value) {
@@ -135,7 +130,12 @@ void WidgetController::towersCountChanged(int value) {
 
 void WidgetController::actionMainMenuSoundRadionButton(bool checked) {
     qDebug() << "WidgetController::actionMainMenuSoundRadionButton(); -- volume:" << mediaPlayer->volume();
-    mediaPlayer->setVolume( (mediaPlayer->volume()>0) ? 0 : 100);
+//    mediaPlayer->setVolume( (mediaPlayer->volume()>0) ? 0 : 100);
+    if (checked) {
+        mediaPlayer->setVolume(100);
+    } else {
+        mediaPlayer->setVolume(0);
+    }
 }
 
 void WidgetController::panMidMouseButton(bool checked) {

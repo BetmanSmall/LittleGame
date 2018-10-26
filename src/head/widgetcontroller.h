@@ -31,35 +31,39 @@ public:
     explicit WidgetController(QWidget *parent = 0);
 
 private:
-    QFile* gameRecordsFile;
-    QList<int> gameRecords;
-    QMediaPlayer* mediaPlayer;
-    QPixmap mainMenuBackground;
     QStackedWidget* stackedWidget;
+    QMediaPlayer* mediaPlayer;
 
     FactionsManager* factionsManager;
-    MainMenu* mainMenu;
-    int enemyCount, difficultyLevel, towersCount;
-    bool panMidMouseButtonBool;
+    QList<int> gameRecords;
+    QFile* gameRecordsFile;
 
+    MainMenu* mainMenu;
+    QPixmap mainMenuBackground;
+
+    int enemyCount = 16, difficultyLevel = 0, towersCount = 0;
+    bool panMidMouseButtonBool = true;
+    OptionMenu* optionMenu;
+
+    GameWidget* gameWidget;
     QPainter painter;
     void paintEvent(QPaintEvent* );
     void loadMap(QString mapPath);
 
 private slots:
     void showMainMenu();
-
     void loadRandomMap();
     void loadNormalMap();
-    void showOptionMenu();
     void showGameWidget(GameWidget *gameWidget);
     void changeWindowState();
 
+    void showOptionMenu();
     void enemyCountChanged(int value);
     void difficultyLevelChanged(int value);
     void towersCountChanged(int value);
     void actionMainMenuSoundRadionButton(bool checked);
     void panMidMouseButton(bool checked);
+
     void closeWidget();
     void closeWidgetGameFinished(bool win, int timeOfGame);
 };
