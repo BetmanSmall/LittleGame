@@ -12,9 +12,6 @@
 //#include "src/head/faction.h"
 #include "template.h"
 
-/**
- * @brief The TemplateForUnit class - класс, описывающий все реализации определенного типа Юнита.
- */
 class TemplateForUnit : public Template
 {
 public:

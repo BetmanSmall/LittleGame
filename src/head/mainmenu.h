@@ -15,6 +15,11 @@ class MainMenu;
 class MainMenu : public QWidget
 {
     Q_OBJECT
+#ifdef QT_DEBUG
+    QString ASSETS_PATH = "../../LittleGame/assets/";
+#else
+    QString ASSETS_PATH = "./assets/";
+#endif
 
 public:
     explicit MainMenu(QWidget *parent = 0);
@@ -27,7 +32,6 @@ public:
 private:
     Ui::MainMenu *ui;
 
-    QString ASSETS_PATH;
     QPainter p;
 
 private slots:

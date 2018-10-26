@@ -5,12 +5,6 @@ MainMenu::MainMenu(QWidget *parent) :
     ui(new Ui::MainMenu)
 {
     ui->setupUi(this);
-
-#ifdef QT_DEBUG
-    ASSETS_PATH = "../../LittleGame/assets/";
-#else
-    ASSETS_PATH = "./assets/";
-#endif
 }
 
 MainMenu::~MainMenu() {

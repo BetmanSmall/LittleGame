@@ -21,11 +21,16 @@ class WidgetController : public QWidget
 {
     Q_OBJECT
 
+#ifdef QT_DEBUG
+    QString ASSETS_PATH = "../../LittleGame/assets/";
+#else
+    QString ASSETS_PATH = "./assets/";
+#endif
+
 public:
     explicit WidgetController(QWidget *parent = 0);
 
 private:
-    QString ASSETS_PATH;
     QFile* gameRecordsFile;
     QList<int> gameRecords;
     QMediaPlayer* mediaPlayer;

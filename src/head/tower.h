@@ -7,9 +7,6 @@
 #include "src/head/bullet.h"
 #include "src/head/templatefortower.h"
 
-/**
- * @brief The Tower class - класс, описывающий общие характеристики башни.
- */
 class Tower
 {
 public:

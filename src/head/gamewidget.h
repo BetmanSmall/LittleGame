@@ -33,6 +33,11 @@ namespace Ui {
 
 class GameWidget : public QWidget {
     Q_OBJECT
+#ifdef QT_DEBUG
+    QString ASSETS_PATH = "../../LittleGame/assets/";
+#else
+    QString ASSETS_PATH = "./assets/";
+#endif
 
 public:
     explicit GameWidget(QWidget *parent = 0);
@@ -66,7 +71,7 @@ public:
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
 
-    void loadMap(QString mapName, int enemyCount, int towersCount);
+    void loadMap(QString mapPath, int enemyCount, int towersCount);
 
     bool gameStart;
     bool gamePause;
@@ -91,7 +96,7 @@ public:
     int scanMouseMove_TimerId;
 
     int test;
-    Field field;
+    Field* field;
     std::vector<TileSet> tileSets;
 
     QPixmap global_pixmap;
@@ -110,7 +115,6 @@ public:
 
 private:
     Ui::GameWidget *ui;
-    QString ASSETS_PATH;
 
 private slots:
     void on_loadMaps_clicked();

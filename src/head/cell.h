@@ -8,9 +8,6 @@
 #include "src/head/tower.h"
 #include "src/head/unit.h"
 
-/**
- * @brief Ячейка
- */
 class Cell {
 public:
     int unitStepWA;

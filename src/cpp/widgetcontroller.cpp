@@ -3,12 +3,6 @@
 WidgetController::WidgetController(QWidget *parent) :
     QWidget(parent)
 {
-#ifdef QT_DEBUG
-    ASSETS_PATH = "../../LittleGame/assets/";
-#else
-    ASSETS_PATH = "./assets/";
-#endif
-
     factionsManager = new FactionsManager();
 
     setWindowState(Qt::WindowMaximized);
@@ -101,9 +95,9 @@ void WidgetController::loadMap(QString mapPath) {
     gameWidget->setMinimumWidth(1024);
     gameWidget->setMinimumHeight(768);
 
-    gameWidget->field.factionsManager = factionsManager;
+    gameWidget->field->factionsManager = factionsManager;
     gameWidget->loadMap(ASSETS_PATH + mapPath, enemyCount, towersCount);
-    gameWidget->field.towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
+    gameWidget->field->towersManager.difficultyLevel = difficultyLevel; // not good | unsafe
     gameWidget->panMidMouseButton = panMidMouseButtonBool;
     showGameWidget(gameWidget);
     qDebug() << "WidgetController::showGameWidget(); -- END";

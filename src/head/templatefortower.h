@@ -9,9 +9,6 @@
 //#include "src/head/direction.h"
 //#include "src/head/faction.h"
 
-/**
- * @brief The TemplateForTower class - класс, описывающий все реализации определенного типа Башни.
- */
 class TemplateForTower : public Template
 {
 public:

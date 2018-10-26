@@ -8,9 +8,6 @@
 #include "src/head/direction.h"
 #include "src/head/templateforunit.h"
 
-/**
- * @brief The Unit class - класс, описывающий общие характеристики юнита.
- */
 class Unit
 {
 public:
@@ -18,10 +15,8 @@ public:
     bool alive;
     bool preDeath;
     int number;
-
     int type;
     AStar::CoordinateList path;
-
     int lastX, lastY;
     int coorByCellX, coorByCellY;
     int coorByMapX, coorByMapY;
@@ -32,7 +27,6 @@ public:
     QPixmap pixmap;
     std::vector<QPixmap> activePixmaps;
     TemplateForUnit* defUnit;
-
     Unit();
     ~Unit();
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
