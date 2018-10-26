@@ -30,7 +30,7 @@ Map* MapLoader::load(QString mapPath) {
 
 QDomDocument* MapLoader::loadDomDocument(QString xmlFile) {
     QString xmlName = xmlFile.mid(xmlFile.lastIndexOf("/")+1);
-    qDebug() << "MapLoader::loadDomDocument() -- Try load xmlName:" << xmlName;
+//    qDebug() << "MapLoader::loadDomDocument() -- Try load xmlName:" << xmlName;
     QDomDocument *domDocument = new QDomDocument(xmlName);
     QFile file(xmlFile);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -43,7 +43,7 @@ QDomDocument* MapLoader::loadDomDocument(QString xmlFile) {
         return NULL;
     }
     file.close();
-    qDebug() << "MapLoader::loadDomDocument() -- Load xmlFile: " << xmlFile;
+//    qDebug() << "MapLoader::loadDomDocument() -- Load xmlFile: " << xmlFile;
     return domDocument;
 }
 
@@ -186,13 +186,13 @@ void MapLoader::loadProperties(QMap<QString, QString> *properties, QDomElement p
         return;
     }
     if (propertiesElement.nodeName() == "properties") {
-        QDomNodeList propertieNodeList = propertiesElement.elementsByTagName("property");
-        for (int k = 0; k < propertieNodeList.length(); k++) {
-            QDomNode propertyNode = propertieNodeList.item(k);
-            QString name = propertyNode.toElement().attribute("name", NULL);
-            QString value = propertyNode.toElement().attribute("value", NULL);
+        QDomNodeList propertyNodeList = propertiesElement.elementsByTagName("property");
+        for (int p = 0; p < propertyNodeList.length(); p++) {
+            QDomElement propertyElement = propertyNodeList.item(p).toElement();
+            QString name = propertyElement.attribute("name", "NULL");
+            QString value = propertyElement.attribute("value", NULL);
             if (value == NULL) {
-                value = propertyNode.toElement().nodeValue();
+                value = propertyElement.nodeValue();
             }
             properties->insert(name, value);
         }

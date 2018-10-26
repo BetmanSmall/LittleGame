@@ -4,6 +4,10 @@ Tile::Tile() {
 //    qDebug() << "Tile::Tile();";
 }
 
+Tile::~Tile() {
+//    qDebug() << "Tile::~Tile();";
+}
+
 void Tile::setId(int id) {
 //    qDebug() << "Tile::setId(" << id << ");";
     this->id = id;
@@ -30,7 +34,7 @@ QPixmap *Tile::getPixmapRef() {
 }
 
 QMap<QString, QString> *Tile::addProperties(QMap<QString, QString> properties) {
-    qDebug() << "Tile::addProperties(); -- properties:" << properties;
+//    qDebug() << "Tile::addProperties(); -- properties:" << properties;
     foreach (QString key, properties.keys()) {
         this->properties.insert(key, properties.value(key));
     }

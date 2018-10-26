@@ -204,7 +204,7 @@
    </animation>
   </tile>
  </tileset>
- <tileset firstgid="365" name="tower1_winter_scout" tilewidth="64" tileheight="64" tilecount="9" columns="3">
+ <tileset firstgid="365" name="tower1_winter_scout" tilewidth="64" tileheight="64" tilecount="6" columns="2">
   <properties>
    <property name="attack" value="1"/>
    <property name="height" value="1"/>
@@ -213,7 +213,7 @@
    <property name="size" value="1"/>
    <property name="type" value="1"/>
   </properties>
-  <image source="textures/warcraft2/tilesets/winter/human/buildings/scout_tower_3.png" trans="ff00ff" width="192" height="192"/>
+  <image source="textures/warcraft2/tilesets/winter/human/buildings/scout_tower.png" trans="ff00ff" width="128" height="192"/>
   <terraintypes>
    <terrain name="idle_up" tile="0"/>
    <terrain name="bullet_fly_up" tile="1"/>
@@ -226,7 +226,7 @@
    <terrain name="bullet" tile="8"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="374" name="unit3_footman" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="371" name="unit3_footman" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Footman"/>
@@ -305,7 +305,7 @@
    <terrain name="death3_down" tile="59"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="434" name="unit1_grunt" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="431" name="unit1_grunt" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Grunt"/>
@@ -384,7 +384,7 @@
    <terrain name="death3_down" tile="59"/>
   </terraintypes>
  </tileset>
- <tileset firstgid="494" name="unit2_troll_axethrower" tilewidth="72" tileheight="72" tilecount="60" columns="5">
+ <tileset firstgid="491" name="unit2_troll_axethrower" tilewidth="72" tileheight="72" tilecount="60" columns="5">
   <properties>
    <property name="health_point" value="100"/>
    <property name="name" value="Troll"/>

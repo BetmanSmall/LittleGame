@@ -162,69 +162,53 @@ void FactionsManager::loadFactions() {
 //            factions.addAll(factionsDir.list());
 //        }
 //    }.
-    qDebug() << "FactionsManager::loadFactions(); -- factions.size:" << factions.size();
+    qDebug() << "FactionsManager::loadFactions(); -1- factions.size:" << factions.size();
     foreach (QString factionFile, factions) {
         if (factionFile.contains("fac")) {
             loadFaction(factionFile);
         }
     }
+    qDebug() << "FactionsManager::loadFactions(); -2- factions.size:" << factions.size();
 }
 
 void FactionsManager::loadFaction(QString factionFile) {
-//    if (factionFile != NULL && factionFile.isOpen()) {
-        qDebug() << "FactionsManager::loadFaction(); -- factionFile:" << factionFile;
-        QDomDocument* domDocument = MapLoader::loadDomDocument(factionFile);
-        qDebug() << "FactionsManager::loadFaction(); -- domDocument:" << domDocument;
-//        try {
-//            XmlReader xmlReader = new XmlReader();
-//            Element root = xmlReader.parse(factionFile);
-        QDomElement rootElement = domDocument->documentElement();
-        QString factionName = rootElement.attribute("name", NULL);
-        qDebug() << "FactionsManager::loadFaction(); -- factionName:" << factionName;
-            if (factionName != NULL) {
-                Faction* faction = new Faction(factionName);
-                QDomNodeList templateForUnitElements = rootElement.elementsByTagName("templateForUnit");
-                qDebug() << "FactionsManager::loadFaction(); -- templateForUnitElements.length():" << templateForUnitElements.length();
-//                Array<Element> templateForUnitElements = root.getChildrenByName("templateForUnit");
-                for(int k = 0; k < templateForUnitElements.length(); k++) {
-                    QDomNode tileSetNode = templateForUnitElements.item(k);
-                    QString source = tileSetNode.toElement().attribute("source", NULL);
-                    qDebug() << "FactionsManager::loadFaction(); -- source:" << source;
-                    if (source != NULL) {
-                        QString templateFile = MapLoader::findFile(factionFile, source);
-                        qDebug() << "FactionsManager::loadFaction(); -- templateFile:" << templateFile;
-                        TemplateForUnit* templateForUnit = new TemplateForUnit(templateFile);
+    qDebug() << "FactionsManager::loadFaction(); -1- factionFile:" << factionFile;
+    QDomDocument* domDocument = MapLoader::loadDomDocument(factionFile);
+
+    QDomElement rootElement = domDocument->documentElement();
+    QString factionName = rootElement.attribute("name", NULL);
+    if (factionName != NULL) {
+        Faction* faction = new Faction(factionName);
+        QDomNodeList templateForUnitElements = rootElement.elementsByTagName("templateForUnit");
+        qDebug() << "FactionsManager::loadFaction(); -- templateForUnitElements.length():" << templateForUnitElements.length();
+        for (int k = 0; k < templateForUnitElements.length(); k++) {
+            QDomNode tileSetNode = templateForUnitElements.item(k);
+            QString source = tileSetNode.toElement().attribute("source", NULL);
+//                    qDebug() << "FactionsManager::loadFaction(); -- source:" << source;
+            if (source != NULL) {
+                QString templateFile = MapLoader::findFile(factionFile, source);
+//                        qDebug() << "FactionsManager::loadFaction(); -- templateFile:" << templateFile;
+                TemplateForUnit* templateForUnit = new TemplateForUnit(templateFile);
 //                        templateForUnit->setFaction(faction);
 //                        templateForUnit->healthPoints = templateForUnit->healthPoints*levelOfDifficulty; // simple level of difficulty
-                        faction->units.push_back(templateForUnit);
-                    }
-                }
-//                for (Element templateForUnitElement : templateForUnitElements) {
-//                    String source = templateForUnitElement.getAttribute("source", null);
-//                    if (source != null) {
-//                        FileHandle templateFile = getRelativeFileHandle(factionFile, source);
-//                        TemplateForUnit templateForUnit = new TemplateForUnit(templateFile);
-//                        templateForUnit.setFaction(faction);
-//                        templateForUnit.healthPoints = templateForUnit.healthPoints*levelOfDifficulty; // simple level of difficulty
-//                        faction.getTemplateForUnits().add(templateForUnit);
-//                    }
-//                }
-//                Array<Element> templateForTowerElements = root.getChildrenByName("templateForTower");
-//                for (Element templateForTowerElement : templateForTowerElements) {
-//                    String source = templateForTowerElement.getAttribute("source", null);
-//                    if (source != null) {
-//                        FileHandle templateFile = getRelativeFileHandle(factionFile, source);
-//                        TemplateForTower templateForTower = new TemplateForTower(templateFile);
-//                        templateForTower.setFaction(faction);
-//                        faction.getTemplateForTowers().add(templateForTower);
-//                    }
-//                }
-//                factions.add(faction);
+                faction->units.push_back(templateForUnit);
             }
-//        } catch (Exception exp) {
-//            Gdx.app.error("FactionsManager::loadFaction()", "-- Could not load Faction! Exp:" + exp);
-//        }
-//    } else {
-//        Gdx.app.error("FactionsManager::loadFaction()", "-- Could not load Faction! (factionFile == null) or (factionFile.isDirectory() == true)");
-//    }
+        }
+        QDomNodeList templateForTowerElements = rootElement.elementsByTagName("templateForTower");
+        qDebug() << "FactionsManager::loadFaction(); -- templateForTowerElements.length():" << templateForTowerElements.length();
+        for (int k = 0; k < templateForTowerElements.length(); k++) {
+            QDomNode tileSetNode = templateForTowerElements.item(k);
+            QString source = tileSetNode.toElement().attribute("source", NULL);
+            qDebug() << "FactionsManager::loadFaction(); -- source:" << source;
+            if (source != NULL) {
+                QString templateFile = MapLoader::findFile(factionFile, source);
+                qDebug() << "FactionsManager::loadFaction(); -- templateFile:" << templateFile;
+                TemplateForTower* templateForTower = new TemplateForTower(templateFile);
+//                        templateForTower->setFaction(faction);
+                faction->towers.push_back(templateForTower);
+            }
+        }
+        factions.push_back(faction);
+    }
+    qDebug() << "FactionsManager::loadFaction(); -2- factionFile:" << factionFile;
 }

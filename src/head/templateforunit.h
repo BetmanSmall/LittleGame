@@ -9,26 +9,20 @@
 #include "src/head/mapEditor/animatedtile.h"
 #include "src/head/mapEditor/tile.h"
 #include "src/head/direction.h"
+//#include "src/head/faction.h"
+#include "template.h"
 
 /**
  * @brief The TemplateForUnit class - класс, описывающий все реализации определенного типа Юнита.
  */
-class TemplateForUnit
+class TemplateForUnit : public Template
 {
 public:
-//    Faction* faction;
-    QString templateName;
-
-//    Float bounty;
-//    Float cost;
-    QString factionName;
+//    float bounty;
+//    float cost;
     float healthPoints;
-    QString name;
     float speed;
-//    QString type;
-
     QMap<QString, AnimatedTile*> animations;
-    AnimatedTile idleTile;
 
     QPixmap pixmap;
     QPixmap idle_up;
@@ -73,10 +67,12 @@ public:
     TemplateForUnit(QString templateFile);
     ~TemplateForUnit();
     void clearVectors();
+//    void setFaction(Faction* faction);
+    void specificLoad();
 
 private:
     AnimatedTile* flipAnimatedTiledMapTile(AnimatedTile* animatedTiledMapTile);
-//    void validate();
+    void validate();
 
 public:
     QString toString();

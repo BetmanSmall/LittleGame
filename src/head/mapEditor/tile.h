@@ -18,6 +18,7 @@ protected:
     float offsetY;
 public:
     Tile();
+    virtual ~Tile();
     void setId(int id);
     int getId();
 

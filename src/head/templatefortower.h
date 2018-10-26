@@ -3,23 +3,39 @@
 
 #include <QDebug>
 #include <QPixmap>
+#include <QtXml>
 
-//#include "src/head/libs/tinyxml2.h"
+#include "template.h"
+//#include "src/head/direction.h"
+//#include "src/head/faction.h"
 
 /**
  * @brief The TemplateForTower class - класс, описывающий все реализации определенного типа Башни.
  */
-class TemplateForTower
+class TemplateForTower : public Template
 {
 public:
-    QString name;
-    int attack;
-    int radius;
-    int size;
-    int reloadTime;
-    int height;
-    int type;
+    int     radiusDetection;
+    int     attack;
+    int     damage;
+    int     radius;
+    int     size;
+    int     height;
+    float   ammoSize;
+    float   ammoSpeed;
+    float   reloadTime;
+    int     type;
+    Tile* idleTile;
+//    AnimatedTile idleTile;
+    QMap<QString, Tile*> ammunitionPictures;
 
+//    Float    radiusFlyShell;
+//    Integer  cost;
+//    TowerAttackType towerAttackType;
+//    ShellAttackType shellAttackType;
+//    ShellEffectType shellEffectType;
+//    Integer capacity;
+//    Integer ammoDistance;
     QPixmap pixmap;
     std::vector<QPixmap> bullet;
 
@@ -32,8 +48,17 @@ public:
     std::vector<QPixmap> bullet_fly_left;
     std::vector<QPixmap> bullet_fly_up_left;
 
-    TemplateForTower();
+    TemplateForTower(QString templateFile);
     ~TemplateForTower();
+//    void setFaction(Faction* faction);
+    void specificLoad();
+
+private:
+    void validate();
+
+public:
+    QString toString();
+    QString toString(bool full);
 };
 
 #endif // TEMPLATEFORTOWER_H
