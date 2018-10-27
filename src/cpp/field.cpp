@@ -9,7 +9,7 @@ Field::Field(QString mapFile, FactionsManager* factionsManager, int enemyCount, 
     qDebug() << "Field::Field(); -- map:" << map;
     this->factionsManager = factionsManager;
     this->towersManager = new TowersManager(difficultyLevel);
-    this->unitsManager = new UnitsManager();
+    this->unitsManager = new UnitsManager(difficultyLevel);
     qDebug() << "Field::Field(); -end- ";
 }
 
@@ -70,13 +70,14 @@ Cell* Field::getCell(int x, int y) {
 //    this->faction = faction;
 //}
 
-bool Field::createSpawnPoint(int num, int x, int y){
-    for(int k = 0; k < unitsManager->getAmount(); k++) {
-        Unit* unit = unitsManager->getUnit(k);
-        int unitX = unit->coorByCellX;
-        int unitY = unit->coorByCellY;
-        getCell(unitX, unitY)->clearUnit();
-    }
+bool Field::createSpawnPoint(int num, int x, int y) {
+//    foreach (Unit* unit, unitsManager->units) {
+//        int unitX = unit->coorByCellX;
+//        int unitY = unit->coorByCellY;
+//        getCell(unitX, unitY)->clearUnit();
+//    }
+//    delete unitsManager;
+//    unitsManager = new UnitsManager(1);
     if(x == -1 && y == -1) {
         if(!isSetSpawnPoint()) {
             return false;
@@ -85,10 +86,8 @@ bool Field::createSpawnPoint(int num, int x, int y){
         spawnPointX = x;
         spawnPointY = y;
         getCell(x, y)->spawn = true;
-        getCell(x, y)->removeTerrain(true); // clearBusy(x,y);
+        getCell(x, y)->removeTerrain(true);
     }
-    unitsManager->deleteMass();
-    unitsManager->createMass(num);
     currentFinishedUnits = 0;
     return true;
 }
@@ -97,7 +96,7 @@ void Field::createExitPoint(int x, int y) {
     exitPointX = x;
     exitPointY = y;
     getCell(x, y)->exit = true;
-    getCell(x, y)->removeTerrain(true); // clearBusy(x, y);
+    getCell(x, y)->removeTerrain(true);
     waveAlgorithm(x, y);
 }
 
@@ -115,20 +114,19 @@ void Field::updateHeroDestinationPoint() {
 
 void Field::updateHeroDestinationPoint(int x, int y) {
     updatePathFinderWalls();
-    for (int k = 0; k < unitsManager->getAmount(); k++) {
-        Unit* tmpUnit = unitsManager->getUnit(k);
-        if (tmpUnit->type == 0) {
+//    foreach (Unit* unit, unitsManager->units) {
+//        if (unit->type == 0) {
+    Unit* unit = unitsManager->hero;
             qDebug() << "Field::updateHeroDestionPoint(" << x << ", " << y << "); -- ";
-            AStar::CoordinateList newPath = pathFinder.findPath({tmpUnit->coorByCellX, tmpUnit->coorByCellY}, {x, y});
+            AStar::CoordinateList newPath = pathFinder.findPath({unit->coorByCellX, unit->coorByCellY}, {x, y});
             if (newPath.front().operator==({x, y})) {
                 newPath.pop_back();
-                tmpUnit->path = newPath;
+                unit->path = newPath;
             } else {
-                tmpUnit->path.clear();
+                unit->path.clear();
             }
-
-        }
-    }
+//        }
+//    }
 }
 
 void Field::updatePathFinderWalls() {
@@ -378,8 +376,10 @@ bool Field::isSetExitPoint(int x, int y) {
 
 int Field::stepAllUnits() {
     bool allDead = true;
-    for(int k = 0; k < unitsManager->getAmount(); k++) {
-        int result = stepOneUnit(k);
+//    for(int k = 0; k < unitsManager->getAmount(); k++) {
+    foreach (Unit* unit, unitsManager->units) {
+        int result = stepOneUnit(unit);
+//        int result = stepOneUnit(k);
         if(result != -2) {
             allDead = false;
         }
@@ -405,23 +405,23 @@ int Field::stepAllUnits() {
     }
 }
 
-int Field::stepOneUnit(int num) {
-    Unit* tmpUnit = unitsManager->getUnit(num);
-    if(tmpUnit->alive) {
-        if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter) {
-            tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
+int Field::stepOneUnit(Unit* unit) {
+//    Unit* tmpUnit = unitsManager->getUnit(num);
+    if(unit->alive) {
+        if(unit->animationCurrIter < unit->animationMaxIter) {
+            unit->pixmap = unit->activePixmaps[unit->animationCurrIter++];
         } else {
-            int currX = tmpUnit->coorByCellX;
-            int currY = tmpUnit->coorByCellY;
+            int currX = unit->coorByCellX;
+            int currY = unit->coorByCellY;
             int exitX = currX, exitY = currY;
-            if (!tmpUnit->path.empty()) {
-                AStar::Vec2i point = tmpUnit->path.back();
-                tmpUnit->path.pop_back();
+            if (!unit->path.empty()) {
+                AStar::Vec2i point = unit->path.back();
+                unit->path.pop_back();
                 exitX = point.x;
                 exitY = point.y;
 
             }
-            if(tmpUnit->type == 0) {
+            if(unit == unitsManager->hero) {
                 if (currX == exitPointX && currY == exitPointY) {
                     qDebug() << "Field::stepOneUnit(); -- HeroInExitPoint!";
                     return 3;
@@ -441,102 +441,102 @@ int Field::stepOneUnit(int num) {
                     getCell(currX, currY)->removeTerrain(true);
                     updatePathFinderWalls();
                 }
-                if (tmpUnit->path.empty() || getCell(exitX, exitY)->isTerrain()) {
+                if (unit->path.empty() || getCell(exitX, exitY)->isTerrain()) {
                     int randomX = rand()%sizeX;
                     int randomY = rand()%sizeY;
-                    tmpUnit->path = pathFinder.findPath({tmpUnit->coorByCellX, tmpUnit->coorByCellY}, {randomX, randomY});
+                    unit->path = pathFinder.findPath({unit->coorByCellX, unit->coorByCellY}, {randomX, randomY});
                 }
             }
             if(exitX != currX || exitY != currY) {
-                getCell(currX, currY)->clearUnit(tmpUnit);//clearUnit(currX, currY, tmpUnit);
-                tmpUnit->lastX = currX;
-                tmpUnit->lastY = currY;
-                tmpUnit->coorByCellX = exitX;
-                tmpUnit->coorByCellY = exitY;
+                getCell(currX, currY)->clearUnit(unit);
+                unit->lastX = currX;
+                unit->lastY = currY;
+                unit->coorByCellX = exitX;
+                unit->coorByCellY = exitY;
                 if(!getIsometric()) {
                     if(exitX < currX && exitY < currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_left;
-                        tmpUnit->direction = Direction::type::UP_LEFT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_up_left.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_up_left;
+                        unit->direction = Direction::type::UP_LEFT;
                     } else if(exitX == currX && exitY < currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up;
-                        tmpUnit->direction = Direction::UP;
+                        unit->animationMaxIter = unit->templateForUnit->walk_up.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_up;
+                        unit->direction = Direction::UP;
                     } else if(exitX > currX && exitY < currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_right.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_right;
-                        tmpUnit->direction = Direction::UP_RIGHT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_up_right.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_up_right;
+                        unit->direction = Direction::UP_RIGHT;
                     } else if(exitX < currX && exitY == currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_left.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_left;
-                        tmpUnit->direction = Direction::LEFT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_left.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_left;
+                        unit->direction = Direction::LEFT;
                     } else if(exitX > currX && exitY == currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_right.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_right;
-                        tmpUnit->direction = Direction::RIGHT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_right.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_right;
+                        unit->direction = Direction::RIGHT;
                     } else if(exitX < currX && exitY > currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_left.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_left;
-                        tmpUnit->direction = Direction::DOWN_LEFT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_down_left.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_down_left;
+                        unit->direction = Direction::DOWN_LEFT;
                     } else if(exitX == currX && exitY > currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down;
-                        tmpUnit->direction = Direction::DOWN;
+                        unit->animationMaxIter = unit->templateForUnit->walk_down.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_down;
+                        unit->direction = Direction::DOWN;
                     } else if(exitX > currX && exitY > currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_right.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_right;
-                        tmpUnit->direction = Direction::DOWN_RIGHT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_down_right.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_down_right;
+                        unit->direction = Direction::DOWN_RIGHT;
                     }
                 } else {
                     if(exitX < currX && exitY < currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up;
-                        tmpUnit->direction = Direction::UP;
+                        unit->animationMaxIter = unit->templateForUnit->walk_up.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_up;
+                        unit->direction = Direction::UP;
                     } else if(exitX == currX && exitY < currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_right.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_right;
-                        tmpUnit->direction = Direction::UP_RIGHT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_up_right.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_up_right;
+                        unit->direction = Direction::UP_RIGHT;
                     } else if(exitX > currX && exitY < currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_right.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_right;
-                        tmpUnit->direction = Direction::RIGHT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_right.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_right;
+                        unit->direction = Direction::RIGHT;
                     } else if(exitX < currX && exitY == currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_up_left.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_up_left;
-                        tmpUnit->direction = Direction::UP_LEFT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_up_left.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_up_left;
+                        unit->direction = Direction::UP_LEFT;
                     } else if(exitX > currX && exitY == currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_right.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_right;
-                        tmpUnit->direction = Direction::DOWN_RIGHT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_down_right.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_down_right;
+                        unit->direction = Direction::DOWN_RIGHT;
                     } else if(exitX < currX && exitY > currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_left.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_left;
-                        tmpUnit->direction = Direction::LEFT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_left.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_left;
+                        unit->direction = Direction::LEFT;
                     } else if(exitX == currX && exitY > currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down_left.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down_left;
-                        tmpUnit->direction = Direction::DOWN_LEFT;
+                        unit->animationMaxIter = unit->templateForUnit->walk_down_left.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_down_left;
+                        unit->direction = Direction::DOWN_LEFT;
                     } else if(exitX > currX && exitY > currY) {
-                        tmpUnit->animationMaxIter = tmpUnit->defUnit->walk_down.size();
-                        tmpUnit->activePixmaps = tmpUnit->defUnit->walk_down;
-                        tmpUnit->direction = Direction::DOWN;
+                        unit->animationMaxIter = unit->templateForUnit->walk_down.size();
+                        unit->activePixmaps = unit->templateForUnit->walk_down;
+                        unit->direction = Direction::DOWN;
                     }
                 }
-                tmpUnit->pixmap = tmpUnit->activePixmaps[0];
-                tmpUnit->animationCurrIter = 0;
-                getCell(exitX, exitY)->setUnit(tmpUnit);
+                unit->pixmap = unit->activePixmaps[0];
+                unit->animationCurrIter = 0;
+                getCell(exitX, exitY)->setUnit(unit);
             } else {
-                tmpUnit->animationMaxIter = tmpUnit->defUnit->idle.size();
-                tmpUnit->activePixmaps = tmpUnit->defUnit->idle;
-                tmpUnit->direction = Direction::IDLE;
-                tmpUnit->pixmap = tmpUnit->activePixmaps[0];
+                unit->animationMaxIter = unit->templateForUnit->idle.size();
+                unit->activePixmaps = unit->templateForUnit->idle;
+                unit->direction = Direction::IDLE;
+                unit->pixmap = unit->activePixmaps[0];
             }
         }
-    } else if(tmpUnit->preDeath) {
-        if(tmpUnit->animationCurrIter < tmpUnit->animationMaxIter) {
-            tmpUnit->pixmap = tmpUnit->activePixmaps[tmpUnit->animationCurrIter++];
+    } else if(unit->preDeath) {
+        if(unit->animationCurrIter < unit->animationMaxIter) {
+            unit->pixmap = unit->activePixmaps[unit->animationCurrIter++];
         } else {
-            tmpUnit->preDeath = false;
+            unit->preDeath = false;
             return 4;
         }
     } else {
@@ -580,15 +580,14 @@ void Field::clearStepCell(int x, int y) {
     field[sizeX*y + x].unitStepWA = 0;
 }
 
+//int Field::getUnitHpInCell(int x, int y) {
+//    if(x >= 0 && x < getSizeX())
+//        if(y >= 0 && y < getSizeY())
+//            if(containUnit(x,y))
+//                return unitsManager->getHP(x, y);
 
-int Field::getUnitHpInCell(int x, int y) {
-    if(x >= 0 && x < getSizeX())
-        if(y >= 0 && y < getSizeY())
-            if(containUnit(x,y))
-                return unitsManager->getHP(x, y);
-
-    return 0;
-}
+//    return 0;
+//}
 
 Unit* Field::getUnitWithLowHP(int x, int y) {
     if(x >= 0 && x < getSizeX()) {
@@ -670,11 +669,12 @@ Unit* Field::createUnit(int x, int y, int type) {
         coorByMapY = mainCoorMapY + isometricCoorY+spaceWidget - halfSizeCellY*2 + x*halfSizeCellY;
     }
     Unit* unit;
+    AStar::CoordinateList path = pathFinder.findPath({x, y}, {exitPointX, exitPointY});
     if (type == 0) {
-        unit = unitsManager->createHero(x, y, coorByMapX, coorByMapY, factionsManager->getTemplateForUnitByName("unit3_footman"));//faction->getDefaultUnitById(0)); //, type);
+        unit = unitsManager->createHero(path, factionsManager->getTemplateForUnitByName("unit3_footman"));//faction->getDefaultUnitById(0)); //, type);
         updateHeroDestinationPoint(exitPointX, exitPointY);
     } else /*if (type == 1)*/ {
-        unit = unitsManager->createUnit(x, y, coorByMapX, coorByMapY, factionsManager->getRandomTemplateForUnitFromFirstFaction(), type);
+        unit = unitsManager->createUnit(path, factionsManager->getRandomTemplateForUnitFromFirstFaction(), type);
         if (unit != NULL) { //
             int randomX = rand()%sizeX;
             int randomY = rand()%sizeY;

@@ -10,9 +10,9 @@ Map* MapLoader::load(QString mapPath) {
     QDomElement mapElement = domDocument->documentElement();
     QMap<QString, QPixmap> textures;
     QVector<QString> textureFiles = loadTilesets(mapElement, mapPath);
-    qDebug() << textureFiles;
+    qDebug() << "MapLoader::load() -- textureFiles: " << textureFiles;
     textureFiles += loadImages(mapElement, mapPath);
-    qDebug() << textureFiles;
+    qDebug() << "MapLoader::load() -- textureFiles: " << textureFiles;
 
     foreach (QString pixFilePath, textureFiles) {
         QPixmap pix(pixFilePath);
@@ -157,7 +157,7 @@ Map *MapLoader::loadMap(QDomElement mapElement, QString mapPath, QMap<QString, Q
     if (!propertiesElement.isNull()) {
         loadProperties(map->getProperties(), propertiesElement);
     }
-    qDebug() << *(map->getProperties());
+    qDebug() << "MapLoader::loadMap() -- *(map->getProperties()): " << *(map->getProperties());
 
     QDomNodeList tileSetsNodeList = mapElement.elementsByTagName("tileset");
     for(int k = 0; k < tileSetsNodeList.length(); k++) {

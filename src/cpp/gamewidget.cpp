@@ -554,9 +554,8 @@ void GameWidget::drawPaths() {
     painter.setPen(QColor(255,0,0));
 
     QPixmap pixmapPathPoint;
-    for (int u = 0; u < field->unitsManager->getAmount(); u++) {
-        Unit* tmpUnit = field->unitsManager->getUnit(u);
-        if (tmpUnit->type == 0) {
+    foreach (Unit* tmpUnit, field->unitsManager->units) {
+        if (tmpUnit == field->unitsManager->hero) {
             pixmapPathPoint = global_pixmap_PathPoint;
         } else {
             pixmapPathPoint = global_pixmap_EnemyPathPoint;

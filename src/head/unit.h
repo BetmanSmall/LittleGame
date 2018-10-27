@@ -16,20 +16,26 @@ public:
     int coorByCellX, coorByCellY;
     int hp;
     float speed;
+    float stepsInTime;
+    float deathElapsedTime;
 
+//    int player;
+    int coorByMapX, coorByMapY;
     bool alive;
     bool preDeath;
-    int number;
-    int type;
-    int coorByMapX, coorByMapY;
+    QString type;
+
+    TemplateForUnit* templateForUnit;
+
     Direction::type direction;
+    QPixmap pixmap;
+    std::vector<QPixmap> activePixmaps;
     int animationLastAliveIter;
     int animationCurrIter;
     int animationMaxIter;
-    QPixmap pixmap;
-    std::vector<QPixmap> activePixmaps;
-    TemplateForUnit* defUnit;
-    Unit();
+
+public:
+    Unit(AStar::CoordinateList path, TemplateForUnit* templateForUnit);
     ~Unit();
     QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
 };

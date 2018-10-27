@@ -74,7 +74,7 @@ bool Cell::removeTower() {
 
 Unit *Cell::getHero() {
     foreach (Unit* unit, units) {
-        if (unit->type == 0) { // type 0 = Hero
+        if (unit->type == "hero") { // type 0 = Hero
             return unit;
         }
     }

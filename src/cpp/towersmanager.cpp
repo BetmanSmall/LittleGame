@@ -1,10 +1,12 @@
 #include "src/head/towersmanager.h"
 
 TowersManager::TowersManager(int difficultyLevel) {
+    qDebug() << "TowersManager::TowersManager(); -- ";
     this->difficultyLevel = difficultyLevel;
 }
 
 TowersManager::~TowersManager() {
+    qDebug() << "TowersManager::~TowersManager(); -- ";
     towers.clear();
 }
 

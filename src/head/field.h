@@ -65,7 +65,7 @@ public:
     bool isSetSpawnPoint(int x = -1, int y = -1);
     bool isSetExitPoint(int x = -1, int y = -1);
     int stepAllUnits();
-    int stepOneUnit(int num);
+    int stepOneUnit(Unit* unit);
     int getNumStep(int x, int y);
     int getStepCell(int x, int y);
     bool setNumOfCell(int x, int y, int step);
@@ -73,7 +73,7 @@ public:
     void clearStepCell(int x, int y);
     Unit* getUnit(int x, int y);
     std::vector<Unit *> getUnits(int x, int y);
-    int getUnitHpInCell(int x, int y);
+//    int getUnitHpInCell(int x, int y);
     Unit* getUnitWithLowHP(int x, int y);
     std::vector<Tower*> getAllTowers();
     bool containEmpty(int x, int y);
@@ -84,9 +84,6 @@ public:
     bool setTower(int x, int y, TemplateForTower* defTower);
     bool spawnHeroInSpawnPoint();//Unit* unit = NULL);//, int type = 0);
     Unit* createUnit(int x, int y, int type = -1);
-    bool clearBusy(int x, int y);
-    bool clearTower(int x, int y);
-    bool clearUnit(int x, int y, Unit* unit = NULL);
     bool deleteTower(int x = -1, int y = -1);
 };
 
