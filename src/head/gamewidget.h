@@ -37,9 +37,6 @@ class GameWidget : public QWidget {
     QString ASSETS_PATH = "./assets/";
 #endif
 public:
-//    bool gameStart;
-//    bool gamePause;
-//    bool mapLoad;
     // camera need
     int pixelsShiftMap;
     int zoomSizeCell;

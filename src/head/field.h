@@ -37,6 +37,9 @@ public: // we are friendly!
     QPixmap global_pixmap_DestinationPoint;
     QPixmap global_pixmap_ExitPoint;
 
+//    bool gameStart;
+    bool gamePause;
+//    float gameSpeed;
     int spawnPointX, spawnPointY;
     int exitPointX, exitPointY;
     int gameOverLimitUnits;

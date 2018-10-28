@@ -27,11 +27,37 @@ Field::Field(QString mapFile, FactionsManager* factionsManager, int enemyCount, 
 //    green;
 //    red?
     createField(sizeFieldX, sizeFieldY, map->getMapLayers());
+    int terrainType = rand()%2;
+    if (mapFile.contains("randomMap")) {
+        for (int x = 0; x < sizeFieldX; x++) {
+            for (int y = 0; y < sizeFieldY; y++) {
+                if( (rand()%100) < 30 ) {
+                    int randNumber = map->getTileSets()->getTileSet(1)->firshgid+( 42+(rand()%4) );
+                    QPixmap pixmap = map->getTileSets()->getTileSet(1)->getGlobalTile(randNumber)->getPixmap();
+                    getCell(x, y)->setTerrain(pixmap);
+                }
+            }
+        }
+    } else {
+        for (int x = 0; x < sizeFieldX; x++) {
+            for (int y = 0; y < sizeFieldY; y++) {
+                if( (rand()%100) < 10 ) {
+                    if (getCell(x, y)->isEmpty()) {
+                        int randNumber = ( 124+(rand()%2) );
+                        QPixmap pixmap = map->getTileSets()->getTileSet(0)->getLocalTile(randNumber)->getPixmap();
+                        getCell(x, y)->setTerrain(pixmap);
+                    }
+                }
+            }
+        }
+    }
     qDebug() << "Field::Field(); -- map:" << map;
     // camera 1
     mainCoorMapX = 0, mainCoorMapY = 0;
     spaceWidget = 0; // fix this. 16 and launch
     // camera 2
+    gamePause = false;
+//    gameSpeed = 1.0;
     mouseX = -1;
     mouseY = -1;
     spawnPointX = -1;
