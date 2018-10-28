@@ -59,11 +59,6 @@ public:
 //    std::vector<TileSet> tileSets;
 
 // test screen ---1
-    QPixmap global_pixmap;
-    QPixmap global_pixmap_PathPoint;
-    QPixmap global_pixmap_EnemyPathPoint;
-    QPixmap global_pixmap_DestinationPoint;
-    QPixmap global_pixmap_ExitPoint;
     std::string global_text;
     std::string global_text2;
 // test screen ---2
@@ -84,20 +79,8 @@ public:
     void timerEvent(QTimerEvent* event);
     void keyPressEvent(QKeyEvent* event);
 
-    QPainter painter;
+    QPainter* painter;
     void paintEvent(QPaintEvent* event);
-    void drawFullField();
-    void drawGrid();
-    void drawBackGround();
-    void drawGround();
-    void drawForeGround();
-
-    void drawTowersByTowers();
-    void drawUnits();
-    void drawBlackTiles();
-    void drawPaths();
-    void drawTowersUnderConstruction();
-    void drawTowerUnderConstruction(int buildX, int buildY, TemplateForTower* tower);
 
     bool whichCell(int &mouseX, int &mouseY);
 

@@ -16,12 +16,12 @@ Cell::Cell() {
 }
 
 Cell::~Cell() {
-    qDebug() << "Cell::~Cell(); -- units:" << units.size();
+//    qDebug() << "Cell::~Cell(); -- units:" << units.size();
     backgroundTiles.clear();
     terrainTiles.clear();
     foregroundTiles.clear();
     units.clear();
-    qDebug() << "Cell::~Cell(); -end- ";
+//    qDebug() << "Cell::~Cell(); -end- ";
 }
 
 void Cell::setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, float halfSizeCellY) {

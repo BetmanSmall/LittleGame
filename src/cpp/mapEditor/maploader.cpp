@@ -157,7 +157,7 @@ Map *MapLoader::loadMap(QDomElement mapElement, QString mapPath, QMap<QString, Q
     if (!propertiesElement.isNull()) {
         loadProperties(map->getProperties(), propertiesElement);
     }
-    qDebug() << "MapLoader::loadMap() -- *(map->getProperties()): " << *(map->getProperties());
+    qDebug() << "MapLoader::loadMap() -- map->getProperties(): " << *(map->getProperties());
 
     QDomNodeList tileSetsNodeList = mapElement.elementsByTagName("tileset");
     for(int k = 0; k < tileSetsNodeList.length(); k++) {

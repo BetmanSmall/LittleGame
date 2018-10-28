@@ -1,7 +1,7 @@
 #include "src/head/mapEditor/map.h"
 
 Map::Map() {
-    properties.insert("key1", "value1");
+//    properties.insert("key1", "value1");
 }
 
 Layer *Map::addNewLayer() {

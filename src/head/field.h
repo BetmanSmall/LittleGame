@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <QPixmap>
+#include <QPainter>
 
 //#include "src/head/libs/astar.h"
 #include "src/head/unitsmanager.h"
@@ -30,6 +31,11 @@ public: // we are friendly!
     int spaceWidget; // fix this. 16 and launch
     bool isometric;
 //    int tileMapWidth, tileMapHeight;
+    QPixmap global_pixmap;
+    QPixmap global_pixmap_PathPoint;
+    QPixmap global_pixmap_EnemyPathPoint;
+    QPixmap global_pixmap_DestinationPoint;
+    QPixmap global_pixmap_ExitPoint;
 
     int spawnPointX, spawnPointY;
     int exitPointX, exitPointY;
@@ -47,10 +53,20 @@ public:
     void updateHeroDestinationPoint();
     void updateHeroDestinationPoint(int x, int y);
     void updatePathFinderWalls();
-    void render(float deltaTime);
+    void render(float deltaTime, QPainter *painter);
 
+    void drawFullField(QPainter* painter);
+    void drawGrid(QPainter* painter);
+    void drawBackGround(QPainter* painter);
+    void drawGround(QPainter* painter);
+    void drawForeGround(QPainter* painter);
 
-
+    void drawTowersByTowers(QPainter* painter);
+    void drawUnits(QPainter* painter);
+    void drawBlackTiles(QPainter* painter);
+    void drawPaths(QPainter* painter);
+    void drawTowersUnderConstruction(QPainter* painter);
+    void drawTowerUnderConstruction(QPainter* painter, int buildX, int buildY, TemplateForTower* tower);
 
     int getSizeX();
     int getSizeY();
@@ -58,11 +74,11 @@ public:
     void setSizeCell(int sizeCellX);
     int getMainCoorMapX();
     int getMainCoorMapY();
-    int getSpaceWidget();
+//    int getSpaceWidget();
     int getSizeCell();
-    void setIsometric(bool isometric);
+//    void setIsometric(bool isometric);
 //    void setTileMapSize(int tileMapWidth, int tileMapHeight);
-    bool getIsometric();
+//    bool getIsometric();
 //    int getTileMapWidth();
 //    int getTileMapHeight();
     bool towersAttack(int deltaTime);

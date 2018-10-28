@@ -10,7 +10,7 @@ TemplateForUnit::TemplateForUnit(QString templateFile) {
 //        qDebug() << "TemplateForUnit::TemplateForUnit(); -- Could not load TemplateForUnit from " + templateFile.path() + " Exp:" + exp);
 //        throw new Exception("TemplateForUnit::TemplateForUnit() -- Could not load TemplateForUnit from " + templateFile.path() + " Exp:" + exp);
 //    }
-    qDebug() << "TemplateForUnit::TemplateForUnit(); -end- ";
+//    qDebug() << "TemplateForUnit::TemplateForUnit(); -end- ";
 }
 
 TemplateForUnit::~TemplateForUnit() {
@@ -125,7 +125,7 @@ void TemplateForUnit::validate() {
 //    foreach (QString key, animations.keys()) {
 //        qDebug() << "TemplateForUnit::validate(); -- Dir:" << key << " Lenght:" << animations.value(key)->getFrameTiles().length();
 //    }
-    qDebug() << "TemplateForUnit::validate(); --" << toString(true).toStdString().c_str();
+//    qDebug() << "TemplateForUnit::validate(); --" << toString(true).toStdString().c_str();
 //    qDebug() << "TemplateForUnit::validate(); -- animations.size():" << animations.size();
 //    qDebug() << "TemplateForUnit::validate(); -- ------end-------";
 }

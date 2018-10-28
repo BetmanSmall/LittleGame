@@ -3,7 +3,7 @@
 WidgetController::WidgetController(QWidget *parent) :
     QWidget(parent)
 {
-    setWindowState(Qt::WindowMaximized);
+//    setWindowState(Qt::WindowMaximized);
 
     stackedWidget = new QStackedWidget;
     QVBoxLayout* layout = new QVBoxLayout;

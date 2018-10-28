@@ -9,7 +9,7 @@
 //}
 
 void Template::loadBasicTemplate(QString templateFile) {
-//    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
+    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
     QDomDocument* domDocument = MapLoader::loadDomDocument(templateFile);
     QDomElement templateORtileset = domDocument->documentElement();
     this->templateName = templateORtileset.attribute("name", NULL);
