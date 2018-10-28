@@ -33,7 +33,7 @@ TemplateForTower::~TemplateForTower() {
 //}
 
 void TemplateForTower::specificLoad() {
-    qDebug() << "TemplateForTower::specificLoad(); -- tiles.size():" << tiles.size();
+//    qDebug() << "TemplateForTower::specificLoad(); -- tiles.size():" << tiles.size();
     foreach (Tile* tile, tiles) {
 //        qDebug() << "TemplateForTower::specificLoad(); -- tile->getId():" << tile->getId();
 //        qDebug() << "TemplateForTower::specificLoad(); -- tile:" << tile;
@@ -50,9 +50,9 @@ void TemplateForTower::specificLoad() {
             }
         }
     }
-    qDebug() << "TemplateForTower::specificLoad(); -- idleTile:" << idleTile;
-    qDebug() << "TemplateForTower::specificLoad(); -- ammunitionPictures.size:" << ammunitionPictures.size();
-    qDebug() << "TemplateForTower::specificLoad(); -end- ";
+//    qDebug() << "TemplateForTower::specificLoad(); -- idleTile:" << idleTile;
+//    qDebug() << "TemplateForTower::specificLoad(); -- ammunitionPictures.size:" << ammunitionPictures.size();
+//    qDebug() << "TemplateForTower::specificLoad(); -end- ";
 }
 
 void TemplateForTower::validate() {
@@ -85,8 +85,8 @@ void TemplateForTower::validate() {
 //        qDebug() << "TemplateForTower::validate(); -- Dir:" << key << " properties:" << ammunitionPictures.value(key)->properties;
 //    }
     qDebug() << "TemplateForTower::validate(); --" << toString(true).toStdString().c_str();
-    qDebug() << "TemplateForTower::validate(); -end- idleTile:" << idleTile;
-    qDebug() << "TemplateForTower::validate(); -- ------end-------";
+//    qDebug() << "TemplateForTower::validate(); -end- idleTile:" << idleTile;
+//    qDebug() << "TemplateForTower::validate(); -- ------end-------";
 }
 
 QString TemplateForTower::toString() {
@@ -104,11 +104,13 @@ QString TemplateForTower::toString(bool full) {
         sb.append(QString(",radius:%1").arg(radius));
         sb.append(QString(",size:%1").arg(size));
         sb.append(QString(",height:%1").arg(height));
-//        sb += ",ammoSize:" + ammoSize;
-//        sb += ",ammoSpeed:" + ammoSpeed;
-//        sb += ",reloadTime:" + reloadTime;
-//        sb += ",idleTile:" + idleTile;
-//        sb += ",ammunitionPictures:" + ammunitionPictures.size();
+        sb.append(QString(",ammoSize:%1").arg(ammoSize));
+        sb.append(QString(",ammoSize:%1").arg(ammoSize));
+        sb.append(QString(",reloadTime:%1").arg(reloadTime));
+        sb.append(QString(",type:%1").arg(type));
+        sb.append(QString(",idleTile!= NULL:%1").arg( idleTile!= NULL ));
+        sb.append(QString(",ammunitionPictures.size():%1").arg(ammunitionPictures.size()));
+
 //        sb += ",radiusFlyShell:" + radiusFlyShell;
 //        sb += ",cost:" + cost;
 //        sb += ",towerAttackType:" + towerAttackType;
@@ -116,8 +118,8 @@ QString TemplateForTower::toString(bool full) {
 //        sb += ",shellEffectEnum:" + shellEffectType;
 //        sb += ",capacity:" + capacity;
 //        sb += ",ammoDistance:" + ammoDistance;
-//        sb += ",pixmap:" + !pixmap.isNull();
-//        sb += ",bullet:" + bullet;
+        sb.append(QString(",!pixmap.isNull():%1").arg(!pixmap.isNull()));
+        sb.append(QString(",bullet.size():%1").arg(bullet.size()));
     }
     sb.append("]");
     return sb;

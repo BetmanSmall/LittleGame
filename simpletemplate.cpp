@@ -2,6 +2,7 @@
 
 SimpleTemplate::SimpleTemplate(QString templateFile) {
     loadBasicTemplate(templateFile);
+    basicValidate();
 }
 
 QString SimpleTemplate::toString() {

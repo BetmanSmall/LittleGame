@@ -22,7 +22,7 @@ public:
     float   ammoSpeed;
     float   reloadTime;
     int     type;
-    Tile* idleTile;
+    Tile*   idleTile;
 //    AnimatedTile idleTile;
     QMap<QString, Tile*> ammunitionPictures;
 

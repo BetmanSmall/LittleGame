@@ -6,6 +6,7 @@
 #include "layer.h"
 
 class MapLayers {
+public:
     QVector<Layer*> layers;
 public:
     MapLayers();

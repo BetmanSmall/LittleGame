@@ -10,23 +10,28 @@
 
 class Cell {
 public:
-    int unitStepWA;
-    bool hero;
+    std::vector<QPixmap> backgroundTiles;
+    std::vector<QPixmap> terrainTiles;
+    std::vector<QPixmap> foregroundTiles;
+//    std::vector<Tree> trees;
+//    int unitStepWA;
     bool empty;
     bool removableTerrain;
     bool terrain;
     Tower* tower;
     std::vector<Unit*> units;
 
-    bool spawn;
-    bool exit;
+    int cellX, cellY;
+    QPointF* graphicCoordinatesBottom, *graphicCoordinatesRight, *graphicCoordinatesTop, *graphicCoordinatesLeft;
 
-    std::vector<QPixmap> backgroundTiles;
-    std::vector<QPixmap> terrainTiles;
-    std::vector<QPixmap> foregroundTiles;
+    bool spawn, exit;
 
 public:
     Cell();
+    ~Cell();
+
+    void setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, float halfSizeCellY);
+    QPointF* getGraphicCoordinates(int map);
 
     bool isEmpty();
     bool isTerrain();

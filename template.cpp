@@ -9,7 +9,7 @@
 //}
 
 void Template::loadBasicTemplate(QString templateFile) {
-    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
+//    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
     QDomDocument* domDocument = MapLoader::loadDomDocument(templateFile);
     QDomElement templateORtileset = domDocument->documentElement();
     this->templateName = templateORtileset.attribute("name", NULL);
@@ -27,9 +27,9 @@ void Template::loadBasicTemplate(QString templateFile) {
     QDomElement imageElement = templateORtileset.firstChildElement("image");
     QString source = imageElement.attribute("source", NULL);
     QString textureFile = MapLoader::findFile(templateFile, source);
-    qDebug() << "Template::loadBasicTemplate(); -- textureFile:" << textureFile;
+//    qDebug() << "Template::loadBasicTemplate(); -- textureFile:" << textureFile;
     QPixmap texture(textureFile);
-    qDebug() << "Template::loadBasicTemplate(); -- texture:" << texture;
+//    qDebug() << "Template::loadBasicTemplate(); -- texture:" << texture;
 
     int stopWidth = texture.width() - tilewidth;
     int stopHeight = texture.height() - tileheight;
@@ -95,8 +95,8 @@ void Template::loadBasicTemplate(QString templateFile) {
             }
         }
     }
-    qDebug() << "Template::loadBasicTemplate(); -- tiles:" << tiles;
-    qDebug() << "Template::loadBasicTemplate(); -- animatedTiles:" << animatedTiles;
+//    qDebug() << "Template::loadBasicTemplate(); -- tiles:" << tiles;
+//    qDebug() << "Template::loadBasicTemplate(); -- animatedTiles:" << animatedTiles;
 }
 
 void Template::basicValidate() {

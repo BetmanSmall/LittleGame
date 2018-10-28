@@ -69,7 +69,7 @@ void GameWidget::timerEvent(QTimerEvent *event) {
                     global_text = "You LOSE!";
                 } else if(result == -1) {
                     if(field->deleteTower()) {
-                        field->waveAlgorithm();
+//                        field->waveAlgorithm();
                     } else {
                         stopTimer_UnitsMoveAndTowerAttack();
                     }
@@ -522,8 +522,8 @@ void GameWidget::drawBlackTiles() {
                 int localSizeCell = sizeCell-1;
                 int localSpaceCell = sizeCell/4;
                 painter.drawPixmap(sizeCell, 0, global_pixmap.width(), global_pixmap.height(), global_pixmap);
-                if(field->getStepCell(x, y))
-                    painter.drawText(pxlsX + sizeCell/2-5, pxlsY + sizeCell/2+5, QString("%1").arg(field->getStepCell(x, y)));
+//                if(field->getStepCell(x, y))
+//                    painter.drawText(pxlsX + sizeCell/2-5, pxlsY + sizeCell/2+5, QString("%1").arg(field->getStepCell(x, y)));
                 if(field->isSetSpawnPoint(x,y))
                     painter.fillRect(pxlsX + localSpaceCell, pxlsY + localSpaceCell, localSizeCell - 2*(localSpaceCell), localSizeCell - 2*(localSpaceCell), QColor(255, 162, 0));
                 if(field->isSetExitPoint(x,y))

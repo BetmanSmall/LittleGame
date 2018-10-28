@@ -1,15 +1,56 @@
 #include "src/head/cell.h"
 
 Cell::Cell() {
-    unitStepWA = 0;
-    empty = true;
+//    unitStepWA = 0;
+    this->empty = true;
     this->removableTerrain = true;
     this->terrain = false;
-    spawn = false;
-    exit = false;
+    this->tower = NULL;
+//    this->units;
 
-    hero = false;
-    tower = NULL;
+//    cellX, cellY
+//    qPointF
+
+    this->spawn = false;
+    this->exit = false;
+}
+
+Cell::~Cell() {
+    qDebug() << "Cell::~Cell(); -- units:" << units.size();
+    backgroundTiles.clear();
+    terrainTiles.clear();
+    foregroundTiles.clear();
+    units.clear();
+    qDebug() << "Cell::~Cell(); -end- ";
+}
+
+void Cell::setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, float halfSizeCellY) {
+//    qDebug() << "Cell::setGraphicCoordinates(); -- cellX:" << cellX << " cellY:" << cellY << " halfSizeCellX:" << halfSizeCellX << " halfSizeCellY:" << halfSizeCellY;
+    this->cellX = cellX;
+    this->cellY = cellY;
+//        if(map == 1) { // Нижняя карта
+    graphicCoordinatesBottom = new QPointF((-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)), (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)));
+//        } else if(map == 2) { // Правая карта
+    graphicCoordinatesRight = new QPointF(((halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX, ((halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
+//        } else if(map == 3) { // Верхняя карта
+    graphicCoordinatesTop = new QPointF((-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)), ((halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
+//        } else if(map == 4) {// Левая карта
+    graphicCoordinatesLeft = new QPointF((-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX, ((halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
+//        }
+}
+
+QPointF* Cell::getGraphicCoordinates(int map) {
+    if(map == 1) {
+        return graphicCoordinatesBottom;
+    } else if(map == 2) {
+        return graphicCoordinatesRight;
+    } else if(map == 3) {
+        return graphicCoordinatesTop;
+    } else if(map == 4) {
+        return graphicCoordinatesLeft;
+    }
+    qDebug() << "Cell::getGraphicCoordinates(" << map << "); -- Bad map | return null!";
+    return NULL;
 }
 
 bool Cell::isEmpty() {
@@ -144,7 +185,6 @@ int Cell::removeUnit(Unit* unit) {
             units.erase(units.begin()+(num-1));
         }
         if (units.size() == 0) {
-
             empty = true;
             return 0;
         }
@@ -153,3 +193,14 @@ int Cell::removeUnit(Unit* unit) {
     return -1;
 }
 
+QString Cell::toString() {
+    QString sb("Cell[");
+    sb.append("cellX:" + cellX);
+    sb.append(",cellY:" + cellY);
+    sb.append(",empty:" + empty);
+    sb.append(",terrain:" + terrain);
+    sb.append(",tower:" + (tower!=NULL));
+    sb.append(",units:" + units.size());
+    sb.append("]");
+    return sb;
+}

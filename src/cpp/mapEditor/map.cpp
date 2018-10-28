@@ -5,6 +5,8 @@ Map::Map() {
 }
 
 Layer *Map::addNewLayer() {
+//    int width = properties.value("width").toInt();
+//    int height = properties.value("height").toInt();
     int tileWidth = properties.value("tilewidth").toInt();
     int tileHeight = properties.value("tileheight").toInt();
     Layer* layer = new Layer(width, height, tileWidth, tileHeight);

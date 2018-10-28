@@ -4,12 +4,37 @@ Field::Field(QString mapFile, FactionsManager* factionsManager, int enemyCount, 
     qDebug() << "Field::Field(); -- mapPath:" << mapFile;
     qDebug() << "Field::Field(); -- enemyCount:" << enemyCount;
     qDebug() << "Field::Field(); -- towersCount:" << towersCount;
-    qDebug() << "Field::Field(); -- map:" << map;
-    this->map = (new MapLoader())->load(mapFile);
-    qDebug() << "Field::Field(); -- map:" << map;
     this->factionsManager = factionsManager;
     this->towersManager = new TowersManager(difficultyLevel);
     this->unitsManager = new UnitsManager(difficultyLevel);
+    qDebug() << "Field::Field(); -- map:" << map;
+    this->map = (new MapLoader())->load(mapFile);
+
+    sizeFieldX = map->properties.value("width").toInt();// map->width;
+    sizeFieldY = map->properties.value("height").toInt();// map->height;
+    sizeCellX = map->properties.value("tilewidth").toInt();
+    sizeCellY = map->properties.value("tileheight").toInt();
+    halfSizeCellX = sizeCellX/2;
+    halfSizeCellY = sizeCellY/2;
+
+//    underConstruction = null;
+//    green;
+//    red?
+    createField(sizeFieldX, sizeFieldY, map->getMapLayers());
+    qDebug() << "Field::Field(); -- map:" << map;
+    // camera 1
+    mainCoorMapX = 0, mainCoorMapY = 0;
+    spaceWidget = 0; // fix this. 16 and launch
+    // camera 2
+    mouseX = -1;
+    mouseY = -1;
+    spawnPointX = -1;
+    spawnPointY = -1;
+    exitPointX = -1;
+    exitPointY = -1;
+
+    gameOverLimitUnits = 10;
+    currentFinishedUnits = 0;
     qDebug() << "Field::Field(); -end- ";
 }
 
@@ -17,32 +42,68 @@ Field::~Field() {
     qDebug() << "Field::~Field(); -- ";
 }
 
-void Field::createField(int newSizeX, int newSizeY) {
-    if(field == NULL) {
-        field = new Cell[newSizeX*newSizeY];
-
+void Field::createField(int sizeFieldX, int sizeFieldY, MapLayers *mapLayers) {
+    qDebug() << "Field::createField(); -- sizeFieldX:" << sizeFieldX << " sizeFieldY:" << sizeFieldY << " mapLayers:" << mapLayers;
+    qDebug() << "Field::createField(); -1- field:" << field;
+//    if(field == NULL) {
         isometric = false;
-
-        gameOverLimitUnits = 10;
-        currentFinishedUnits = 0;
-
-        sizeX = newSizeX;
-        sizeY = newSizeY;
-
-        mainCoorMapX = 0, mainCoorMapY = 0;
-        spaceWidget = 0; // fix this. 16 and launch
-        sizeCell = 64;
-
-        mouseX = -1;
-        mouseY = -1;
-        spawnPointX = -1;
-        spawnPointY = -1;
-        exitPointX = -1;
-        exitPointY = -1;
-    } else {
-        deleteField();
-        createField(newSizeX, newSizeY);
-    }
+        field = new Cell[sizeFieldX*sizeFieldY];
+        for (int y = 0; y < sizeFieldY; y++) {
+            for (int x = 0; x < sizeFieldX; x++) {
+//                field[sizeFieldX*y + x] = new Cell();
+                field[sizeFieldX*y + x].setGraphicCoordinates(x, y, halfSizeCellX, halfSizeCellY);
+                for (Layer* layer : mapLayers->layers) {
+//                    if (layer instanceof TiledMapTileLayer) {
+//                        TiledMapTileLayer layer = (TiledMapTileLayer) layer;
+                        TileLayerCell* cell = layer->getCell(x, y);
+                        if (cell != NULL) {
+                            Tile* tile = cell->getTile();
+                            if (tile != NULL) {
+                                if(!layer->getProperties()->contains("background")) {
+                                    field[sizeFieldX*y + x].foregroundTiles.push_back(tile->getPixmap());
+                                } else {
+                                    field[sizeFieldX*y + x].backgroundTiles.push_back(tile->getPixmap());
+                                }
+                                if (tile->getProperties()->contains("terrain")) {
+                                    field[sizeFieldX*y + x].setTerrain();
+                                } else if (tile->getProperties()->contains("spawnPoint")) {
+//                                    spawnPoint = new GridPoint2(x, y);
+//                                        waveManager.spawnPoints.add(new GridPoint2(x, y));
+//                                    field[x][y].setTerrain();
+                                    qDebug() << "GameField::GameField(); -- Set spawnPoint!";//: (" + x + ", " + y + ")";
+                                } else if (tile->getProperties()->contains("exitPoint")) {
+//                                    exitPoint = new GridPoint2(x, y);
+//                                        waveManager.exitPoints.add(new GridPoint2(x, y));
+//                                    field[x][y].setTerrain();
+                                    qDebug() << "GameField::GameField(); -- Set exitPoint!";//: (" + x + ", " + y + ")");
+                                }
+//                                // task 6. отрисовка деревьев полностью
+//                                if(tile.getProperties().get("treeName") != null) {
+//                                    String treeName = tile.getProperties().get("treeName");
+//                                    int treeWidth = Integer.parseInt(tile.getProperties().get("treeWidth", "1"));
+//                                    int treeHeight = Integer.parseInt(tile.getProperties().get("treeHeight", "1"));
+//                                    Gdx.app.log("GameField::createField()", "-- New Tree:" + treeName + "[" + treeWidth + "," + treeHeight + "]:{" + x + "," + y + "}");
+//                                    float regionX = tile.getTextureRegion().getRegionX();
+//                                    float regionY = tile.getTextureRegion().getRegionY();
+//                                    float regionWidth = tile.getTextureRegion().getRegionWidth();
+//                                    float regionHeight = tile.getTextureRegion().getRegionWidth();
+//                                    Gdx.app.log("GameField::createField()", "-- regionX:" + regionX + " regionY:" + regionY + " regionWidth:" + regionWidth + " regionHeight:" + regionHeight);
+//                                    TextureRegion textureRegion = new TextureRegion(tile.getTextureRegion());
+//                                    textureRegion.setRegion(regionX - ((treeWidth>2) ? (treeWidth-2)*regionWidth : 0), regionY - ((treeHeight>1) ? (treeHeight-1)*regionHeight : 0), treeWidth*regionWidth, treeHeight*regionHeight);
+////                                        Cell.Tree tree = new Cell.Tree(textureRegion, treeWidth, treeHeight);
+//                                }
+                            }
+                        }
+//                    } else {
+//                        Gdx.app.log("GameField::createField()", "-- Не смог преобразовать MapLayer в TiledMapTileLayer");
+//                    }
+                }
+            }
+        }
+//    }
+    qDebug() << "Field::createField(); -2- field:" << field;
+    qDebug() << "Field::createField(); -- pathFinder:" << &pathFinder;
+//    updatePathFinderWalls();
 }
 
 void Field::deleteField() {
@@ -58,9 +119,11 @@ void Field::deleteField() {
 }
 
 Cell* Field::getCell(int x, int y) {
-    if (x >= 0 && x < sizeX) {
-        if (y >= 0 && y < sizeY) {
-            return &field[sizeX*y + x];
+//    qDebug() << "Field::getCell(); -- x:" << x << " y:" << y;
+//    qDebug() << "Field::getCell(); -- sizeFieldX:" << sizeFieldX << " sizeFieldY:" << sizeFieldX;
+    if (x >= 0 && x < sizeFieldX) {
+        if (y >= 0 && y < sizeFieldY) {
+            return &field[sizeFieldX*y + x];
         }
     }
     return NULL;
@@ -85,7 +148,7 @@ bool Field::createSpawnPoint(int num, int x, int y) {
     } else {
         spawnPointX = x;
         spawnPointY = y;
-        getCell(x, y)->spawn = true;
+//        getCell(x, y)->spawn = true;
         getCell(x, y)->removeTerrain(true);
     }
     currentFinishedUnits = 0;
@@ -95,14 +158,13 @@ bool Field::createSpawnPoint(int num, int x, int y) {
 void Field::createExitPoint(int x, int y) {
     exitPointX = x;
     exitPointY = y;
-    getCell(x, y)->exit = true;
+//    getCell(x, y)->exit = true;
     getCell(x, y)->removeTerrain(true);
-    waveAlgorithm(x, y);
+//    waveAlgorithm(x, y);
 }
 
 void Field::updateHeroDestinationPoint() {
     qDebug() << "Field::updateHeroDestinationPoint(); -- ";
-
     Unit* hero = unitsManager->hero;
     qDebug() << "Field::updateHeroDestinationPoint(); -- hero:" << hero;
     if (hero != NULL && !hero->path.empty()) {
@@ -130,22 +192,33 @@ void Field::updateHeroDestinationPoint(int x, int y) {
 }
 
 void Field::updatePathFinderWalls() {
+    qDebug() << "Field::updatePathFinderWalls(); -1- ";
     pathFinder.clearCollisions();
-    for (int x = 0; x < sizeX; x++) {
-        for (int y = 0; y < sizeY; y++) {
-            if(getCell(x, y)->isTerrain() || getCell(x, y)->getTower() != NULL) {
+//    qDebug() << "Field::updatePathFinderWalls(); -2- ";
+    for (int x = 0; x < sizeFieldX; x++) {
+//        qDebug() << "Field::updatePathFinderWalls(); -3- ";
+        for (int y = 0; y < sizeFieldY; y++) {
+//            qDebug() << "Field::updatePathFinderWalls(); -4- ";
+            Cell* cell = getCell(x, y);
+            qDebug() << "Field::updatePathFinderWalls(); -4- cell:" << cell;
+            if (cell->isTerrain() || cell->getTower() != NULL) {
+//                qDebug() << "Field::updatePathFinderWalls(); -5- ";
                 pathFinder.addCollision({x, y});
+//                qDebug() << "Field::updatePathFinderWalls(); -6- ";
             }
+//            qDebug() << "Field::updatePathFinderWalls(); -7- ";
         }
+//        qDebug() << "Field::updatePathFinderWalls(); -8- ";
     }
+    qDebug() << "Field::updatePathFinderWalls(); -end- ";
 }
 
 int Field::getSizeX() {
-    return sizeX;
+    return sizeFieldX;
 }
 
 int Field::getSizeY() {
-    return sizeY;
+    return sizeFieldY;
 }
 
 void Field::setMainCoorMap(int mainCoorMapX, int mainCoorMapY) {
@@ -154,7 +227,7 @@ void Field::setMainCoorMap(int mainCoorMapX, int mainCoorMapY) {
 }
 
 void Field::setSizeCell(int sizeCell) {
-    this->sizeCell = sizeCell;
+    this->sizeCellX = sizeCell;
 }
 
 int Field::getMainCoorMapX() {
@@ -170,29 +243,29 @@ int Field::getSpaceWidget() {
 }
 
 int Field::getSizeCell() {
-    return sizeCell;
+    return sizeCellX;
 }
 
 void Field::setIsometric(bool isometric) {
     this->isometric = isometric;
 }
 
-void Field::setTileMapSize(int tileMapWidth, int tileMapHeight) {
-    this->tileMapWidth = tileMapWidth;
-    this->tileMapHeight = tileMapHeight;
-}
+//void Field::setTileMapSize(int tileMapWidth, int tileMapHeight) {
+//    this->tileMapWidth = tileMapWidth;
+//    this->tileMapHeight = tileMapHeight;
+//}
 
 bool Field::getIsometric() {
     return isometric;
 }
 
-int Field::getTileMapWidth() {
-    return tileMapWidth;
-}
+//int Field::getTileMapWidth() {
+//    return tileMapWidth;
+//}
 
-int Field::getTileMapHeight() {
-    return tileMapHeight;
-}
+//int Field::getTileMapHeight() {
+//    return tileMapHeight;
+//}
 
 bool Field::towersAttack(int deltaTime) {
     foreach (Tower* tmpTower, towersManager->towers) {
@@ -203,7 +276,7 @@ bool Field::towersAttack(int deltaTime) {
             Bullet* tmpBullet = tmpTower->bullets[b];
             int currX = tmpBullet->currCellX;
             int currY = tmpBullet->currCellY;
-            if (currX < 0 || currX >= sizeX || currY < 0 || currY >= sizeY) {
+            if (currX < 0 || currX >= sizeFieldX || currY < 0 || currY >= sizeFieldY) {
                 tmpTower->bullets.erase(tmpTower->bullets.begin()+b);
                 delete tmpBullet;
                 b--;
@@ -292,60 +365,6 @@ bool Field::towersAttack(int deltaTime) {
         }
     }
     return true;
-}
-
-void Field::waveAlgorithm(int x, int y) {
-    qDebug() << "Field::waveAlgorithm() :: X: " << x << " Y: " << y;
-    if(x == -1 && y == -1) {
-        if(isSetExitPoint()) {
-            waveAlgorithm(exitPointX, exitPointY);
-            return;
-        }
-    }
-    if(!getCell(x, y)->isTerrain() && !getCell(x, y)->getTower()) {
-        for(int tmpX = 0; tmpX < getSizeX(); tmpX++) {
-            for(int tmpY = 0; tmpY < getSizeY(); tmpY++) {
-                clearStepCell(tmpX, tmpY);
-            }
-        }
-        setStepCell(x, y, 1);
-        waveStep(x, y, 1);
-    }
-}
-
-void Field::waveStep(int x, int y, int step) {
-#ifdef CIRCLET8
-    bool mass[3][3];
-    int nextStep = step+1;
-
-    for(int tmpY = -1; tmpY < 2; tmpY++)
-        for(int tmpX = -1; tmpX < 2; tmpX++)
-            mass[tmpX+1][tmpY+1] = setNumOfCell(x + tmpX, y + tmpY, nextStep);
-
-    for(int tmpY = -1; tmpY < 2; tmpY++)
-        for(int tmpX = -1; tmpX < 2; tmpX++)
-            if(mass[tmpX+1][tmpY+1])
-                waveStep(x + tmpX, y + tmpY, nextStep);
-#else
-    bool mass[4];
-    int nextStep = step+1;
-    int x1 = x-1, x2 = x, x3 = x+1;
-    int y1 = y-1, y2 = y, y3 = y+1;
-
-    mass[0] = setNumOfCell(x1, y2, nextStep);
-    mass[1] = setNumOfCell(x2, y1, nextStep);
-    mass[2] = setNumOfCell(x2, y3, nextStep);
-    mass[3] = setNumOfCell(x3, y2, nextStep);
-
-    if(mass[0])
-        waveStep(x1, y2, nextStep);
-    if(mass[1])
-        waveStep(x2, y1, nextStep);
-    if(mass[2])
-        waveStep(x2, y3, nextStep);
-    if(mass[3])
-        waveStep(x3, y2, nextStep);
-#endif
 }
 
 void Field::setMousePress(int x, int y) {
@@ -442,8 +461,8 @@ int Field::stepOneUnit(Unit* unit) {
                     updatePathFinderWalls();
                 }
                 if (unit->path.empty() || getCell(exitX, exitY)->isTerrain()) {
-                    int randomX = rand()%sizeX;
-                    int randomY = rand()%sizeY;
+                    int randomX = rand()%sizeFieldX;
+                    int randomY = rand()%sizeFieldY;
                     unit->path = pathFinder.findPath({unit->coorByCellX, unit->coorByCellY}, {randomX, randomY});
                 }
             }
@@ -545,85 +564,48 @@ int Field::stepOneUnit(Unit* unit) {
     return 0;
 }
 
-int Field::getNumStep(int x, int y) {
-    if(x >= 0 && x < getSizeX())
-        if(y >= 0 && y < getSizeY())
-            if(!getCell(x, y)->isTerrain())
-                if(!getCell(x, y)->getTower())
-                    return getStepCell(x, y);
-    return 0;
-}
-
-int Field::getStepCell(int x, int y) {
-    return field[sizeX*y + x].unitStepWA;
-}
-
-bool Field::setNumOfCell(int x, int y, int step) {
-    if(x >= 0 && x < getSizeX()) {
-        if(y >= 0 && y < getSizeY()) {
-            if(!getCell(x, y)->isTerrain() && !getCell(x, y)->getTower()) {
-                if(getStepCell(x, y) > step || getStepCell(x, y) == 0) {
-                    setStepCell(x, y, step);
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-void Field::setStepCell(int x, int y, int step) {
-    field[sizeX*y + x].unitStepWA = step;
-}
-
-void Field::clearStepCell(int x, int y) {
-    field[sizeX*y + x].unitStepWA = 0;
-}
-
 //int Field::getUnitHpInCell(int x, int y) {
 //    if(x >= 0 && x < getSizeX())
 //        if(y >= 0 && y < getSizeY())
 //            if(containUnit(x,y))
 //                return unitsManager->getHP(x, y);
-
 //    return 0;
 //}
 
-Unit* Field::getUnitWithLowHP(int x, int y) {
-    if(x >= 0 && x < getSizeX()) {
-        if(y >= 0 && y < getSizeY()) {
-            if(!field[sizeX*y + x].units.empty()) {
-                Unit* unit = field[sizeX*y + x].units.front();
-                int localHp = unit->hp;
-                int size = field[sizeX*y + x].units.size();
-                for(int k = 1; k < size; k++) {
-                    int hp = field[sizeX*y + x].units[k]->hp;
-                    if(hp < localHp) {
-                        unit = field[sizeX*y + x].units[k];
-                        localHp = unit->hp;
-                    }
-                }
-                return unit;
-            }
-        }
-    }
-    return NULL;
-}
+//Unit* Field::getUnitWithLowHP(int x, int y) {
+//    if(x >= 0 && x < getSizeX()) {
+//        if(y >= 0 && y < getSizeY()) {
+//            if(!field[sizeFieldX*y + x].units.empty()) {
+//                Unit* unit = field[sizeFieldX*y + x].units.front();
+//                int localHp = unit->hp;
+//                int size = field[sizeFieldX*y + x].units.size();
+//                for(int k = 1; k < size; k++) {
+//                    int hp = field[sizeFieldX*y + x].units[k]->hp;
+//                    if(hp < localHp) {
+//                        unit = field[sizeFieldX*y + x].units[k];
+//                        localHp = unit->hp;
+//                    }
+//                }
+//                return unit;
+//            }
+//        }
+//    }
+//    return NULL;
+//}
 
 int Field::containUnit(int x, int y, Unit *unit) {
-    if(!field[sizeX*y + x].units.empty()) {
-        int size = field[sizeX*y + x].units.size();
+    if(!field[sizeFieldX*y + x].units.empty()) {
+        int size = field[sizeFieldX*y + x].units.size();
         if(unit == NULL) {
             return size;
         } else {
             for(int k = 0; k < size; k++) {
-                if(field[sizeX*y + x].units[k] == unit) {
+                if(field[sizeFieldX*y + x].units[k] == unit) {
                     return k+1;
                 }
             }
         }
     }
-
     return 0;
 }
 
@@ -658,10 +640,10 @@ bool Field::spawnHeroInSpawnPoint() { //Unit* unit, int type)
 Unit* Field::createUnit(int x, int y, int type) {
     int coorByMapX, coorByMapY;
     if(!getIsometric()) {
-        coorByMapX = mainCoorMapX + spaceWidget + x*sizeCell;
-        coorByMapY = mainCoorMapY + spaceWidget + y*sizeCell;
+        coorByMapX = mainCoorMapX + spaceWidget + x*sizeCellX;
+        coorByMapY = mainCoorMapY + spaceWidget + y*sizeCellX;
     } else {
-        int halfSizeCellX = sizeCell/2;
+        int halfSizeCellX = sizeCellX/2;
         int halfSizeCellY = halfSizeCellX/2;
         int isometricCoorX = halfSizeCellX*getSizeY();
         int isometricCoorY = halfSizeCellY*y;
@@ -676,8 +658,8 @@ Unit* Field::createUnit(int x, int y, int type) {
     } else /*if (type == 1)*/ {
         unit = unitsManager->createUnit(path, factionsManager->getRandomTemplateForUnitFromFirstFaction(), type);
         if (unit != NULL) { //
-            int randomX = rand()%sizeX;
-            int randomY = rand()%sizeY;
+            int randomX = rand()%sizeFieldX;
+            int randomY = rand()%sizeFieldY;
             unit->path = pathFinder.findPath({unit->coorByCellX, unit->coorByCellY}, {randomX, randomY});
         }
     }

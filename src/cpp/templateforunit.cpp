@@ -54,7 +54,7 @@ void TemplateForUnit::clearVectors() {
 //}
 
 void TemplateForUnit::specificLoad() {
-    qDebug() << "TemplateForUnit::specificLoad(); -- animatedTiles.size():" << animatedTiles.size();
+//    qDebug() << "TemplateForUnit::specificLoad(); -- animatedTiles.size():" << animatedTiles.size();
     foreach (AnimatedTile* tile, animatedTiles) {
 //        qDebug() << "TemplateForUnit::specificLoad(); -- tile->getId():" << tile->getId();
 //        qDebug() << "TemplateForUnit::specificLoad(); -- tile:" << tile;
@@ -82,8 +82,8 @@ void TemplateForUnit::specificLoad() {
 //            qDebug() << "TemplateForUnit::specificLoad(); -- animatedTile:" << animatedTile;
         }
     }
-    qDebug() << "TemplateForUnit::specificLoad(); -- animations.size:" << animations.size();
-    qDebug() << "TemplateForUnit::specificLoad(); -end- ";
+//    qDebug() << "TemplateForUnit::specificLoad(); -- animations.size:" << animations.size();
+//    qDebug() << "TemplateForUnit::specificLoad(); -end- ";
 }
 
 AnimatedTile* TemplateForUnit::flipAnimatedTiledMapTile(AnimatedTile* animatedTiledMapTile) {
@@ -126,8 +126,8 @@ void TemplateForUnit::validate() {
 //        qDebug() << "TemplateForUnit::validate(); -- Dir:" << key << " Lenght:" << animations.value(key)->getFrameTiles().length();
 //    }
     qDebug() << "TemplateForUnit::validate(); --" << toString(true).toStdString().c_str();
-    qDebug() << "TemplateForUnit::validate(); -- animations.size():" << animations.size();
-    qDebug() << "TemplateForUnit::validate(); -- ------end-------";
+//    qDebug() << "TemplateForUnit::validate(); -- animations.size():" << animations.size();
+//    qDebug() << "TemplateForUnit::validate(); -- ------end-------";
 }
 
 QString TemplateForUnit::toString() {

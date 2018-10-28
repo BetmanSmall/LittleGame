@@ -47,7 +47,8 @@ SOURCES += src/cpp/main.cpp\
     src/cpp/mapEditor/tilelayercell.cpp \
     template.cpp \
     simpletemplate.cpp \
-    animation.cpp
+    animation.cpp \
+    wavealgorithm.cpp
 
 HEADERS  += \
     src/head/field.h \
@@ -82,7 +83,8 @@ HEADERS  += \
     src/head/mapEditor/tilelayercell.h \
     template.h \
     simpletemplate.h \
-    animation.h
+    animation.h \
+    wavealgorithm.h
 
 FORMS    += \
     src/uis/mainmenu.ui \
