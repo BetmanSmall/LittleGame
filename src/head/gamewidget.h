@@ -20,6 +20,7 @@
 //#include "src/head/factionsmanager.h"
 //#include "src/head/faction.h"
 #include "src/head/underconstruction.h"
+#include "cameracontroller.h"
 
 //#include "src/head/mapEditor/tileset.h"
 
@@ -31,40 +32,29 @@ namespace Ui {
 
 class GameWidget : public QWidget {
     Q_OBJECT
+
 #ifdef QT_DEBUG
     QString ASSETS_PATH = "../../LittleGame/assets/";
 #else
     QString ASSETS_PATH = "./assets/";
 #endif
+
 public:
-    // camera need
-    int pixelsShiftMap;
-    int zoomSizeCell;
-    int zoomMaxSizeCell;
-    int zoomMinSizeCell;
+    Field* field;
+    CameraController* cameraController;
 
     int timeOfGame;
-    int unitsMove_TimerMilliSec;
-    int towersAttack_TimerMilliSec;
-    int scanMouseMove_TimerMilliSec;
-    int unitsMove_TimerId;
-    int towersAttack_TimerId;
-    int scanMouseMove_TimerId;
-
-    int test;
-    Field* field;
-//    std::vector<TileSet> tileSets;
+    QTime currentTime;
+    QTime lastTime;
+    int elapsedTime;
+    float fps; // current fps in the loop, depending on the "work time" required during the paintGL call
+    QTimer* gameTimer;
 
 // test screen ---1
     std::string global_text;
     std::string global_text2;
 // test screen ---2
 // option screen -3--
-    bool panMidMouseButton;
-    bool pan = false;
-    int prevMouseX, prevMouseY;
-    int prevMouseCellX, prevMouseCellY;
-    int prevGlobalMouseX, prevGlobalMouseY;
 // option screen -4--
 
 public:
@@ -74,21 +64,19 @@ public:
     ~GameWidget();
 
     void timerEvent(QTimerEvent* event);
-    void keyPressEvent(QKeyEvent* event);
-
-    QPainter* painter;
     void paintEvent(QPaintEvent* event);
+//    bool whichCell(int &mouseX, int &mouseY);
 
-    bool whichCell(int &mouseX, int &mouseY);
+//    void startTimer_UnitsMoveAndTowerAttack();
+//    void stopTimer_UnitsMoveAndTowerAttack();
+//    void buildTower(int x = -1, int y = -1);
 
-    void startTimer_UnitsMoveAndTowerAttack();
-    void stopTimer_UnitsMoveAndTowerAttack();
-
-    void buildTower(int x = -1, int y = -1);
+    void keyPressEvent(QKeyEvent* event);
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
+    void resizeEvent(QResizeEvent* event);
 
 private:
     Ui::GameWidget *ui;

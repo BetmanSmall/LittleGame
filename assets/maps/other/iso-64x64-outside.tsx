@@ -3,7 +3,7 @@
  <image source="../textures/iso-64x64-outside.png" width="640" height="1024"/>
  <tile id="18">
   <properties>
-   <property name="exitPoint" value=""/>
+   <property name="exitPoint" value="true"/>
   </properties>
  </tile>
  <tile id="28">

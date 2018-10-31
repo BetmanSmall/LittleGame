@@ -11,7 +11,7 @@
 class Cell {
 public:
     std::vector<QPixmap> backgroundTiles;
-    std::vector<QPixmap> terrainTiles;
+    std::vector<QPixmap> groundTiles;
     std::vector<QPixmap> foregroundTiles;
 //    std::vector<Tree> trees;
 //    int unitStepWA;

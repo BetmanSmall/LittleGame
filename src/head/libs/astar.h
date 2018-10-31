@@ -46,7 +46,7 @@ namespace AStar
         void clearCollisions();
         bool detectCollision(Vec2i coordinates_);
 
-    private:
+//    private:
         HeuristicFunction heuristic;
         CoordinateList direction, walls;
         Vec2i worldSize;

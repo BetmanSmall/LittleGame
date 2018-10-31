@@ -13,6 +13,7 @@ public:
     MapLayers mapLayers;
     QMap<QString, QString> properties;
     int width, height;
+    int tileWidth, tileHeight;
 
 public:
     Map();

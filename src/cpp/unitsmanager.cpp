@@ -10,16 +10,13 @@ UnitsManager::~UnitsManager() {
     units.clear();
 }
 
-Unit* UnitsManager::createHero(AStar::CoordinateList path, TemplateForUnit* templateForUnit) {
-    if (hero == NULL) {
-        hero = createUnit(path, templateForUnit, 1);
-    }
-    return hero;
-}
 
 Unit* UnitsManager::createUnit(AStar::CoordinateList path, TemplateForUnit* templateForUnit, int player){
-    Unit* unit = new Unit(path, templateForUnit);
+    Unit* unit = new Unit(path, templateForUnit, player);
     units.push_back(unit);
+    if (player != 0) {
+        hero.push_back(unit);
+    }
     return unit;
 }
 
@@ -103,14 +100,3 @@ bool UnitsManager::attackUnit(int x, int y, int damage) {//, Unit *unit) {
     }
     return false;
 }
-
-//QPixmap UnitsManager::getUnitPixmap(int x, int y) {
-//    for(int k = 0; k < amount; k++) {
-//        int localX = units[k].coorByCellX;
-//        int localY = units[k].coorByCellY;
-//        if(localX == x && localY == y) {
-//            return units[k].pixmap;
-//        }
-//    }
-//    return defaultPixmapForUnit;
-//}

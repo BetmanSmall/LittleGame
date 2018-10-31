@@ -18,7 +18,7 @@ Cell::Cell() {
 Cell::~Cell() {
 //    qDebug() << "Cell::~Cell(); -- units:" << units.size();
     backgroundTiles.clear();
-    terrainTiles.clear();
+    groundTiles.clear();
     foregroundTiles.clear();
     units.clear();
 //    qDebug() << "Cell::~Cell(); -end- ";
@@ -29,13 +29,13 @@ void Cell::setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, floa
     this->cellX = cellX;
     this->cellY = cellY;
 //        if(map == 1) { // Нижняя карта
-    graphicCoordinatesBottom = new QPointF((-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)), (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)));
+    graphicCoordinatesBottom = new QPointF( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)));
 //        } else if(map == 2) { // Правая карта
-    graphicCoordinatesRight = new QPointF(((halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX, ((halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
+    graphicCoordinatesRight = new QPointF(  ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
 //        } else if(map == 3) { // Верхняя карта
-    graphicCoordinatesTop = new QPointF((-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)), ((halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
+    graphicCoordinatesTop = new QPointF(    (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
 //        } else if(map == 4) {// Левая карта
-    graphicCoordinatesLeft = new QPointF((-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX, ((halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
+    graphicCoordinatesLeft = new QPointF(   (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
 //        }
 }
 
@@ -63,7 +63,7 @@ bool Cell::isTerrain() {
 
 bool Cell::setTerrain(QPixmap pixmap, bool removable) {//int x, int y, QPixmap pixmap) {
     if (!pixmap.isNull()) { // Not good!
-        terrainTiles.push_back(pixmap);
+        groundTiles.push_back(pixmap);
     }
     if (empty && !spawn && !exit) {
         removableTerrain = removable;
@@ -135,7 +135,6 @@ Unit* Cell::getUnit() {
 
 bool Cell::setUnit(Unit* unit) {
     if (empty) {
-
         units.push_back(unit);
         empty = false;
         return true;
@@ -195,12 +194,19 @@ int Cell::removeUnit(Unit* unit) {
 
 QString Cell::toString() {
     QString sb("Cell[");
-    sb.append("cellX:" + cellX);
-    sb.append(",cellY:" + cellY);
-    sb.append(",empty:" + empty);
-    sb.append(",terrain:" + terrain);
-    sb.append(",tower:" + (tower!=NULL));
-    sb.append(",units:" + units.size());
+    sb.append(QString("cellX:%1").arg(cellX));
+    sb.append(QString(",cellY:%1").arg(cellY));
+    sb.append(QString(",empty:%1").arg(empty));
+    sb.append(QString(",terrain:%1").arg(terrain));
+    sb.append(QString(",removableTerrain:%1").arg(removableTerrain));
+    sb.append(QString(",tower:%1").arg(tower!=NULL));
+    sb.append(QString(",units:%1").arg(units.size()));
+    sb.append(QString(",spawn:%1").arg(spawn));
+    sb.append(QString(",exit:%1").arg(exit));
+    sb.append(QString(",backgroundTiles:%1").arg(backgroundTiles.size()));
+    sb.append(QString(",terrainTiles:%1").arg(groundTiles.size()));
+    sb.append(QString(",foregroundTiles:%1").arg(foregroundTiles.size()));
+//    sb.append(QString(",graphicCoordinatesBottom:%1").arg(graphicCoordinatesBottom));
     sb.append("]");
     return sb;
 }

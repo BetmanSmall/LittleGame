@@ -43,12 +43,12 @@ void WidgetController::loadMap(QString mapPath) {
     qDebug() << "WidgetController::loadMap(); -- mapPath:" << mapPath;
     gameWidget = new GameWidget(ASSETS_PATH + mapPath, factionsManager, enemyCount, difficultyLevel, towersCount, this);
 
-    gameWidget->panMidMouseButton = panMidMouseButtonBool;
+//    gameWidget->cameraController->panMidMouseButton = panMidMouseButtonBool;
 
     gameWidget->setMinimumWidth(1024);
     gameWidget->setMinimumHeight(768);
-    showGameWidget(gameWidget);
     qDebug() << "WidgetController::showGameWidget(); -- END";
+    showGameWidget(gameWidget);
 }
 
 void WidgetController::showMainMenu() {

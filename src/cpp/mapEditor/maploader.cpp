@@ -178,6 +178,8 @@ Map *MapLoader::loadMap(QDomElement mapElement, QString mapPath, QMap<QString, Q
     }
     map->width = mapWidth;
     map->height = mapHeight;
+    map->tileWidth = tileWidth;
+    map->tileHeight = tileHeight;
     return map;
 }
 

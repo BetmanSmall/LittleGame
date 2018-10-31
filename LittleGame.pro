@@ -48,7 +48,10 @@ SOURCES += src/cpp/main.cpp\
     template.cpp \
     simpletemplate.cpp \
     animation.cpp \
-    wavealgorithm.cpp
+    wavealgorithm.cpp \
+    wavemanager.cpp \
+    wave.cpp \
+    cameracontroller.cpp
 
 HEADERS  += \
     src/head/field.h \
@@ -84,7 +87,10 @@ HEADERS  += \
     template.h \
     simpletemplate.h \
     animation.h \
-    wavealgorithm.h
+    wavealgorithm.h \
+    wavemanager.h \
+    wave.h \
+    cameracontroller.h
 
 FORMS    += \
     src/uis/mainmenu.ui \
