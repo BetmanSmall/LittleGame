@@ -16,7 +16,6 @@ RC_FILE = myicon.rc
 RESOURCES = resources.qrc
 
 SOURCES += src/cpp/main.cpp\
-    src/cpp/field.cpp \
     src/cpp/mainmenu.cpp \
     src/cpp/widgetcontroller.cpp \
     src/cpp/optionmenu.cpp \
@@ -51,10 +50,11 @@ SOURCES += src/cpp/main.cpp\
     wavealgorithm.cpp \
     wavemanager.cpp \
     wave.cpp \
-    cameracontroller.cpp
+    cameracontroller.cpp \
+    circle.cpp \
+    src/cpp/gamefield.cpp
 
 HEADERS  += \
-    src/head/field.h \
     src/head/mainmenu.h \
     src/head/widgetcontroller.h \
     src/head/optionmenu.h \
@@ -90,7 +90,9 @@ HEADERS  += \
     wavealgorithm.h \
     wavemanager.h \
     wave.h \
-    cameracontroller.h
+    cameracontroller.h \
+    circle.h \
+    src/head/gamefield.h
 
 FORMS    += \
     src/uis/mainmenu.ui \

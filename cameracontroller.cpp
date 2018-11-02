@@ -1,7 +1,9 @@
 #include "cameracontroller.h"
 
-CameraController::CameraController(float sizeCellX, float sizeCellY) {
+CameraController::CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY) {
     this->painter = new QPainter();
+    this->mapWidth = mapWidth;
+    this->mapHeight = mapHeight;
     this->defSizeCellX = sizeCellX;
     this->defSizeCellY = sizeCellY;
     this->sizeCellX = sizeCellX;
@@ -25,7 +27,7 @@ bool CameraController::touchUp(int screenX, int screenY, int pointer, int button
 //    this->cameraY = screenY;
     if (paning) {
         this->paning = false;
-        fling((float)(screenX)-(prevMouseX), (float)(screenY)-(prevMouseY), button);
+//        fling((float)(screenX)-(prevMouseX), (float)(screenY)-(prevMouseY), button);
     }
     qDebug() << "CameraController::touchUp(); -- cameraX:" << cameraX << " cameraY:" << cameraY;
 }
@@ -106,11 +108,88 @@ void CameraController::update(float deltaTime) {
 //        }
         if (qAbs(velX) < 0.01) velX = 0.0;
         if (qAbs(velY) < 0.01) velY = 0.0;
-        if (velX == 0.0 || velY == 0.0) {
-            flinging = false;
-        }
+//        if (velX == 0.0 && velY == 0.0) {
+//            flinging = false;
+//        }
         qDebug() << "CameraController::update(); -- newCameraX:" << newCameraX << " newCameraY:" << newCameraY;
     }
+}
+
+void CameraController::unproject(int &screenX, int &screenY) {
+//    qDebug() << "CameraController::unproject(); -- screenCoords:" << screenCoords;
+    screenX -= cameraX;
+    screenY -= cameraY;
+}
+
+//QPoint CameraController::unproject(QPoint screenCoords) {
+//    qDebug() << "CameraController::unproject(); -- screenCoords:" << screenCoords;
+//    return unproject(screenCoords, 0, 0, this->viewportWidth, this->viewportHeight);
+//}
+
+//QPoint CameraController::unproject(QPoint screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight) {
+//    qDebug() << "CameraController::update(); -- viewportX:" << viewportX << " viewportY:" << viewportY;
+//    qDebug() << "CameraController::update(); -- viewportWidth:" << viewportWidth << " viewportHeight:" << viewportHeight;
+//    float x = screenCoords.x, y = screenCoords.y;
+//    x = x - viewportX;
+//    y = Gdx.graphics.getHeight() - y - 1;
+//    y = y - viewportY;
+//    screenCoords.x = (2 * x) / viewportWidth - 1;
+//    screenCoords.y = (2 * y) / viewportHeight - 1;
+//    screenCoords.z = 2 * screenCoords.z - 1;
+//    screenCoords.prj(invProjectionView);
+//    return screenCoords;
+//}
+
+QPoint* CameraController::whichCell(int &mouseX, int &mouseY, int map) {
+    int screenMouseX = mouseX;
+    int screenMouseY = mouseY;
+//    mouseX /= sizeCellX;
+//    mouseY = (mouseY - sizeCellY / 2) / sizeCellY + mouseX;
+//    mouseX -= mouseY - mouseX;
+    mouseY /= sizeCellY;
+    mouseX = (mouseX - sizeCellX / 2) / sizeCellX + mouseY;
+    mouseY -= mouseX- mouseY;
+    qDebug() << "CameraController::whichCell(); -graphics- screenMouseX:" << screenMouseX << " screenMouseY:" << screenMouseY << " map:" << map << " -new- mouseX:" << mouseX << " mouseY:" << mouseY;
+    QPoint* cell = new QPoint(qAbs((int) mouseX), qAbs((int) mouseY));
+    if(mouseX < 0) {
+        cell->setX(cell->y());
+        cell->setY(cell->x());
+    } // Где то я накосячил. мб сделать подругому. если это уберать то нужно будет править Cell::setGraphicCoordinates() для 3 и 4 карты
+    qDebug() << "CameraController::whichCell(); -cell- cell->x():" << cell->x() << " cell->y():" << cell->y();
+    if (cell->x() < mapWidth && cell->y() < mapHeight) {
+        if (map == 5) {
+            return cell;
+        } else {
+            if ( (map == 1 && mouseX > 0 && mouseY < 0)
+              || (map == 2 && mouseX > 0 && mouseY > 0) ) {
+                return cell;
+            } else if ( (map == 3 && mouseX < 0 && mouseY > 0)
+                     || (map == 4 && mouseX < 0 && mouseY < 0) ) {
+                return cell;
+            }
+        }
+    }
+    return NULL;
+}
+
+QPointF* CameraController::getCorrectGraphicTowerCoord(QPointF* towerPos, int towerSize, int map) {
+    QPointF* retTowerPos = new QPointF();
+    if(map == 1) {
+        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * towerSize) ) );
+        retTowerPos->setY( towerPos->y() + ( -halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) );
+    } else if(map == 2) {
+        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) ) );
+        retTowerPos->setY( towerPos->y() + (-(halfSizeCellY * towerSize) ) );
+    } else if(map == 3) {
+        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * towerSize)) );
+        retTowerPos->setY( towerPos->y() + (-(halfSizeCellY * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) ) );
+    } else if(map == 4) {
+        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) ) );
+        retTowerPos->setY( towerPos->y() + (-(halfSizeCellY * towerSize) ) );
+    } else {
+        qDebug() << "CameraController::getCorrectGraphicTowerCoord(" << towerPos << ", " << towerSize << ", " << map << "); -- Bad map[1-4] value:" << map;
+    }
+    return retTowerPos;
 }
 
 QString CameraController::toString() {

@@ -1,6 +1,7 @@
 #ifndef ASTAR_H
 #define ASTAR_H
 
+#include <QString>
 #include <vector>
 #include <functional>
 #include <set>
@@ -12,6 +13,13 @@ namespace AStar
         int x, y;
 
         bool operator == (const Vec2i& coordinates_);
+        std::string toString() {
+            QString sb("Vec2i[");
+            sb.append("x:" + QString::number(x));
+            sb.append(",y:" + QString::number(y));
+            sb.append("]");
+            return sb.toStdString();
+        }
     };
 
     using uint = unsigned int;

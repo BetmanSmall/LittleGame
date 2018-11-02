@@ -17,9 +17,9 @@ Tower* TowersManager::createTower(int x, int y, TemplateForTower* templateForTow
 }
 
 bool TowersManager::removeTower(Tower* tower) {
-    std::vector<Tower*>::iterator position = std::find(towers.begin(), towers.end(), tower);
-    if (position != towers.end()) {
-        towers.erase(position);
+    std::vector<Tower*>::iterator it = std::find(towers.begin(), towers.end(), tower);
+    if (it != towers.end()) {
+        towers.erase(it);
         return true;
     }
     return false;

@@ -1,37 +1,47 @@
 #include "src/head/unit.h"
 
-Unit::Unit(AStar::CoordinateList path, TemplateForUnit *templateForUnit, int player) {
-    if (!path.empty()) {
-        this->path = path;
-        this->lastX = path.back().x;
-        this->lastY = path.back().y;
-        this->coorByCellX = lastX;
-        this->coorByCellY = lastY;
+Unit::Unit(AStar::CoordinateList route, TemplateForUnit *templateForUnit, int player) {
+    if (!route.empty()) {
+        this->route = route;
+        this->oldPosition = route.back();
+        this->newPosition = oldPosition;
+        route.pop_back();
         this->hp = templateForUnit->healthPoints;
         this->speed = templateForUnit->speed;
-        this->stepsInTime = 0;
-        this->deathElapsedTime = 0;
+        this->stepsInTime = 0.0;
+        this->deathElapsedTime = 0.0;
 
         this->player = player;
 //        this->coorByMapX = coorByMapX;
 //        this->coorByMapY = coorByMapY;
-        this->alive = true;
-        this->preDeath = false;
-        this->type = templateForUnit->type;
+        this->circle1 = new Circle(0.0, 0.0, 16.0);
+        this->circle2 = new Circle(0.0, 0.0, 16.0);
+        this->circle3 = new Circle(0.0, 0.0, 16.0);
+        this->circle4 = new Circle(0.0, 0.0, 16.0);
+//        this->alive = true;
+//        this->preDeath = false;
+//        this->type = templateForUnit->type;
 
         this->templateForUnit = templateForUnit;
 
         this->direction = Direction::UP;
-        this->animationCurrIter = 0;
-        this->animationMaxIter = 0;
-//        this->effects
+//        this->animationCurrIter = 0;
+//        this->animationMaxIter = 0;
         setAnimation("walk_");
+//        this->effects
+    } else {
+        qDebug() << "Unit::Unit(); -- path.empty():" << route.empty();
     }
 }
 
 Unit::~Unit() {
-    path.clear();
-    activePixmaps.clear();
+    route.clear();
+//    activePixmaps.clear();
+    delete circle1;
+    delete circle2;
+    delete circle3;
+    delete circle4;
+    delete animation;
 }
 
 void Unit::setAnimation(QString action) {
@@ -54,36 +64,242 @@ void Unit::setAnimation(QString action) {
     qDebug() << "Unit::setAnimation(); -end- ";
 }
 
-QPixmap Unit::getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter) {
-    *lastX = this->lastX;
-    *lastY = this->lastY;
-    *animationCurrIter = this->animationCurrIter;
-    *animationMaxIter = this->animationMaxIter;
-    return this->pixmap;
+AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
+//    qDebug() << "Unit::move(); -- Unit status:" << this->toString();
+    if(/*route != null &&*/ !route.empty()) {
+        stepsInTime += deltaTime;
+        if (stepsInTime >= speed) {
+            stepsInTime = 0.0;
+            oldPosition = newPosition;
+            newPosition = route.back();
+            route.pop_back();
+        }
+
+        int oldX = oldPosition.x, oldY = oldPosition.y;
+        int newX = newPosition.x, newY = newPosition.y;
+        int sizeCellX = cameraController->sizeCellX;
+        int sizeCellY = cameraController->sizeCellY;
+        float halfSizeCellX = sizeCellX/2;
+        float halfSizeCellY = sizeCellY/2;
+        float fVx = 0, fVy = 0;
+        Direction::type oldDirection = direction;
+        int isDrawableUnits = cameraController->isDrawableUnits;
+        if(isDrawableUnits == 4 || isDrawableUnits == 5) {
+            fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
+            fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY)) + halfSizeCellY;
+            if (newX < oldX && newY > oldY) {
+                direction = Direction::UP;
+                fVy -= (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY == oldY) {
+                direction = Direction::UP_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY < oldY) {
+                direction = Direction::RIGHT;
+                fVx -= (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY < oldY) {
+                direction = Direction::DOWN_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY < oldY) {
+                direction = Direction::DOWN;
+                fVy += (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY == oldY) {
+                direction = Direction::DOWN_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY > oldY) {
+                direction = Direction::LEFT;
+                fVx += (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY > oldY) {
+                direction = Direction::UP_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            }
+//            currentPoint.set(fVx, fVy);
+            circle4->set(fVx, fVy, 16.0);
+        }
+        if(isDrawableUnits == 3 || isDrawableUnits == 5) {
+            fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
+            fVy = ( (halfSizeCellY * newY) + (newX * halfSizeCellY)) + halfSizeCellY*2;
+            if (newX < oldX && newY > oldY) {
+                direction = Direction::UP;
+                fVy -= (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY == oldY) {
+                direction = Direction::UP_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY < oldY) {
+                direction = Direction::RIGHT;
+                fVx -= (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY < oldY) {
+                direction = Direction::DOWN_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY < oldY) {
+                direction = Direction::DOWN;
+                fVy += (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY == oldY) {
+                direction = Direction::DOWN_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY > oldY) {
+                direction = Direction::LEFT;
+                fVx += (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY > oldY) {
+                direction = Direction::UP_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            }
+//            currentPoint.set(fVx, fVy);
+            circle3->set(fVx, fVy, 16.0);
+        }
+        if(isDrawableUnits == 2 || isDrawableUnits == 5) {
+            fVx = (halfSizeCellX * newY) + (newX * halfSizeCellX) + halfSizeCellX;
+            fVy = (halfSizeCellY * newY) - (newX * halfSizeCellY) + halfSizeCellY;
+            if (newX < oldX && newY > oldY) {
+                direction = Direction::UP;
+                fVy -= (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY > oldY) {
+                direction = Direction::UP_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY > oldY) {
+                direction = Direction::RIGHT;
+                fVx -= (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY == oldY) {
+                direction = Direction::DOWN_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY < oldY) {
+                direction = Direction::DOWN;
+                fVy += (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY < oldY) {
+                direction = Direction::DOWN_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY < oldY) {
+                direction = Direction::LEFT;
+                fVx += (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY == oldY) {
+                direction = Direction::UP_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            }
+//            currentPoint.set(fVx, fVy);
+            circle2->set(fVx, fVy, 16.0);
+        }
+        if(isDrawableUnits == 1 || isDrawableUnits == 5) {
+            fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
+            fVy = (-(halfSizeCellY * newY) - (newX * halfSizeCellY));
+            if (newX < oldX && newY < oldY) {
+                direction = Direction::UP;
+                fVy -= (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY < oldY) {
+                direction = Direction::UP_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY < oldY) {
+                direction = Direction::RIGHT;
+                fVx -= (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY == oldY) {
+                direction = Direction::DOWN_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY > oldY) {
+                direction = Direction::DOWN;
+                fVy += (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY > oldY) {
+                direction = Direction::DOWN_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY > oldY) {
+                direction = Direction::LEFT;
+                fVx += (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY == oldY) {
+                direction = Direction::UP_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            }
+//            currentPoint.set(fVx, fVy);
+            circle1->set(fVx, fVy, 16.0);
+        }
+
+//        backStepPoint = currentPoint;
+//        currentPoint.set(fVx, fVy);
+
+//        velocity = new Vector2(backStepPoint.x - currentPoint.x,
+//                backStepPoint.y - currentPoint.y).nor().scl(Math.min(currentPoint.dst(backStepPoint.x,
+//                backStepPoint.y), speed));
+//        displacement = new Vector2(velocity.x * deltaTime, velocity.y * deltaTime);
+
+//        qDebug() << "Unit::move(); -- direction:" << direction << " oldDirection:" << oldDirection;
+        if(!direction == oldDirection) {
+            setAnimation("walk_");
+        }
+        return &newPosition;
+    } else {
+//        dispose();
+        return NULL;
+    }
+}
+
+bool Unit::changeDeathFrame(float delta) {
+    if (hp <= 0) {
+        if (deathElapsedTime >= speed) {
+//                dispose();
+            return false;
+        } else {
+            deathElapsedTime += delta;
+        }
+        return true;
+    }
+    return false;
+}
+
+//QPixmap Unit::getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter) {
+//    *lastX = this->lastX;
+//    *lastY = this->lastY;
+//    *animationCurrIter = this->animationCurrIter;
+//    *animationMaxIter = this->animationMaxIter;
+//    return this->pixmap;
+//}
+
+bool Unit::isAlive() {
+    if(animation == NULL) {
+        return false;
+    }
+    return hp > 0 ? true : false;
+}
+
+QPixmap Unit::getCurrentFrame() {
+    return animation->getKeyFrame(stepsInTime, true);
+}
+
+QPixmap Unit::getCurrentDeathFrame() {
+    return animation->getKeyFrame(deathElapsedTime, true);
 }
 
 QString Unit::toString() {
     QString sb("Unit[");
 //    sb.append(QString("path:%1").arg(path));
-    sb.append(QString("lastX:%1").arg(lastX));
-    sb.append(QString(",lastY:%1").arg(lastY));
-    sb.append(QString(",coorByCellX:%1").arg(coorByCellX));
-    sb.append(QString(",coorByCellY:%1").arg(coorByCellY));
+    sb.append(QString("oldPosition:%1").arg(oldPosition.toString().c_str()));
+    sb.append(QString(",newPosition:%1").arg(newPosition.toString().c_str()));
     sb.append(QString(",hp:%1").arg(hp));
     sb.append(QString(",speed:%1").arg(speed));
     sb.append(QString(",stepsInTime:%1").arg(stepsInTime));
     sb.append(QString(",deathElapsedTime:%1").arg(deathElapsedTime));
     sb.append(QString(",player:%1").arg(player));
-    sb.append(QString(",coorByMapX:%1").arg(coorByMapX));
-    sb.append(QString(",coorByMapY:%1").arg(coorByMapY));
-    sb.append(QString(",alive:%1").arg(alive));
-    sb.append(QString(",preDeath:%1").arg(preDeath));
-    sb.append(QString(",type:%1").arg(type));
+    sb.append(",circle1:" + circle1->toString());
+    sb.append(",circle2:" + circle2->toString());
+    sb.append(",circle3:" + circle3->toString());
+    sb.append(",circle4:" + circle4->toString());
+//    sb.append(QString(",alive:%1").arg(alive));
+//    sb.append(QString(",preDeath:%1").arg(preDeath));
+//    sb.append(QString(",type:%1").arg(type));
     sb.append(QString(",templateForUnit:%1").arg(templateForUnit->toString()));
-//    sb.append("circle1:" + circle1 + ",");
-//    sb.append("circle2:" + circle2 + ",");
     sb.append(QString(",direction:%1").arg(direction));
-//    sb.append("animation:" + animation + ",");
+//    sb.append(",animation:" + animation);
 //    sb.append("shellEffectTypes:" + shellEffectTypes + ",");
     sb.append("]");
     return sb;

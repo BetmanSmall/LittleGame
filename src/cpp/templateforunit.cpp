@@ -19,34 +19,34 @@ TemplateForUnit::~TemplateForUnit() {
 }
 
 void TemplateForUnit::clearVectors() {
-    idle.clear();
+//    idle.clear();
 
-    walk_up.clear();
-    walk_up_right.clear();
-    walk_right.clear();
-    walk_down_right.clear();
-    walk_down.clear();
-    walk_down_left.clear();
-    walk_left.clear();
-    walk_up_left.clear();
+//    walk_up.clear();
+//    walk_up_right.clear();
+//    walk_right.clear();
+//    walk_down_right.clear();
+//    walk_down.clear();
+//    walk_down_left.clear();
+//    walk_left.clear();
+//    walk_up_left.clear();
 
-    attack_up.clear();
-    attack_up_right.clear();
-    attack_right.clear();
-    attack_down_right.clear();
-    attack_down.clear();
-    attack_down_left.clear();
-    attack_left.clear();
-    attack_up_left.clear();
+//    attack_up.clear();
+//    attack_up_right.clear();
+//    attack_right.clear();
+//    attack_down_right.clear();
+//    attack_down.clear();
+//    attack_down_left.clear();
+//    attack_left.clear();
+//    attack_up_left.clear();
 
-    death_up.clear();
-    death_up_right.clear();
-    death_right.clear();
-    death_down_right.clear();
-    death_down.clear();
-    death_down_left.clear();
-    death_left.clear();
-    death_up_left.clear();
+//    death_up.clear();
+//    death_up_right.clear();
+//    death_right.clear();
+//    death_down_right.clear();
+//    death_down.clear();
+//    death_down_left.clear();
+//    death_left.clear();
+//    death_up_left.clear();
 }
 
 //void TemplateForUnit::setFaction(Faction* faction) {
@@ -112,12 +112,12 @@ void TemplateForUnit::validate() {
     basicValidate();
     // Need check range values
     if (!properties.contains("healthPoints")) {
-        qDebug() << "Template::basicValidate(); -- Can't get 'healthPoints'! Check the file";
+        qDebug() << "TemplateForUnit::validate(); -- Can't get 'healthPoints'! Check the file";
     } else {
         healthPoints = properties.value("healthPoints").toFloat();
     }
     if (!properties.contains("speed")) {
-        qDebug() << "Template::basicValidate(); -- Can't get 'speed'! Check the file";
+        qDebug() << "TemplateForUnit::validate(); -- Can't get 'speed'! Check the file";
     } else {
         speed = properties.value("speed").toFloat();
     }
@@ -136,9 +136,9 @@ QString TemplateForUnit::toString() {
 
 QString TemplateForUnit::toString(bool full) {
     QString sb("TemplateForUnit[");
+    sb.append(toStringBasicParam());
     if(full) {
         sb.append(toStringProperties());
-        sb.append(toStringBasicParam());
 //        sb.append("," + "bounty:" + bounty);
 //        sb.append("," + "cost:" + cost);
         sb.append(QString(",healthPoints:%1").arg(healthPoints));

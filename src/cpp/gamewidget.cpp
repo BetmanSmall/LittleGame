@@ -8,14 +8,15 @@ GameWidget::GameWidget(QString mapFile, FactionsManager* factionsManager,
 {
     ui->setupUi(this);
 
-    field = new Field(mapFile, factionsManager, enemyCount, difficultyLevel, towersCount);
-    cameraController = new CameraController(field->map->tileWidth, field->map->tileHeight);
+    gameField = new GameField(mapFile, factionsManager, enemyCount, difficultyLevel, towersCount);
+    cameraController = new CameraController(gameField->map->width, gameField->map->height, gameField->map->tileWidth, gameField->map->tileHeight);
 
-    timeOfGame = 0;
+//    timeOfGame = 0;
     gameTimer = new QTimer(this);
     connect(gameTimer, SIGNAL(timeout()), this, SLOT(update()));
     gameTimer->start(0);
 
+    setMouseTracking(true);
 //    ui->loadMaps->setHidden(true);
 //    ui->clearMap->setHidden(true);
 //    ui->goUnits->setHidden(true);
@@ -23,21 +24,21 @@ GameWidget::GameWidget(QString mapFile, FactionsManager* factionsManager,
     qDebug() << "GameWidget::loadMap(); -- mapFile:" << mapFile;
     qDebug() << "GameWidget::loadMap(); -- enemyCount:" << enemyCount;
     qDebug() << "GameWidget::loadMap(); -- towersCount:" << towersCount;
-    qDebug() << "GameWidget::loadMap(); -- field:" << field;
-    qDebug() << "GameWidget::loadMap(); -- field->map:" << field->map;
+    qDebug() << "GameWidget::loadMap(); -- field:" << gameField;
+    qDebug() << "GameWidget::loadMap(); -- field->map:" << gameField->map;
     qDebug() << "GameWidget::GameWidget(); -END- -END-";
 }
 
 GameWidget::~GameWidget() {
 //    if (scanMouseMove_TimerId)
 //        killTimer(scanMouseMove_TimerId);
-    delete field;
+    delete gameField;
     delete cameraController;
     delete gameTimer;
     delete ui;
 }
 
-void GameWidget::timerEvent(QTimerEvent *event) {
+//void GameWidget::timerEvent(QTimerEvent *event) {
 //    int timerId = event->timerId();
 //    if(timerId == scanMouseMove_TimerId) {
 //        int curX = cursor().pos().x();
@@ -70,7 +71,7 @@ void GameWidget::timerEvent(QTimerEvent *event) {
 //        }
 //    }
 //    update();
-}
+//}
 
 void GameWidget::paintEvent(QPaintEvent* event) {
     lastTime = currentTime;
@@ -79,8 +80,8 @@ void GameWidget::paintEvent(QPaintEvent* event) {
     this->fps = 1000 / elapsedTime;
 
     cameraController->painter->begin(this);
-    field->render(elapsedTime, cameraController);
-    cameraController->update(elapsedTime);
+    gameField->render(elapsedTime, cameraController);
+//    cameraController->update(elapsedTime);
     cameraController->painter->setPen(QColor(255, 0, 0));
     cameraController->painter->drawEllipse(QPoint(cameraController->cameraX, cameraController->cameraY), 5, 5);
     cameraController->painter->drawText(10, 10, "FPS:" + QString::number(fps));
@@ -95,7 +96,15 @@ void GameWidget::paintEvent(QPaintEvent* event) {
     cameraController->painter->drawText(10, 100, "cameraController->halfSizeCellY:" + QString::number(cameraController->halfSizeCellY));
     cameraController->painter->drawText(10, 110, "cameraController->paning:" + QString::number(cameraController->paning));
     cameraController->painter->drawText(10, 120, "cameraController->flinging:" + QString::number(cameraController->flinging));
-    cameraController->painter->drawText(10, 130, "field->drawOrder:" + QString::number(field->drawOrder));
+    cameraController->painter->drawText(10, 130, "cameraController->drawOrder:" + QString::number(cameraController->drawOrder));
+    cameraController->painter->drawText(10, 140, "cameraController->isDrawableGrid:" + QString::number(cameraController->isDrawableGrid));
+    cameraController->painter->drawText(10, 150, "cameraController->isDrawableUnits:" + QString::number(cameraController->isDrawableUnits));
+    cameraController->painter->drawText(10, 160, "cameraController->isDrawableTowers:" + QString::number(cameraController->isDrawableTowers));
+    cameraController->painter->drawText(10, 170, "cameraController->isDrawableBackground:" + QString::number(cameraController->isDrawableBackground));
+    cameraController->painter->drawText(10, 180, "cameraController->isDrawableGround:" + QString::number(cameraController->isDrawableGround));
+    cameraController->painter->drawText(10, 190, "cameraController->isDrawableForeground:" + QString::number(cameraController->isDrawableForeground));
+    cameraController->painter->drawText(10, 200, "cameraController->isDrawableGridNav:" + QString::number(cameraController->isDrawableGridNav));
+    cameraController->painter->drawText(10, 210, "cameraController->isDrawableRoutes:" + QString::number(cameraController->isDrawableRoutes));
     cameraController->painter->end();
 }
 
@@ -108,7 +117,7 @@ void GameWidget::paintEvent(QPaintEvent* event) {
 //        gameX = ( (mouseX+sizeCell - mainCoorMapX) / sizeCell);
 //        gameY = ( (mouseY+sizeCell - mainCoorMapY) / sizeCell);
 //    } else {
-//        int fieldX = field->sizeFieldX;
+//        int fieldX = cameraController->sizeFieldX;
 //        int fieldY = field->sizeFieldY;
 //        int sizeCellX = field->getSizeCell();
 //        int sizeCellY = sizeCellX/2;
@@ -173,83 +182,87 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
     } else if(key == Qt::Key_1) {
         ui->drawGrid_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_1 || Input.Keys.NUMPAD_1)";
-        field->isDrawableGrid--;
-        if (field->isDrawableGrid < 0) {
-            field->isDrawableGrid = 5;
+        cameraController->isDrawableGrid--;
+        if (cameraController->isDrawableGrid < 0) {
+            cameraController->isDrawableGrid = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableGrid:" + field->isDrawableGrid);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableGrid: " << field->isDrawableGrid;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableGrid:" + cameraController->isDrawableGrid);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableGrid: " << cameraController->isDrawableGrid;
     } else if(key == Qt::Key_2) {
         ui->drawUnits_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_2 || Input.Keys.NUMPAD_2)";
-        field->isDrawableUnits--;
-        if (field->isDrawableUnits < 0) {
-            field->isDrawableUnits = 5;
+        cameraController->isDrawableUnits--;
+        if (cameraController->isDrawableUnits < 0) {
+            cameraController->isDrawableUnits = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableUnits:" + field->isDrawableUnits);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableUnits: " << field->isDrawableUnits;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableUnits:" + cameraController->isDrawableUnits);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableUnits: " << cameraController->isDrawableUnits;
     } else if(key == Qt::Key_3) {
         ui->drawTowersByTowers_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_3 || Input.Keys.NUMPAD_3)";
-        field->isDrawableTowers--;
-        if (field->isDrawableTowers < 0) {
-            field->isDrawableTowers = 5;
+        cameraController->isDrawableTowers--;
+        if (cameraController->isDrawableTowers < 0) {
+            cameraController->isDrawableTowers = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableTowers:" + field->isDrawableTowers);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableTowers: " << field->isDrawableTowers;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableTowers:" + cameraController->isDrawableTowers);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableTowers: " << cameraController->isDrawableTowers;
     } else if(key == Qt::Key_4) {
         ui->drawBackGround_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_4 || Input.Keys.NUMPAD_4)";
-        field->isDrawableBackground--;
-        if (field->isDrawableBackground < 0) {
-            field->isDrawableBackground = 5;
+        cameraController->isDrawableBackground--;
+        if (cameraController->isDrawableBackground < 0) {
+            cameraController->isDrawableBackground = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableBackground:" + field->isDrawableBackground);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableBackground: " << field->isDrawableBackground;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableBackground:" + cameraController->isDrawableBackground);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableBackground: " << cameraController->isDrawableBackground;
     } else if(key == Qt::Key_5) {
         ui->drawGround_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_6 || Input.Keys.NUMPAD_6)";
-        field->isDrawableGround--;
-        if (field->isDrawableGround < 0) {
-            field->isDrawableGround = 5;
+        cameraController->isDrawableGround--;
+        if (cameraController->isDrawableGround < 0) {
+            cameraController->isDrawableGround = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableGround:" + field->isDrawableGround);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableGround: " << field->isDrawableGround;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableGround:" + cameraController->isDrawableGround);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableGround: " << cameraController->isDrawableGround;
     } else if(key == Qt::Key_6) {
         ui->drawForeGround_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_6 || Input.Keys.NUMPAD_6)";
-        field->isDrawableForeground--;
-        if (field->isDrawableForeground < 0) {
-            field->isDrawableForeground = 5;
+        cameraController->isDrawableForeground--;
+        if (cameraController->isDrawableForeground < 0) {
+            cameraController->isDrawableForeground = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableForeground:" + field->isDrawableForeground);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableForeground: " << field->isDrawableForeground;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableForeground:" + cameraController->isDrawableForeground);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableForeground: " << cameraController->isDrawableForeground;
     } else if(key == Qt::Key_7) {
         ui->drawBlackTiles_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_6 || Input.Keys.NUMPAD_6)";
-        field->isDrawableGridNav--;
-        if (field->isDrawableGridNav < 0) {
-            field->isDrawableGridNav = 5;
+        cameraController->isDrawableGridNav--;
+        if (cameraController->isDrawableGridNav < 0) {
+            cameraController->isDrawableGridNav = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableGridNav:" + field->isDrawableGridNav);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableGridNav: " << field->isDrawableGridNav;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableGridNav:" + cameraController->isDrawableGridNav);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableGridNav: " << cameraController->isDrawableGridNav;
     } else if(key == Qt::Key_8) {
         ui->drawPaths_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_6 || Input.Keys.NUMPAD_6)";
-        field->isDrawableRoutes--;
-        if (field->isDrawableRoutes < 0) {
-            field->isDrawableRoutes = 5;
+        cameraController->isDrawableRoutes--;
+        if (cameraController->isDrawableRoutes < 0) {
+            cameraController->isDrawableRoutes = 5;
         }
-//        gameInterface.addActionToHistory("-- field->isDrawableRoutes:" + field->isDrawableRoutes);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->isDrawableRoutes: " << field->isDrawableRoutes;
+//        gameInterface.addActionToHistory("-- cameraController->isDrawableRoutes:" + cameraController->isDrawableRoutes);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->isDrawableRoutes: " << cameraController->isDrawableRoutes;
     } else if(key == Qt::Key_9) {
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_9 || Input.Keys.NUMPAD_9)";
-        field->drawOrder++;
-        if (field->drawOrder > 8) {
-            field->drawOrder = 0;
+        cameraController->drawOrder++;
+        if (cameraController->drawOrder > 8) {
+            cameraController->drawOrder = 0;
         }
-//        gameInterface.addActionToHistory("-- field->drawOrder:" + field->drawOrder);
-        qDebug() << "GameWidget::keyPressEvent(); -- field->drawOrder: " << field->drawOrder;
+//        gameInterface.addActionToHistory("-- cameraController->drawOrder:" + cameraController->drawOrder);
+        qDebug() << "GameWidget::keyPressEvent(); -- cameraController->drawOrder: " << cameraController->drawOrder;
+    } else if(key == Qt::Key_B) {
+        gameField->createdRandomUnderConstruction();
+    } else if(key == Qt::Key_Escape || key == Qt::Key_N) {
+        gameField->cancelUnderConstruction();
     } else if(key == Qt::Key_Space || key == Qt::Key_Escape) {
 //        gamePause = !gamePause;
 //        qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
@@ -258,22 +271,22 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
         return;
     } else if (key == Qt::Key_A) {
         qDebug() << "GameScreen::inputHandler(); -- isKeyJustPressed(Input.Keys.A)";
-        field->turnLeft();
+        gameField->turnLeft();
 //        gameInterface.addActionToHistory("-- gameField.turnLeft()");
         qDebug() << "GameScreen::inputHandler(); -- gameField.turnLeft()";
     } else if (key == Qt::Key_S) {
         qDebug() << "GameScreen::inputHandler(); -- -- isKeyJustPressed(Input.Keys.S)";
-        field->turnRight();
+        gameField->turnRight();
 //        gameInterface.addActionToHistory("-- gameField.turnRight()");
         qDebug() << "GameScreen::inputHandler(); -- gameField.turnRight()";
     } else if (key == Qt::Key_Q) {
         qDebug() << "GameScreen::inputHandler(); -- isKeyJustPressed(Input.Keys.Q)";
-        field->flipX();
+        gameField->flipX();
 //        gameInterface.addActionToHistory("-- gameField.flipX()");
         qDebug() << "GameScreen::inputHandler(); -- gameField.flipX()";
     } else if (key == Qt::Key_W) {
         qDebug() << "GameScreen::inputHandler(); -- isKeyJustPressed(Input.Keys.W)";
-        field->flipY();
+        gameField->flipY();
 //        gameInterface.addActionToHistory("-- gameField.flipY()");
         qDebug() << "GameScreen::inputHandler(); -- gameField.flipY()";
 //    } else if(key == Qt::Key_Left) {
@@ -327,12 +340,20 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         cameraController->touchUp(mouseX, mouseY, 0, button);
         setCursor(Qt::ArrowCursor);
     }
-//    if (whichCell(mouseX, mouseY)) {
-//        if (button == Qt::LeftButton) {
-//            if (field->getCell(mouseX, mouseY)->isEmpty()) {
-//                field->updateHeroDestinationPoint(mouseX, mouseY);
-//            }
-//        } else if (button == Qt::RightButton) {
+    if (button == Qt::LeftButton) {
+        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits) != NULL) {
+            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
+            if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
+                gameField->updateHeroDestinationPoint(mouseX, mouseY);
+            }
+        }
+    } else if (button == Qt::MidButton && cameraController->panMidMouseButton) {
+        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGridNav) != NULL) {
+            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
+        }
+    } else if (button == Qt::RightButton && !cameraController->panMidMouseButton) {
+        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers) != NULL) {
+            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
 //            if ( panMidMouseButton || (prevMouseCellX == mouseX && prevMouseCellY == mouseY && prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
 //                Cell* cell = field->getCell(mouseX, mouseY);
 //                if (cell != NULL) {
@@ -348,8 +369,8 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
 //                }
 //                field->updateHeroDestinationPoint();
 //            }
-//        }
-//    }
+        }
+    }
 }
 
 void GameWidget::mouseMoveEvent(QMouseEvent* event) {
@@ -358,6 +379,18 @@ void GameWidget::mouseMoveEvent(QMouseEvent* event) {
     int mouseY = event->y();
     Qt::MouseButton button = event->button();
     cameraController->pan(mouseX, mouseY);
+
+//    qDebug() << "GameWidget::mouseMoveEvent(); -window- mouseX:" << mouseX << " mouseY:" << mouseY;
+    cameraController->unproject(mouseX, mouseY);
+//    qDebug() << "GameWidget::mouseMoveEvent(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY;
+    QPoint* cellCoord = cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid);
+    qDebug() << "GameWidget::mouseMoveEvent(); -- cellCoord:" << cellCoord;
+    if ( cellCoord != NULL ) {
+        if (gameField->getUnderConstruction() != NULL) {
+            gameField->getUnderConstruction()->setEndCoors(cellCoord->x(), cellCoord->y());
+        }
+        qDebug() << "GameWidget::mouseMoveEvent(); -cell- cellCoord->x():" << cellCoord->x() << " cellCoord->y():" << cellCoord->y();
+    }
 //    if (gameInterface.pan(x, y, deltaX, deltaY)) {
 //        lastCircleTouched = true;
 //        return true;
@@ -408,7 +441,7 @@ void GameWidget::wheelEvent(QWheelEvent* event) {
     qDebug() << "GameWidget::resizeEvent(); -- event->angleDelta():" << event->angleDelta();
 
     cameraController->scrolled(event->angleDelta().y());
-    field->updateCellsGraphicCoordinates(cameraController->halfSizeCellX, cameraController->halfSizeCellY);
+    gameField->updateCellsGraphicCoordinates(cameraController->halfSizeCellX, cameraController->halfSizeCellY);
 
 //    int mainCoorMapX = field->getMainCoorMapX();
 //    int mainCoorMapY = field->getMainCoorMapY();

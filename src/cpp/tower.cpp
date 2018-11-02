@@ -3,12 +3,14 @@
 Tower::Tower(int x, int y, TemplateForTower *templateForTower) {
     qDebug() << "Tower::Tower(); -- x:" << x << ", y:" << y << ", templateForTower:" << templateForTower;
     this->currX = x;
-    this->currY = x;
+    this->currY = y;
     this->elapsedReloadTime = templateForTower->reloadTime;
     this->templateForTower = templateForTower;
 
+//    this.player = player;
+//    this.capacity = (templateForTower.capacity != null) ? templateForTower.capacity : 0;
 //    this->bullets = new Array<Shell>();
-    this->radius = templateForTower->radius;
+//    this->radiusDetectionСircle = templateForTower->radiusDetectionСircle;
 //    this->radiusDetectionСircle = new Circle(getCenterGraphicCoord(1), (templateForTower->radiusDetection == null) ? 0f : templateForTower->radiusDetection); // AlexGor
 //    if(templateForTower->shellAttackType == ShellAttackType->FirstTarget && templateForTower->radiusFlyShell != null && templateForTower->radiusFlyShell >= templateForTower->radiusDetection) {
 //        this->radiusFlyShellСircle = new Circle(getCenterGraphicCoord(1), templateForTower->radiusFlyShell);

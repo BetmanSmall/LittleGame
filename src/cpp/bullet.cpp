@@ -1,16 +1,16 @@
 #include "src/head/bullet.h"
 
-Bullet::Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower* defTower) {
+Bullet::Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower* templateForTower) {
     this->flying = true;
     this->currCellX = currCellX;
     this->currCellY = currCellY;
     this->direction = direction;
-    this->defTower = defTower;
+    this->templateForTower = templateForTower;
 
     this->animationCurrIter = 0;
     this->animationMaxIter = 0;
 
-    this->pixmap = defTower->bullet[0];
+//    this->pixmap = templateForTower->bullet[0];
 }
 
 void Bullet::setSpeed(int speed) {

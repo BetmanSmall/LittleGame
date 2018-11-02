@@ -11,10 +11,18 @@
 #include "src/head/factionsmanager.h"
 #include "src/head/bullet.h"
 #include "src/head/cell.h"
+#include "src/head/underconstruction.h"
 #include "cameracontroller.h"
 
-class Field
+class GameField
 {
+
+#ifdef QT_DEBUG
+    QString ASSETS_PATH = "../../LittleGame/assets/";
+#else
+    QString ASSETS_PATH = "./assets/";
+#endif
+
 public: // we are friendly!
     AStar::PathFinder* pathFinder;
     Map* map;
@@ -27,15 +35,9 @@ public: // we are friendly!
 //    int sizeCellX, sizeCellY;
 //    int halfSizeCellX, halfSizeCellY;
 
-    int isDrawableGrid = 3;
-    int isDrawableUnits = 3;
-    int isDrawableTowers = 3;
-    int isDrawableBackground = 3;
-    int isDrawableGround = 3;
-    int isDrawableForeground = 3;
-    int isDrawableGridNav = 3;
-    int isDrawableRoutes = 3;
-    int drawOrder = 8;
+    UnderConstruction* underConstruction;
+    QPixmap* greenCheckmark;
+    QPixmap* redCross;
 
     bool isometric;
 //    int tileMapWidth, tileMapHeight;
@@ -49,9 +51,11 @@ public: // we are friendly!
 //    int mainCoorMapX, mainCoorMapY; // camera need create
 //    int spaceWidget; // fix this. 16 and launch
 
+    float timeOfGame;
+    float gameSpeed;
+    bool gamePaused;
+    int gamerGold;
 //    bool gameStart;
-    bool gamePause;
-//    float gameSpeed;
 //    int spawnPointX, spawnPointY;
 //    int exitPointX, exitPointY;
     Cell* cellSpawnHero;
@@ -60,8 +64,8 @@ public: // we are friendly!
     int currentFinishedUnits;
 
 public:
-    Field(QString mapFile, FactionsManager* factionsManager, int enemyCount, int difficultyLevel, int towersCount);
-    ~Field();
+    GameField(QString mapFile, FactionsManager* factionsManager, int enemyCount, int difficultyLevel, int towersCount);
+    ~GameField();
     void createField();
     void turnRight();
     void turnLeft();
@@ -85,13 +89,17 @@ public:
     void drawForeGrounds(CameraController* cameraController);
     void drawForeGroundCell(CameraController* cameraController, int cellX, int cellY);
 
-//    void drawTowersByTowers(QPainter* painter);
-//    void drawUnits(QPainter* painter);
+    void drawUnit(CameraController* cameraController, Unit* unit);
+//    void drawUnits(CameraController* cameraController);
+//    void drawTowersByTowers(CameraController* cameraController);
     void drawGridNavs(CameraController *cameraController);
     void drawGridNavCell(CameraController *cameraController, int cellX, int cellY);
     void drawGridNav(CameraController *cameraController);
-    void drawPaths(CameraController *cameraController);
-//    void drawTowersUnderConstruction(QPainter* painter);
+//    void drawPaths(CameraController *cameraController);
+
+    void drawTowersUnderConstruction(CameraController* cameraController);
+    void drawTowerUnderConstruction(CameraController* cameraController, int buildX, int buildY, TemplateForTower* templateForTower, bool enoughGold);
+    void drawTowerUnderConstructionAndMarks(CameraController* cameraController, int map, TemplateForTower* templateForTower, Cell* mainCell, QPoint startDrawCell, QPoint finishDrawCell);
 //    void drawTowerUnderConstruction(QPainter* painter, int buildX, int buildY, TemplateForTower* tower);
 
     void setMainCoorMap(int mainCoorMapX, int mainCoorMapY);
@@ -100,13 +108,14 @@ public:
     int getMainCoorMapY();
     int getSizeCell();
 
-    bool towersAttack(int deltaTime);
+    bool towersAttack(float deltaTime);
     void setMousePress(int x, int y);
     bool getMousePress(int x = -1, int y = -1);
 //    bool isSetSpawnPoint(int x = -1, int y = -1);
 //    bool isSetExitPoint(int x = -1, int y = -1);
-    int stepAllUnits();
-    int stepOneUnit(Unit* unit);
+    void stepAllUnits(float deltaTime, CameraController* cameraController);
+//    int stepOneUnit(Unit* unit);
+    //bool Field::towersAttack(int deltaTime);
     Unit* getUnit(int x, int y);
     std::vector<Unit *> getUnits(int x, int y);
 //    Unit* getUnitWithLowHP(int x, int y);
@@ -119,6 +128,11 @@ public:
     void createUnit(int x, int y, int x2, int y2, int player = 0);
     void createUnit(QPoint spawnPoint, QPoint exitPoint, TemplateForUnit* templateForUnit, int player = 0);
     bool deleteTower(int x = -1, int y = -1);
+
+    UnderConstruction* createdRandomUnderConstruction();
+    UnderConstruction* createdUnderConstruction(TemplateForTower *templateForTower);
+    bool cancelUnderConstruction();
+    UnderConstruction* getUnderConstruction();
 };
 
 #endif // FIELD_H

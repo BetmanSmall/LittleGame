@@ -13,37 +13,37 @@ class TemplateForTower : public Template
 {
 public:
     int     radiusDetection;
-    int     attack;
+    float   radiusFlyShell;
+//    int     attack;
     int     damage;
-    int     radius;
+//    int     radius;
     int     size;
-    int     height;
+    int     cost;
+//    int     height;
     float   ammoSize;
     float   ammoSpeed;
     float   reloadTime;
-    int     type;
+//    int     type;
+//    TowerAttackType towerAttackType;
+//    ShellAttackType shellAttackType;
+//    ShellEffectType shellEffectType;
+    int capacity;
+//    Integer ammoDistance;
+
     Tile*   idleTile;
 //    AnimatedTile idleTile;
     QMap<QString, Tile*> ammunitionPictures;
 
-//    Float    radiusFlyShell;
-//    Integer  cost;
-//    TowerAttackType towerAttackType;
-//    ShellAttackType shellAttackType;
-//    ShellEffectType shellEffectType;
-//    Integer capacity;
-//    Integer ammoDistance;
-    QPixmap pixmap;
-    std::vector<QPixmap> bullet;
-
-    std::vector<QPixmap> bullet_fly_up;
-    std::vector<QPixmap> bullet_fly_up_right;
-    std::vector<QPixmap> bullet_fly_right;
-    std::vector<QPixmap> bullet_fly_down_right;
-    std::vector<QPixmap> bullet_fly_down;
-    std::vector<QPixmap> bullet_fly_down_left;
-    std::vector<QPixmap> bullet_fly_left;
-    std::vector<QPixmap> bullet_fly_up_left;
+//    QPixmap pixmap;
+//    std::vector<QPixmap> bullet;
+//    std::vector<QPixmap> bullet_fly_up;
+//    std::vector<QPixmap> bullet_fly_up_right;
+//    std::vector<QPixmap> bullet_fly_right;
+//    std::vector<QPixmap> bullet_fly_down_right;
+//    std::vector<QPixmap> bullet_fly_down;
+//    std::vector<QPixmap> bullet_fly_down_left;
+//    std::vector<QPixmap> bullet_fly_left;
+//    std::vector<QPixmap> bullet_fly_up_left;
 
     TemplateForTower(QString templateFile);
     ~TemplateForTower();

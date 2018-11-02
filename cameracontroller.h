@@ -10,7 +10,18 @@ public:
     QPainter* painter;
     float viewportWidth = 0;
     float viewportHeight = 0;
+    int mapWidth, mapHeight;
     int cameraX = 0, cameraY = 0;
+
+    int isDrawableGrid = 3;
+    int isDrawableUnits = 3;
+    int isDrawableTowers = 3;
+    int isDrawableBackground = 3;
+    int isDrawableGround = 3;
+    int isDrawableForeground = 3;
+    int isDrawableGridNav = 3;
+    int isDrawableRoutes = 3;
+    int drawOrder = 8;
 
     bool flinging = false;
     float velX;
@@ -32,7 +43,7 @@ public:
     int prevGlobalMouseX, prevGlobalMouseY;
 
 public:
-    CameraController(float sizeCellX, float sizeCellY);
+    CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY);
 //    void setBorders(float borderLeftX, float borderRightX, float borderUpY, float borderDownY);
     bool touchDown(int screenX, int screenY, int pointer, int button);
     bool touchUp(int screenX, int screenY, int pointer, int button);
@@ -40,6 +51,11 @@ public:
     bool pan(float cameraX, float cameraY);
     bool scrolled(int amount);
     void update(float deltaTime);
+    void unproject(int &screenX, int &screenY);
+//    QPoint unproject(QPoint screenCoords);
+//    QPoint unproject(QPoint screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight);
+    QPoint* whichCell(int &mouseX, int &mouseY, int map);
+    QPointF* getCorrectGraphicTowerCoord(QPointF* towerPos, int towerSize, int map);
     QString toString();
 };
 

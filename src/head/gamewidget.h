@@ -16,7 +16,7 @@
 
 //#include "assets/libs/tinyxml2.h"
 #include "src/head/libs/astar.h"
-#include "src/head/field.h"
+#include "src/head/gamefield.h"
 //#include "src/head/factionsmanager.h"
 //#include "src/head/faction.h"
 #include "src/head/underconstruction.h"
@@ -40,10 +40,9 @@ class GameWidget : public QWidget {
 #endif
 
 public:
-    Field* field;
+    GameField* gameField;
     CameraController* cameraController;
 
-    int timeOfGame;
     QTime currentTime;
     QTime lastTime;
     int elapsedTime;
@@ -63,7 +62,7 @@ public:
                         QWidget *parent = 0);
     ~GameWidget();
 
-    void timerEvent(QTimerEvent* event);
+//    void timerEvent(QTimerEvent* event);
     void paintEvent(QPaintEvent* event);
 //    bool whichCell(int &mouseX, int &mouseY);
 

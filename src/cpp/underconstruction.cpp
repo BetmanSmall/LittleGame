@@ -1,15 +1,15 @@
 #include "src/head/underconstruction.h"
 
-UnderConstruction::UnderConstruction(TemplateForTower *tower) {
+UnderConstruction::UnderConstruction(TemplateForTower *templateForTower) {
     this->state = -1;
-    this->tower = tower;
+    this->templateForTower = templateForTower;
 }
 
-UnderConstruction::UnderConstruction(int startX, int startY, TemplateForTower *tower) {
+UnderConstruction::UnderConstruction(int startX, int startY, TemplateForTower *templateForTower) {
     this->state = 1;
     this->startX = startX;
     this->startY = startY;
-    this->tower = tower;
+    this->templateForTower = templateForTower;
 }
 
 bool UnderConstruction::setStartCoors(int startX, int startY) {
@@ -17,6 +17,7 @@ bool UnderConstruction::setStartCoors(int startX, int startY) {
     this->state = 1;
     this->startX = startX;
     this->startY = startY;
+    return true;
 }
 
 bool UnderConstruction::setEndCoors(int endX, int endY) {
@@ -27,31 +28,44 @@ bool UnderConstruction::setEndCoors(int endX, int endY) {
     if(state == -1) {
         state = 0;
     }
-    if(state == 1 && tower != NULL) {
+    if(state == 1 && templateForTower != NULL) {
         coorsX.clear();
         coorsY.clear();
-        if(endY == startY || (endY < (startY+tower->size) && endY > startY)) {
-            if(endX >= startX) {
-                for(int currX = startX+tower->size; currX <= endX; currX+=tower->size) {
-                    this->coorsX.push_back(currX);
-                    this->coorsY.push_back(startY);
+        int towerSize = templateForTower->size;
+        int deltaX = 0, deltaY = 0;
+        if(towerSize != 1) {
+            if(towerSize%2 == 0) {
+                deltaX = towerSize/2;
+                deltaY = (towerSize/2)-1;
+            } else {
+                deltaX = towerSize/2;
+                deltaY = towerSize/2;
+            }
+        }
+        int tmpX = startX-deltaX;
+        int tmpY = startY-deltaY;
+        if(endY == tmpY || (endY < (tmpY+towerSize) && endY > tmpY)) {
+            if(endX >= tmpX) {
+                for(int currX = tmpX+towerSize; currX <= endX; currX+=towerSize) {
+                    this->coorsX.push_back(currX+deltaX);
+                    this->coorsY.push_back(tmpY+deltaY);
                 }
             } else {
-                for(int currX = startX-tower->size; currX > endX-tower->size; currX-=tower->size) {
-                    this->coorsX.push_back(currX);
-                    this->coorsY.push_back(startY);
+                for(int currX = tmpX-towerSize; currX > endX-towerSize; currX-=towerSize) {
+                    this->coorsX.push_back(currX+deltaX);
+                    this->coorsY.push_back(tmpY+deltaY);
                 }
             }
-        } else if(endX == startX || endX < (startX+tower->size) && endX > startX) {
-            if(endY >= startY) {
-                for(int currY = startY+tower->size; currY <= endY; currY+=tower->size) {
-                    this->coorsX.push_back(startX);
-                    this->coorsY.push_back(currY);
+        } else if(endX == tmpX || endX < (tmpX+towerSize) && endX > tmpX) {
+            if(endY >= tmpY) {
+                for(int currY = tmpY+towerSize; currY <= endY; currY+=towerSize) {
+                    this->coorsX.push_back(tmpX+deltaX);
+                    this->coorsY.push_back(currY+deltaY);
                 }
             } else {
-                for(int currY = startY-tower->size; currY > endY-tower->size; currY-=tower->size) {
-                    this->coorsX.push_back(startX);
-                    this->coorsY.push_back(currY);
+                for(int currY = tmpY-towerSize; currY > endY-towerSize; currY-=towerSize) {
+                    this->coorsX.push_back(tmpX+deltaX);
+                    this->coorsY.push_back(currY+deltaY);
                 }
             }
         }
@@ -64,4 +78,5 @@ bool UnderConstruction::clearStartCoors() {
     this->state = 0;
     this->coorsX.clear();
     this->coorsY.clear();
+    return true;
 }

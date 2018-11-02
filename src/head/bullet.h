@@ -20,7 +20,7 @@ public:
     QPixmap pixmap;
     std::vector<QPixmap> activePixmaps;
 
-    TemplateForTower* defTower;
+    TemplateForTower* templateForTower;
 
     Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower* defTower);
     void setSpeed(int speed);

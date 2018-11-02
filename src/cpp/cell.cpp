@@ -10,6 +10,10 @@ Cell::Cell() {
 
 //    cellX, cellY
 //    qPointF
+    graphicCoordinatesBottom = new QPointF();
+    graphicCoordinatesRight = new QPointF();
+    graphicCoordinatesTop = new QPointF();
+    graphicCoordinatesLeft = new QPointF();
 
     this->spawn = false;
     this->exit = false;
@@ -28,14 +32,22 @@ void Cell::setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, floa
 //    qDebug() << "Cell::setGraphicCoordinates(); -- cellX:" << cellX << " cellY:" << cellY << " halfSizeCellX:" << halfSizeCellX << " halfSizeCellY:" << halfSizeCellY;
     this->cellX = cellX;
     this->cellY = cellY;
-//        if(map == 1) { // Нижняя карта
-    graphicCoordinatesBottom = new QPointF( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)));
+//        if(map == 1) { // Нижняя карта-java // Верхняя карта-с++
+//    graphicCoordinatesBottom = new QPointF( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)));
+    graphicCoordinatesBottom->setX( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)) );
+    graphicCoordinatesBottom->setY( (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)) );
 //        } else if(map == 2) { // Правая карта
-    graphicCoordinatesRight = new QPointF(  ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
-//        } else if(map == 3) { // Верхняя карта
-    graphicCoordinatesTop = new QPointF(    (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
+//    graphicCoordinatesRight = new QPointF(  ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
+    graphicCoordinatesRight->setX( ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX );
+    graphicCoordinatesRight->setY( ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY );
+//        } else if(map == 3) { // Верхняя карта-c++ // Нижняя карта-java
+//    graphicCoordinatesTop = new QPointF(    (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
+    graphicCoordinatesTop->setX( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)) );
+    graphicCoordinatesTop->setY( ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
 //        } else if(map == 4) {// Левая карта
-    graphicCoordinatesLeft = new QPointF(   (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
+//    graphicCoordinatesLeft = new QPointF(   (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
+    graphicCoordinatesLeft->setX( (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX );
+    graphicCoordinatesLeft->setY( ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY );
 //        }
 }
 
@@ -115,7 +127,7 @@ bool Cell::removeTower() {
 
 Unit *Cell::getHero() {
     foreach (Unit* unit, units) {
-        if (unit->type == "hero") { // type 0 = Hero
+        if (unit->player == 1) {
             return unit;
         }
     }

@@ -42,7 +42,10 @@ TemplateForTower* FactionsManager::getRandomTemplateForTowerFromAllFaction() {
 //        int r = 0 + (int) (Math.random() * allTowers.size);
 //        Gdx.app.log("TemplateForTower", "getRandomTemplateForTowerFromAllFaction(); -- r:" + r);
 //        return allTowers.get(r);
-    return allTowers[rand()%allTowers.size()];
+//    qDebug() << "FactionsManager::getRandomTemplateForTowerFromAllFaction(); -- allTowers.size():" << allTowers.size();
+    int randI = rand()%allTowers.size();
+//    qDebug() << "FactionsManager::getRandomTemplateForTowerFromAllFaction(); -- randI:" << randI;
+    return allTowers.at(randI);
 }
 
 TemplateForUnit* FactionsManager::getTemplateForUnitFromFirstFactionByIndex(int index) {
