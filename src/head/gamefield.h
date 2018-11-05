@@ -115,7 +115,7 @@ public:
 //    bool isSetExitPoint(int x = -1, int y = -1);
     void stepAllUnits(float deltaTime, CameraController* cameraController);
 //    int stepOneUnit(Unit* unit);
-    //bool Field::towersAttack(int deltaTime);
+    //bool GameField::towersAttack(int deltaTime);
     Unit* getUnit(int x, int y);
     std::vector<Unit *> getUnits(int x, int y);
 //    Unit* getUnitWithLowHP(int x, int y);

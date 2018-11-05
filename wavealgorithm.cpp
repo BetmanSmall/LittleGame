@@ -4,8 +4,8 @@ WaveAlgorithm::WaveAlgorithm() {
 
 }
 
-//void Field::waveAlgorithm(int x, int y) {
-//    qDebug() << "Field::waveAlgorithm() :: X: " << x << " Y: " << y;
+//void GameField::waveAlgorithm(int x, int y) {
+//    qDebug() << "GameField::waveAlgorithm() :: X: " << x << " Y: " << y;
 //    if(x == -1 && y == -1) {
 //        if(isSetExitPoint()) {
 //            waveAlgorithm(exitPointX, exitPointY);
@@ -23,7 +23,7 @@ WaveAlgorithm::WaveAlgorithm() {
 //    }
 //}
 
-//void Field::waveStep(int x, int y, int step) {
+//void GameField::waveStep(int x, int y, int step) {
 //#ifdef CIRCLET8
 //    bool mass[3][3];
 //    int nextStep = step+1;

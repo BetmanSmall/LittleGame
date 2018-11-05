@@ -48,6 +48,7 @@ public:
     Unit(AStar::CoordinateList route, TemplateForUnit* templateForUnit, int player);
     ~Unit();
     void setAnimation(QString action);
+    void correct_fVc(float &fVx, float &fVy, Direction::type direction, float sizeCellX);
     AStar::Vec2i* move(float deltaTime, CameraController* cameraController);
     bool changeDeathFrame(float delta);
 //    QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);

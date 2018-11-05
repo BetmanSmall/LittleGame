@@ -4,8 +4,11 @@
 
 using namespace std::placeholders;
 
-bool AStar::Vec2i::operator == (const Vec2i& coordinates_)
-{
+bool AStar::Vec2i::operator == (const Vec2i& coordinates_) {
+    return (x == coordinates_.x && y == coordinates_.y);
+}
+
+bool AStar::Vec2i::equals(const Vec2i& coordinates_) {
     return (x == coordinates_.x && y == coordinates_.y);
 }
 

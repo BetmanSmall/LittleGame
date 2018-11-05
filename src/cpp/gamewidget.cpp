@@ -76,19 +76,21 @@ GameWidget::~GameWidget() {
 void GameWidget::paintEvent(QPaintEvent* event) {
     lastTime = currentTime;
     currentTime = QTime::currentTime();
-    elapsedTime = (currentTime.second()*1000 + currentTime.msec()) - (lastTime.second()*1000 + lastTime.msec()); // /!\ max = 59 seconds 999 ms
+//    elapsedTime = (currentTime.second()*1000 + currentTime.msec()) - (lastTime.second()*1000 + lastTime.msec()); // /!\ max = 59 seconds 999 ms
+//    this->fps = 1000 / elapsedTime;
+    elapsedTime = (currentTime.msecsSinceStartOfDay()) - (lastTime.msecsSinceStartOfDay());
     this->fps = 1000 / elapsedTime;
 
     cameraController->painter->begin(this);
-    gameField->render(elapsedTime, cameraController);
+    gameField->render(elapsedTime/1000, cameraController);
 //    cameraController->update(elapsedTime);
     cameraController->painter->setPen(QColor(255, 0, 0));
     cameraController->painter->drawEllipse(QPoint(cameraController->cameraX, cameraController->cameraY), 5, 5);
     cameraController->painter->setPen(QColor(0, 255, 0));
     cameraController->painter->drawEllipse(QPoint(0, 0), 5, 5);
     cameraController->painter->drawText(10, 10, "FPS:" + QString::number(fps));
-    cameraController->painter->drawText(10, 20, "lastTime:" + QString::number(lastTime.msec()));
-    cameraController->painter->drawText(10, 30, "currentTime:" + QString::number(currentTime.msec()));
+    cameraController->painter->drawText(10, 20, "lastTime:" + QString::number(lastTime.msecsSinceStartOfDay()));
+    cameraController->painter->drawText(10, 30, "currentTime:" + QString::number(currentTime.msecsSinceStartOfDay()));
     cameraController->painter->drawText(10, 40, "elapsedTime:" + QString::number(elapsedTime));
     cameraController->painter->drawText(10, 50, "cameraController->cameraX:" + QString::number(cameraController->cameraX));
     cameraController->painter->drawText(10, 60, "cameraController->cameraY:" + QString::number(cameraController->cameraY));
@@ -169,7 +171,7 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
         cameraController->isDrawableBackground = cameraController->isDrawableGrid;
         cameraController->isDrawableGround = cameraController->isDrawableGrid;
         cameraController->isDrawableForeground = cameraController->isDrawableGrid;
-        cameraController->isDrawableGridNav = cameraController->isDrawableGrid;
+//        cameraController->isDrawableGridNav = cameraController->isDrawableGrid;
         cameraController->isDrawableRoutes = cameraController->isDrawableGrid;
         qDebug() << "GameWidget::keyPressEvent(); -and other- cameraController->isDrawableGrid: " << cameraController->isDrawableGrid;
     } else if(key == Qt::Key_1) {
@@ -334,13 +336,11 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         setCursor(Qt::ArrowCursor);
     }
     if (button == Qt::LeftButton) {
-        QPoint* cell = cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits);
-        if (cell != NULL) {
-//            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
-            qDebug() << "GameWidget::mouseReleaseEvent(); -cell- cell->x():" << cell->x() << " cell->y():" << cell->y();
-            if (gameField->getCell(cell->x(), cell->y())->isEmpty()) {
-                gameField->updateHeroDestinationPoint(cell->x(), cell->y());
+        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits)) {
+            if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
+                gameField->updateHeroDestinationPoint(mouseX, mouseY);
             }
+            qDebug() << "GameWidget::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
         }
 //    } else if (button == Qt::MidButton && cameraController->panMidMouseButton) {
 //        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGridNav) != NULL) {
@@ -375,19 +375,11 @@ void GameWidget::mouseMoveEvent(QMouseEvent* event) {
     Qt::MouseButton button = event->button();
     cameraController->pan(mouseX, mouseY);
 
-//    qDebug() << "GameWidget::mouseMoveEvent(); -wind- mouseX:" << mouseX << " mouseY:" << mouseY;
-    cameraController->unproject(mouseX, mouseY);
-//    qDebug() << "GameWidget::mouseMoveEvent(); -grph- mouseX:" << mouseX << " mouseY:" << mouseY;
-    QPoint* cellCoord = cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid);
-//    qDebug() << "GameWidget::mouseMoveEvent(); -- cellCoord:" << cellCoord;
-    if ( cellCoord != NULL ) {
-//    if ( cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid) ) {
+    if ( cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid) ) {
         if (gameField->getUnderConstruction() != NULL) {
-            gameField->getUnderConstruction()->setEndCoors(cellCoord->x(), cellCoord->y());
-//            gameField->getUnderConstruction()->setEndCoors(mouseX, mouseY);
+            gameField->getUnderConstruction()->setEndCoors(mouseX, mouseY);
         }
-//        qDebug() << "GameWidget::mouseMoveEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
-//        qDebug() << "GameWidget::mouseMoveEvent(); -cell- cellCoord->x():" << cellCoord->x() << " cellCoord->y():" << cellCoord->y();
+        qDebug() << "GameWidget::mouseMoveEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
     }
 //    if (gameInterface.pan(x, y, deltaX, deltaY)) {
 //        lastCircleTouched = true;

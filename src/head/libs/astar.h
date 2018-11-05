@@ -13,6 +13,7 @@ namespace AStar
         int x, y;
 
         bool operator == (const Vec2i& coordinates_);
+        bool equals(const Vec2i& coordinates_);
         std::string toString() {
             QString sb("Vec2i[");
             sb.append("x:" + QString::number(x));

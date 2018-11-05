@@ -45,7 +45,7 @@ public:
 
     QTime currentTime;
     QTime lastTime;
-    int elapsedTime;
+    float elapsedTime;
     float fps; // current fps in the loop, depending on the "work time" required during the paintGL call
     QTimer* gameTimer;
 

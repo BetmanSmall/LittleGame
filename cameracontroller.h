@@ -11,16 +11,16 @@ public:
     float viewportWidth = 0;
     float viewportHeight = 0;
     int mapWidth, mapHeight;
-    int cameraX = 0, cameraY = 0;
+    int cameraX = 600, cameraY = 800;
 
-    int isDrawableGrid = 3;
-    int isDrawableUnits = 3;
-    int isDrawableTowers = 3;
-    int isDrawableBackground = 3;
-    int isDrawableGround = 3;
-    int isDrawableForeground = 3;
-    int isDrawableGridNav = 2;
-    int isDrawableRoutes = 3;
+    int isDrawableGrid = 1;
+    int isDrawableUnits = 1;
+    int isDrawableTowers = 1;
+    int isDrawableBackground = 1;
+    int isDrawableGround = 1;
+    int isDrawableForeground = 1;
+    int isDrawableGridNav = 0;
+    int isDrawableRoutes = 1;
     int drawOrder = 8;
 
     bool flinging = false;
@@ -54,8 +54,8 @@ public:
     void unproject(int &screenX, int &screenY);
 //    QPoint unproject(QPoint screenCoords);
 //    QPoint unproject(QPoint screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight);
-    bool whichCell(int &mouseX, int &mouseY);
-    QPoint *whichCell(int &mouseX, int &mouseY, int map);
+//    bool whichCell(int &mouseX, int &mouseY);
+    bool whichCell(int &mouseX, int &mouseY, int map);
     QPointF* getCorrectGraphicTowerCoord(QPointF* towerPos, int towerSize, int map);
     QString toString();
 };

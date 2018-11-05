@@ -141,57 +141,64 @@ void CameraController::unproject(int &screenX, int &screenY) {
 //    return screenCoords;
 //}
 
-bool CameraController::whichCell(int &mouseX, int &mouseY) {
-    int mainCoorMapX = cameraX;
-    int mainCoorMapY = cameraY;
-    int gameX, gameY;
-//    if(!field->isometric) {
-//        gameX = ( (mouseX+sizeCell - mainCoorMapX) / sizeCell);
-//        gameY = ( (mouseY+sizeCell - mainCoorMapY) / sizeCell);
-//    } else {
-        int isometricCoorX = 0;//(sizeCellX/2) * mapHeight;
-        int isometricCoorY = 0;
-        int localMouseX = +mainCoorMapX + mouseX - isometricCoorX;
-        int localMouseY = +mainCoorMapY + mouseY + sizeCellY;
-        gameX = (localMouseX/2 + localMouseY) / (sizeCellX/2);
-        gameY = -(localMouseX/2 - localMouseY) / (sizeCellX/2);
+//bool CameraController::whichCell(int &mouseX, int &mouseY) {
+//    int mainCoorMapX = cameraX;
+//    int mainCoorMapY = cameraY;
+//    int gameX, gameY;
+////    if(!field->isometric) {
+////        gameX = ( (mouseX+sizeCell - mainCoorMapX) / sizeCell);
+////        gameY = ( (mouseY+sizeCell - mainCoorMapY) / sizeCell);
+////    } else {
+//        int isometricCoorX = 0;//(sizeCellX/2) * mapHeight;
+//        int isometricCoorY = 0;
+//        int localMouseX = +mainCoorMapX + mouseX - isometricCoorX;
+//        int localMouseY = +mainCoorMapY + mouseY + sizeCellY;
+//        gameX = (localMouseX/2 + localMouseY) / (sizeCellX/2);
+//        gameY = -(localMouseX/2 - localMouseY) / (sizeCellX/2);
+////    }
+//    if(gameX > 0 && gameX < mapWidth+1) {
+//        if(gameY > 0 && gameY < mapHeight+1) {
+//            qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " -new- gameX:" << gameX-1 << " gameY:" << gameY-1;
+//            mouseX = gameX-1;
+//            mouseY = gameY-1;
+//            return true;
+//        }
 //    }
-    if(gameX > 0 && gameX < mapWidth+1) {
-        if(gameY > 0 && gameY < mapHeight+1) {
-            qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " -new- gameX:" << gameX-1 << " gameY:" << gameY-1;
-            mouseX = gameX-1;
-            mouseY = gameY-1;
-            return true;
-        }
-    }
-    return false;
-}
+//    return false;
+//}
 
-QPoint* CameraController::whichCell(int &mouseX, int &mouseY, int map) {
+bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {
+//    qDebug() << "CameraController::whichCell(); -wind- mouseX:" << mouseX << " mouseY:" << mouseY;
+    unproject(mouseX, mouseY);
+//    qDebug() << "CameraController::whichCell(); -grph- mouseX:" << mouseX << " mouseY:" << mouseY;
     float gameX = (mouseX / halfSizeCellX + mouseY / halfSizeCellY) / 2;
     float gameY = (mouseY / halfSizeCellY -(mouseX / halfSizeCellX))/ 2;
-//    qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " map:" << map << " -new- gameX:" << gameX << " gameY:" << gameY;
-    QPoint* cell = new QPoint(qAbs((int) gameX), qAbs((int) gameY));
+    qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " map:" << map << " -new- gameX:" << gameX << " gameY:" << gameY;
+    int cellX = qAbs((int) gameX);
+    int cellY = qAbs((int) gameY);
     if(gameY < 0) {
-        int tmpX = cell->x();
-        cell->setX(cell->y());
-        cell->setY(tmpX);
-    } // Где то я накосячил. мб сделать подругому. если это уберать то нужно будет править Cell::setGraphicCoordinates() для 3 и 4 карты
-//    qDebug() << "CameraController::whichCell(); -cell- cell->x():" << cell->x() << " cell->y():" << cell->y();
-    if (cell->x() < mapWidth && cell->y() < mapHeight) {
+        int tmpX = cellX;
+        cellX = cellY;
+        cellY = tmpX;
+    } // Где то я накосячил. мб сделать подругому.
+    // если это убирать то нужно будет править Cell::setGraphicCoordinates() для 3 и 4 карты-java // c++ ?? or ??
+    mouseX = cellX;
+    mouseY = cellY;
+    qDebug() << "CameraController::whichCell(); -cell- cellX:" << cellX << " cellY:" << cellY;
+    if (cellX < mapWidth && cellY < mapHeight) {
         if (map == 5) {
-            return cell;
+            return true;
         } else {
             if ( (map == 2 && gameX > 0 && gameY < 0)
               || (map == 3 && gameX > 0 && gameY > 0) ) {
-                return cell;
+                return true;
             } else if ( (map == 4 && gameX < 0 && gameY > 0)
                      || (map == 1 && gameX < 0 && gameY < 0) ) {
-                return cell;
+                return true;
             }
         }
     }
-    return NULL;
+    return false;
 }
 
 QPointF* CameraController::getCorrectGraphicTowerCoord(QPointF* towerPos, int towerSize, int map) {
