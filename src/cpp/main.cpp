@@ -15,8 +15,12 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     srand(time(0));
 
+    QRect rec = QApplication::desktop()->screenGeometry();
+//     height = rec.height();
+    int width = rec.width();
+
     WidgetController w;
-    w.move(0, 0);
+    w.move(width/2, 0);
     w.show();
 
     return a.exec();

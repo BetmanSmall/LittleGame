@@ -84,6 +84,8 @@ void GameWidget::paintEvent(QPaintEvent* event) {
 //    cameraController->update(elapsedTime);
     cameraController->painter->setPen(QColor(255, 0, 0));
     cameraController->painter->drawEllipse(QPoint(cameraController->cameraX, cameraController->cameraY), 5, 5);
+    cameraController->painter->setPen(QColor(0, 255, 0));
+    cameraController->painter->drawEllipse(QPoint(0, 0), 5, 5);
     cameraController->painter->drawText(10, 10, "FPS:" + QString::number(fps));
     cameraController->painter->drawText(10, 20, "lastTime:" + QString::number(lastTime.msec()));
     cameraController->painter->drawText(10, 30, "currentTime:" + QString::number(currentTime.msec()));
@@ -105,38 +107,12 @@ void GameWidget::paintEvent(QPaintEvent* event) {
     cameraController->painter->drawText(10, 190, "cameraController->isDrawableForeground:" + QString::number(cameraController->isDrawableForeground));
     cameraController->painter->drawText(10, 200, "cameraController->isDrawableGridNav:" + QString::number(cameraController->isDrawableGridNav));
     cameraController->painter->drawText(10, 210, "cameraController->isDrawableRoutes:" + QString::number(cameraController->isDrawableRoutes));
+    if (gameField->getUnderConstruction() != NULL) {
+        cameraController->painter->drawText(10, 230, "gameField->underConstruction->endX:" + QString::number(gameField->underConstruction->endX));
+        cameraController->painter->drawText(10, 240, "gameField->underConstruction->endY:" + QString::number(gameField->underConstruction->endY));
+    }
     cameraController->painter->end();
 }
-
-//bool GameWidget::whichCell(int &mouseX, int &mouseY) {
-//    int mainCoorMapX = field->getMainCoorMapX();
-//    int mainCoorMapY = field->getMainCoorMapY();
-//    int sizeCell = field->getSizeCell();
-//    int gameX, gameY;
-//    if(!field->isometric) {
-//        gameX = ( (mouseX+sizeCell - mainCoorMapX) / sizeCell);
-//        gameY = ( (mouseY+sizeCell - mainCoorMapY) / sizeCell);
-//    } else {
-//        int fieldX = cameraController->sizeFieldX;
-//        int fieldY = field->sizeFieldY;
-//        int sizeCellX = field->getSizeCell();
-//        int sizeCellY = sizeCellX/2;
-//        int isometricCoorX = (sizeCell/2) * fieldY;
-//        int isometricCoorY = 0;
-//        int localMouseX = -mainCoorMapX + mouseX - isometricCoorX;
-//        int localMouseY = -mainCoorMapY + mouseY + sizeCellY;
-//        gameX = (localMouseX/2 + localMouseY) / (sizeCell/2);
-//        gameY = -(localMouseX/2 - localMouseY) / (sizeCell/2);
-//    }
-//    if(gameX > 0 && gameX < field->sizeFieldX+1) {
-//        if(gameY > 0 && gameY < field->sizeFieldY+1) {
-//            mouseX = gameX-1;
-//            mouseY = gameY-1;
-//            return true;
-//        }
-//    }
-//    return false;
-//}
 
 //void GameWidget::startTimer_UnitsMoveAndTowerAttack() {
 //    qDebug() << "GameWidget::startTimer_UnitsMoveAndTowerAttack(); -- ";
@@ -175,10 +151,27 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
 //    int sizeFieldX = field->sizeFieldX;
 //    int sizeFieldY = field->sizeFieldY;
     int key = event->key();
+    qDebug() << "GameWidget::keyPressEvent(); -- Qt::Key_Tab:" << Qt::Key_Tab;
     qDebug() << "GameWidget::keyPressEvent(); -- key: " << key;
     if(key == Qt::Key_0) {
         signal_changeWindowState();
         qDebug() << "GameWidget::keyPressEvent(); -- parentWidget()->windowState():" << parentWidget()->windowState();
+        cameraController->cameraX = 0;
+        cameraController->cameraY = 0;
+    } else if(key == Qt::Key_F1) {
+        qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Qt::Key_F1)";
+        cameraController->isDrawableGrid--;
+        if (cameraController->isDrawableGrid < 0) {
+            cameraController->isDrawableGrid = 5;
+        }
+        cameraController->isDrawableUnits = cameraController->isDrawableGrid;
+        cameraController->isDrawableTowers= cameraController->isDrawableGrid;
+        cameraController->isDrawableBackground = cameraController->isDrawableGrid;
+        cameraController->isDrawableGround = cameraController->isDrawableGrid;
+        cameraController->isDrawableForeground = cameraController->isDrawableGrid;
+        cameraController->isDrawableGridNav = cameraController->isDrawableGrid;
+        cameraController->isDrawableRoutes = cameraController->isDrawableGrid;
+        qDebug() << "GameWidget::keyPressEvent(); -and other- cameraController->isDrawableGrid: " << cameraController->isDrawableGrid;
     } else if(key == Qt::Key_1) {
         ui->drawGrid_checkBox->toggle();
         qDebug() << "GameWidget::keyPressEvent(); -- isKeyJustPressed(Input.Keys.NUM_1 || Input.Keys.NUMPAD_1)";
@@ -341,35 +334,37 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         setCursor(Qt::ArrowCursor);
     }
     if (button == Qt::LeftButton) {
-        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits) != NULL) {
-            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
-            if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
-                gameField->updateHeroDestinationPoint(mouseX, mouseY);
+        QPoint* cell = cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits);
+        if (cell != NULL) {
+//            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
+            qDebug() << "GameWidget::mouseReleaseEvent(); -cell- cell->x():" << cell->x() << " cell->y():" << cell->y();
+            if (gameField->getCell(cell->x(), cell->y())->isEmpty()) {
+                gameField->updateHeroDestinationPoint(cell->x(), cell->y());
             }
         }
-    } else if (button == Qt::MidButton && cameraController->panMidMouseButton) {
-        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGridNav) != NULL) {
-            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
-        }
-    } else if (button == Qt::RightButton && !cameraController->panMidMouseButton) {
-        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers) != NULL) {
-            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
-//            if ( panMidMouseButton || (prevMouseCellX == mouseX && prevMouseCellY == mouseY && prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
-//                Cell* cell = field->getCell(mouseX, mouseY);
-//                if (cell != NULL) {
-//                    if(cell->isEmpty()) {
-//                        int randNumber = ( 124+(rand()%2) );
-//                        QPixmap pixmap = field->map->tileSets.getTileSet(0)->tiles[randNumber]->getPixmap();
-//                        cell->setTerrain(pixmap);
-//                    } else if (cell->isTerrain()) {
-//                        cell->removeTerrain();
-//                    } else {
-//                        qDebug() << "GameWidget::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
-//                    }
-//                }
-//                field->updateHeroDestinationPoint();
-//            }
-        }
+//    } else if (button == Qt::MidButton && cameraController->panMidMouseButton) {
+//        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGridNav) != NULL) {
+//            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
+//        }
+//    } else if (button == Qt::RightButton && !cameraController->panMidMouseButton) {
+//        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers) != NULL) {
+//            qDebug() << "GameWidget::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
+////            if ( panMidMouseButton || (prevMouseCellX == mouseX && prevMouseCellY == mouseY && prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
+////                Cell* cell = field->getCell(mouseX, mouseY);
+////                if (cell != NULL) {
+////                    if(cell->isEmpty()) {
+////                        int randNumber = ( 124+(rand()%2) );
+////                        QPixmap pixmap = field->map->tileSets.getTileSet(0)->tiles[randNumber]->getPixmap();
+////                        cell->setTerrain(pixmap);
+////                    } else if (cell->isTerrain()) {
+////                        cell->removeTerrain();
+////                    } else {
+////                        qDebug() << "GameWidget::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
+////                    }
+////                }
+////                field->updateHeroDestinationPoint();
+////            }
+//        }
     }
 }
 
@@ -380,16 +375,19 @@ void GameWidget::mouseMoveEvent(QMouseEvent* event) {
     Qt::MouseButton button = event->button();
     cameraController->pan(mouseX, mouseY);
 
-//    qDebug() << "GameWidget::mouseMoveEvent(); -window- mouseX:" << mouseX << " mouseY:" << mouseY;
+//    qDebug() << "GameWidget::mouseMoveEvent(); -wind- mouseX:" << mouseX << " mouseY:" << mouseY;
     cameraController->unproject(mouseX, mouseY);
-//    qDebug() << "GameWidget::mouseMoveEvent(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY;
+//    qDebug() << "GameWidget::mouseMoveEvent(); -grph- mouseX:" << mouseX << " mouseY:" << mouseY;
     QPoint* cellCoord = cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid);
-    qDebug() << "GameWidget::mouseMoveEvent(); -- cellCoord:" << cellCoord;
+//    qDebug() << "GameWidget::mouseMoveEvent(); -- cellCoord:" << cellCoord;
     if ( cellCoord != NULL ) {
+//    if ( cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid) ) {
         if (gameField->getUnderConstruction() != NULL) {
             gameField->getUnderConstruction()->setEndCoors(cellCoord->x(), cellCoord->y());
+//            gameField->getUnderConstruction()->setEndCoors(mouseX, mouseY);
         }
-        qDebug() << "GameWidget::mouseMoveEvent(); -cell- cellCoord->x():" << cellCoord->x() << " cellCoord->y():" << cellCoord->y();
+//        qDebug() << "GameWidget::mouseMoveEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -cell- cellCoord->x():" << cellCoord->x() << " cellCoord->y():" << cellCoord->y();
     }
 //    if (gameInterface.pan(x, y, deltaX, deltaY)) {
 //        lastCircleTouched = true;

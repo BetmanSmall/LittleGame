@@ -94,8 +94,8 @@ public:
 //    void drawTowersByTowers(CameraController* cameraController);
     void drawGridNavs(CameraController *cameraController);
     void drawGridNavCell(CameraController *cameraController, int cellX, int cellY);
-    void drawGridNav(CameraController *cameraController);
-//    void drawPaths(CameraController *cameraController);
+//    void drawGridNav(CameraController *cameraController);
+    void drawRoutes(CameraController *cameraController);
 
     void drawTowersUnderConstruction(CameraController* cameraController);
     void drawTowerUnderConstruction(CameraController* cameraController, int buildX, int buildY, TemplateForTower* templateForTower, bool enoughGold);

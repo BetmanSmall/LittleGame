@@ -21,7 +21,7 @@ bool UnderConstruction::setStartCoors(int startX, int startY) {
 }
 
 bool UnderConstruction::setEndCoors(int endX, int endY) {
-    qDebug() << "UnderConstruction::setEndCoors(" << endX << "," << endY << ");";
+//    qDebug() << "UnderConstruction::setEndCoors(" << endX << "," << endY << ");";
     this->endX = endX;
     this->endY = endY;
 
