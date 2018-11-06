@@ -45,7 +45,7 @@ Unit::~Unit() {
 }
 
 void Unit::setAnimation(QString action) {
-    qDebug() << "Unit::setAnimation(); -- action_+:" << action + Direction::toString(direction);
+//    qDebug() << "Unit::setAnimation(); -- action_+:" << action + Direction::toString(direction);
 //    try {
         AnimatedTile* animatedTiledMapTile = templateForUnit->animations.value( action + Direction::toString(direction) );
         QVector<StaticTile*> staticTiledMapTiles = animatedTiledMapTile->getFrameTiles();
@@ -65,25 +65,25 @@ void Unit::setAnimation(QString action) {
 void Unit::correct_fVc(float &fVx, float &fVy, Direction::type direction, float sizeCellX) {
     this->direction = direction;
     if (direction == Direction::type::UP) {
-        fVy -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+        fVy += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
     } else if (direction == Direction::type::UP_RIGHT) {
-        fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
-        fVy -= (sizeCellX / 4 / speed) * (speed - stepsInTime);
-    } else if (direction = Direction::type::RIGHT) {
+        fVx -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+        fVy += ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
+    } else if (direction == Direction::type::RIGHT) {
         fVx -= (sizeCellX / speed) * (speed - stepsInTime);
     } else if (direction == Direction::type::DOWN_RIGHT) {
-        fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
-        fVy += (sizeCellX / 4 / speed) * (speed - stepsInTime);
-    } else if (direction = Direction::type::DOWN) {
-        fVy += (sizeCellX / 2 / speed) * (speed - stepsInTime);
-    } else if (direction = Direction::type::DOWN_LEFT) {
-        fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
-        fVy += (sizeCellX / 4 / speed) * (speed - stepsInTime);
-    } else if (direction = Direction::type::LEFT) {
+        fVx -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+        fVy -= ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
+    } else if (direction == Direction::type::DOWN) {
+        fVy -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+    } else if (direction == Direction::type::DOWN_LEFT) {
+        fVx += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+        fVy -= ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
+    } else if (direction == Direction::type::LEFT) {
         fVx += (sizeCellX / speed) * (speed - stepsInTime);
-    } else if (direction = Direction::type::UP_LEFT) {
-        fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
-        fVy -= (sizeCellX / 4 / speed) * (speed - stepsInTime);
+    } else if (direction == Direction::type::UP_LEFT) {
+        fVx += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+        fVy += ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
     }
 }
 
@@ -110,72 +110,25 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
         float fVx = 0, fVy = 0;
         Direction::type oldDirection = direction;
         int isDrawableUnits = cameraController->isDrawableUnits;
-        if(isDrawableUnits == 4 || isDrawableUnits == 5) {
-            fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
-            fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY)) + halfSizeCellY;
-            if (newX < oldX && newY > oldY) {
-                direction = Direction::type::UP;
-                fVy -= (sizeCellY / speed) * (speed - stepsInTime);
-            } else if (newX < oldX && newY == oldY) {
-                direction = Direction::type::UP_RIGHT;
-                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
-            } else if (newX < oldX && newY < oldY) {
-                direction = Direction::type::RIGHT;
-                fVx -= (sizeCellX / speed) * (speed - stepsInTime);
-            } else if (newX == oldX && newY < oldY) {
-                direction = Direction::type::DOWN_RIGHT;
-                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
-            } else if (newX > oldX && newY < oldY) {
-                direction = Direction::type::DOWN;
-                fVy += (sizeCellY / speed) * (speed - stepsInTime);
-            } else if (newX > oldX && newY == oldY) {
-                direction = Direction::type::DOWN_LEFT;
-                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
-            } else if (newX > oldX && newY > oldY) {
-                direction = Direction::type::LEFT;
-                fVx += (sizeCellX / speed) * (speed - stepsInTime);
-            } else if (newX == oldX && newY > oldY) {
-                direction = Direction::type::UP_LEFT;
-                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
-            }
-//            currentPoint.set(fVx, fVy);
-            circle4->set(fVx, fVy, 16.0);
-        }
         if(isDrawableUnits == 3 || isDrawableUnits == 5) {
             fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
             fVy = ( (halfSizeCellY * newY) + (newX * halfSizeCellY)) + halfSizeCellY*2;
-            if (newX < oldX && newY > oldY) {
-                direction = Direction::type::UP;
-                fVy -= (sizeCellY / speed) * (speed - stepsInTime);
-            } else if (newX > oldX && newY == oldY) {
-                direction = Direction::type::UP_RIGHT;
-                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
-            } else if (newX > oldX && newY < oldY) {
-                direction = Direction::type::RIGHT;
-                fVx -= (sizeCellX / speed) * (speed - stepsInTime);
+            if (newX < oldX && newY < oldY) {
+                correct_fVc(fVx, fVy, Direction::type::UP, sizeCellX);
             } else if (newX == oldX && newY < oldY) {
-                direction = Direction::type::DOWN_RIGHT;
-                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
-            } else if (newX < oldX && newY < oldY) {
-                direction = Direction::type::DOWN;
-                fVy += (sizeCellY / speed) * (speed - stepsInTime);
-            } else if (newX < oldX && newY == oldY) {
-                direction = Direction::type::DOWN_LEFT;
-                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
-            } else if (newX < oldX && newY > oldY) {
-                direction = Direction::type::LEFT;
-                fVx += (sizeCellX / speed) * (speed - stepsInTime);
+                correct_fVc(fVx, fVy, Direction::type::UP_RIGHT, sizeCellX);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVx, fVy, Direction::type::RIGHT, sizeCellX);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVx, fVy, Direction::type::DOWN_RIGHT, sizeCellX);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVx, fVy, Direction::type::DOWN, sizeCellX);
             } else if (newX == oldX && newY > oldY) {
-                direction = Direction::type::UP_LEFT;
-                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
-                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+                correct_fVc(fVx, fVy, Direction::type::DOWN_LEFT, sizeCellX);
+            } else if (newX < oldX && newY > oldY) {
+                correct_fVc(fVx, fVy, Direction::type::LEFT, sizeCellX);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVx, fVy, Direction::type::UP_LEFT, sizeCellX);
             }
 //            currentPoint.set(fVx, fVy);
             circle3->set(fVx, fVy, 16.0);
@@ -249,6 +202,41 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
             }
 //            currentPoint.set(fVx, fVy);
             circle1->set(fVx, fVy, 16.0);
+        }
+        if(isDrawableUnits == 4 || isDrawableUnits == 5) {
+            fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
+            fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY)) + halfSizeCellY;
+            if (newX < oldX && newY > oldY) {
+                direction = Direction::type::UP;
+                fVy -= (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY == oldY) {
+                direction = Direction::type::UP_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX < oldX && newY < oldY) {
+                direction = Direction::type::RIGHT;
+                fVx -= (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY < oldY) {
+                direction = Direction::type::DOWN_RIGHT;
+                fVx -= (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY < oldY) {
+                direction = Direction::type::DOWN;
+                fVy += (sizeCellY / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY == oldY) {
+                direction = Direction::type::DOWN_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy += (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            } else if (newX > oldX && newY > oldY) {
+                direction = Direction::type::LEFT;
+                fVx += (sizeCellX / speed) * (speed - stepsInTime);
+            } else if (newX == oldX && newY > oldY) {
+                direction = Direction::type::UP_LEFT;
+                fVx += (sizeCellX / 2 / speed) * (speed - stepsInTime);
+                fVy -= (sizeCellY / 2 / speed) * (speed - stepsInTime);
+            }
+//            currentPoint.set(fVx, fVy);
+            circle4->set(fVx, fVy, 16.0);
         }
 
 //        backStepPoint = currentPoint;

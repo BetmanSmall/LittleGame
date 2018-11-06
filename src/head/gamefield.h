@@ -90,6 +90,7 @@ public:
     void drawForeGroundCell(CameraController* cameraController, int cellX, int cellY);
 
     void drawUnit(CameraController* cameraController, Unit* unit);
+    void drawTower(CameraController* cameraController, Tower* tower);
 //    void drawUnits(CameraController* cameraController);
 //    void drawTowersByTowers(CameraController* cameraController);
     void drawGridNavs(CameraController *cameraController);
@@ -115,24 +116,30 @@ public:
 //    bool isSetExitPoint(int x = -1, int y = -1);
     void stepAllUnits(float deltaTime, CameraController* cameraController);
 //    int stepOneUnit(Unit* unit);
-    //bool GameField::towersAttack(int deltaTime);
-    Unit* getUnit(int x, int y);
-    std::vector<Unit *> getUnits(int x, int y);
+    //bool towersAttack(int deltaTime);
+//    Unit* getUnit(int x, int y);
+//    std::vector<Unit *> getUnits(int x, int y);
 //    Unit* getUnitWithLowHP(int x, int y);
-    std::vector<Tower*> getAllTowers();
-    int containUnit(int x, int y, Unit* unit = NULL);
-    bool setTower(int x, int y, TemplateForTower* defTower);
+//    std::vector<Tower*> getAllTowers();
+//    int containUnit(int x, int y, Unit* unit = NULL);
+//    bool setTower(int x, int y, TemplateForTower* defTower);
 
     void spawnHeroInSpawnPoint();
     void spawnCompUnitToRandomExit(int x, int y);
     void createUnit(int x, int y, int x2, int y2, int player = 0);
     void createUnit(QPoint spawnPoint, QPoint exitPoint, TemplateForUnit* templateForUnit, int player = 0);
-    bool deleteTower(int x = -1, int y = -1);
 
     UnderConstruction* createdRandomUnderConstruction();
     UnderConstruction* createdUnderConstruction(TemplateForTower *templateForTower);
     bool cancelUnderConstruction();
     UnderConstruction* getUnderConstruction();
+    void buildTowersWithUnderConstruction(int x, int y);
+
+//    void towerActions(int x, int y);
+    bool createTower(int buildX, int buildY, TemplateForTower *templateForTower, int player);
+    void removeLastTower();
+    void removeTower(int touchX, int touchY);
+    bool deleteTower(int x = -1, int y = -1);
 };
 
 #endif // FIELD_H

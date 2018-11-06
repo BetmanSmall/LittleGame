@@ -6,25 +6,25 @@
 
 #include "src/head/bullet.h"
 #include "src/head/templatefortower.h"
-//#include "circle.h"
+#include "circle.h"
 
 class Tower
 {
 public:
-//    QPoint position;
-    int currX, currY;
-    int elapsedReloadTime;
+    QPoint* position;
+//    int currX, currY;
+    float elapsedReloadTime;
     TemplateForTower* templateForTower;
 
-//    int player;
+    int player;
 //    int capacity;
     std::vector<Bullet*> bullets;
-//    Circle* radiusDetectionСircle;
+    Circle* radiusDetectionCircle;
 //    Circle* radiusFlyShellСircle;
 //    int radius;
 //    QPixmap pixmap;
 
-    Tower(int x, int y, TemplateForTower* templateForTower);
+    Tower(QPoint* position, TemplateForTower* templateForTower, int player);
     bool recharge(float delta);
     void createBullets(int difficultyLevel);
 };

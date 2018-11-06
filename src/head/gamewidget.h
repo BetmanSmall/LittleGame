@@ -2,6 +2,7 @@
 #define GAMEWIDGET_H
 
 #include <time.h>
+#include <QOpenGLWidget>
 #include <QDesktopWidget>
 #include <QDebug>
 #include <QWidget>
@@ -30,7 +31,7 @@ namespace Ui {
     class GameWidget;
 }
 
-class GameWidget : public QWidget {
+class GameWidget : public QOpenGLWidget {
     Q_OBJECT
 
 #ifdef QT_DEBUG
@@ -63,7 +64,7 @@ public:
     ~GameWidget();
 
 //    void timerEvent(QTimerEvent* event);
-    void paintEvent(QPaintEvent* event);
+    void paintEvent(QPaintEvent* event)/* Q_DECL_OVERRIDE*/;
 //    bool whichCell(int &mouseX, int &mouseY);
 
 //    void startTimer_UnitsMoveAndTowerAttack();

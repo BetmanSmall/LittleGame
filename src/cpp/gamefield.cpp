@@ -49,24 +49,26 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
 //            }
 //        }
 //    }
-//    for (int k = 0; k < towersCount; k++) {
-//        int randomX = rand()%mapSizeX;
-//        int randomY = rand()%mapSizeY;
-//        field.setTower(randomX, randomY, field.faction->getFirstTowers()[0]);
-//    }
+    qDebug() << "GameField::GameField(); -- towersCount:" << towersCount;
+    for (int k = 0; k < towersCount; k++) {
+        int randomX = rand()%map->width;
+        int randomY = rand()%map->height;
+        createTower(randomX, randomY, factionsManager->getRandomTemplateForTowerFromAllFaction(), 0); // player0 = comp
+        qDebug() << "GameField::GameField(); -- randomX:" << randomX << " randomY:" << randomY;
+    }
     spawnHeroInSpawnPoint();
 
     qDebug() << "GameField::GameField(); -- enemyCount:" << enemyCount;
-//    int randomEnemyCount = enemyCount;
-//    for (int k = 0; k < randomEnemyCount; k++) {
-//        int randomX = rand()%map->width;
-//        int randomY = rand()%map->height;
-//        if (getCell(randomX, randomY)->isEmpty()) {
-//            spawnCompUnitToRandomExit(randomX, randomY);
-//        } else {
-//            k--;
-//        }
-//    }
+    int randomEnemyCount = enemyCount;
+    for (int k = 0; k < randomEnemyCount; k++) {
+        int randomX = rand()%map->width;
+        int randomY = rand()%map->height;
+        if (getCell(randomX, randomY)->isEmpty()) {
+            spawnCompUnitToRandomExit(randomX, randomY);
+        } else {
+            k--;
+        }
+    }
     qDebug() << "GameField::GameField(); -- map:" << map;
     // camera 1
 //    mainCoorMapX = 0, mainCoorMapY = 0;
@@ -119,7 +121,8 @@ void GameField::createField() {
                                     } else if (layerName == "ground" || layerName == "entity") {
                                         cell->setTerrain(tile->getPixmap());
                                     } else if (layerName == "towers") {
-//                                        this->setTower(x, y, factionsManager->getRandomTemplateForTowerFromAllFaction());
+                                        cell->removeTerrain(true);
+                                        this->createTower(x, y, factionsManager->getRandomTemplateForTowerFromAllFaction(), 0);
                                     } else {
                                         cell->foregroundTiles.push_back(tile->getPixmap());
                                     }
@@ -169,7 +172,7 @@ void GameField::createField() {
     pathFinder = new AStar::PathFinder();
     pathFinder->setWorldSize({map->width, map->height});
     pathFinder->setHeuristic(AStar::Heuristic::euclidean);
-    pathFinder->setDiagonalMovement(false);
+    pathFinder->setDiagonalMovement(true);
     updatePathFinderWalls();
     qDebug() << "GameField::createField(); -- pathFinder:" << pathFinder;
 }
@@ -672,10 +675,10 @@ void GameField::drawGroundCellWithUnitsAndTower(CameraController* cameraControll
     foreach (Unit* unit, cell->getUnits()) {
         drawUnit(cameraController, unit);
     }
-//    Tower tower = field[cellX][cellY].getTower();
-//    if(tower != null) {
-//        drawTower(tower, painter);
-//    }
+    Tower* tower = cell->getTower();
+    if(tower != NULL) {
+        drawTower(cameraController, tower);
+    }
 //    for (QPixmap textureRegion : cell->foregroundTiles) {
 //        if(isDrawableForeground == 1 || isDrawableForeground == 5) {
 //            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
@@ -888,6 +891,24 @@ void GameField::drawUnit(CameraController* cameraController, Unit* unit) {
     }
 //    qDebug() << "GameField::drawUnit(); -- fVx:" << fVx << " fVy:" << fVy;
 //        drawUnitBar(shapeRenderer, unit, currentFrame, fVx, fVy);
+}
+
+void GameField::drawTower(CameraController* cameraController, Tower* tower) {
+//    qDebug() << "GameField::drawTower(); -- tower:" << tower;
+    QPoint* cellPosition = tower->position;
+    int towerSize = tower->templateForTower->size;
+    Cell* cell = getCell(cellPosition->x(), cellPosition->y());
+    QPointF* towerPos = cell->getGraphicCoordinates(cameraController->isDrawableTowers);
+    QPixmap currentFrame = tower->templateForTower->idleTile->getPixmap();
+    if(cameraController->isDrawableTowers == 5) {
+        for(int m = 1; m < cameraController->isDrawableTowers; m++) {
+            towerPos = cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, m);
+            cameraController->painter->drawPixmap(cameraController->cameraX+towerPos->x(), cameraController->cameraY+towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, currentFrame);
+        }
+    } else if(cameraController->isDrawableTowers != 0) {
+        towerPos = cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, cameraController->isDrawableTowers);
+        cameraController->painter->drawPixmap(cameraController->cameraX+towerPos->x(), cameraController->cameraY+towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, currentFrame);
+    }
 }
 
 //void GameField::drawUnits(QPainter* painter) {
@@ -1572,7 +1593,21 @@ void GameField::stepAllUnits(float deltaTime, CameraController* cameraController
                 }
             } else {
                 if (unit->player == 1) {
-//                    qDebug() << "GameField::stepAllUnits(); -- Hero Unit destination lastPoint!";
+                    if (oldPosition.equals({cellExitHero->cellX, cellExitHero->cellY})) {
+                        qDebug() << "GameField::stepAllUnits(); -- Hero Unit destination lastPoint! unit:" << unit->toString().toStdString().c_str();
+                    }
+                } else if (unit->player == 0) {
+//                    Cell* cell = getCell(oldPosition.x, oldPosition.y);
+//                    if (cell->isTerrain()) {
+//                        cell->removeTerrain(true);
+//                        updatePathFinderWalls();
+//                    }
+                    if (unit->route.empty()) {
+                        int randomX = rand()%map->width;
+                        int randomY = rand()%map->height;
+                        unit->route = pathFinder->findPath({oldPosition.x, oldPosition.y}, {randomX, randomY});
+//                        qDebug() << "GameField::stepAllUnits(); -reroute- randomX:" << randomX << " randomY:" << randomY << " unit:" << unit->toString().toStdString().c_str();
+                    }
                 } else {
                     getCell(oldPosition.x, oldPosition.y)->removeUnit(unit);
                     if(unit->player == 0) {
@@ -1796,43 +1831,43 @@ void GameField::stepAllUnits(float deltaTime, CameraController* cameraController
 //    return NULL;
 //}
 
-int GameField::containUnit(int x, int y, Unit *hero) {
-    if(!field[map->width*y + x].units.empty()) {
-        int size = field[map->width*y + x].units.size();
-        if(hero == NULL) {
-            return size;
-        } else {
-            for(int k = 0; k < size; k++) {
-                if(field[map->width*y + x].units[k] == hero) {
-                    return k+1;
-                }
-            }
-        }
-    }
-    return 0;
-}
+//int GameField::containUnit(int x, int y, Unit *hero) {
+//    if(!field[map->width*y + x].units.empty()) {
+//        int size = field[map->width*y + x].units.size();
+//        if(hero == NULL) {
+//            return size;
+//        } else {
+//            for(int k = 0; k < size; k++) {
+//                if(field[map->width*y + x].units[k] == hero) {
+//                    return k+1;
+//                }
+//            }
+//        }
+//    }
+//    return 0;
+//}
 
-bool GameField::setTower(int x, int y, TemplateForTower* defTower) {
-    int size = defTower->size;
-    for(int tmpX = 0; tmpX < size; tmpX++)
-        for(int tmpY = 0; tmpY < size; tmpY++)
-            if(!this->getCell(tmpX+x, tmpY+y)->isEmpty())
-                return false;
+//bool GameField::setTower(int x, int y, TemplateForTower* defTower) {
+//    int size = defTower->size;
+//    for(int tmpX = 0; tmpX < size; tmpX++)
+//        for(int tmpY = 0; tmpY < size; tmpY++)
+//            if(!this->getCell(tmpX+x, tmpY+y)->isEmpty())
+//                return false;
 
-    Tower* tower = towersManager->createTower(x, y, defTower);
-    if(tower != NULL) {
-        for(int tmpX = 0; tmpX < size; tmpX++) {
-            for(int tmpY = 0; tmpY < size; tmpY++) {
-                Cell* cell = getCell(tmpX+x, tmpY+y);
-                if (cell->isEmpty() && !cell->spawn && !cell->exit) {
-                    cell->setTower(tower);
-                }
-            }
-        }
-        return true;
-    }
-    return false;
-}
+//    Tower* tower = towersManager->createTower(x, y, defTower);
+//    if(tower != NULL) {
+//        for(int tmpX = 0; tmpX < size; tmpX++) {
+//            for(int tmpY = 0; tmpY < size; tmpY++) {
+//                Cell* cell = getCell(tmpX+x, tmpY+y);
+//                if (cell->isEmpty() && !cell->spawn && !cell->exit) {
+//                    cell->setTower(tower);
+//                }
+//            }
+//        }
+//        return true;
+//    }
+//    return false;
+//}
 
 void GameField::spawnHeroInSpawnPoint() {
     qDebug() << "GameField::spawnHeroInSpawnPoint(); -- ";
@@ -1893,23 +1928,6 @@ void GameField::createUnit(QPoint spawnPoint, QPoint exitPoint, TemplateForUnit*
     }
 }
 
-bool GameField::deleteTower(int x, int y) {
-    Tower* tower = towersManager->getTower(x, y);
-    if (tower != NULL) {
-        int towerX = tower->currX;
-        int towerY = tower->currY;
-        int size = tower->templateForTower->size;
-        towersManager->deleteTower(towerX, towerY);
-        for (int tmpX = 0; tmpX < size; tmpX++) {
-            for (int tmpY = 0; tmpY < size; tmpY++) {
-                this->getCell(tmpX+towerX, tmpY+towerY)->removeTower();
-            }
-        }
-        return true;
-    }
-    return false;
-}
-
 UnderConstruction* GameField::createdRandomUnderConstruction() {
     return createdUnderConstruction(factionsManager->getRandomTemplateForTowerFromAllFaction());
 }
@@ -1934,4 +1952,144 @@ bool GameField::cancelUnderConstruction() {
 
 UnderConstruction* GameField::getUnderConstruction() {
     return underConstruction;
+}
+
+void GameField::buildTowersWithUnderConstruction(int x, int y) {
+    if (underConstruction != NULL) {
+        underConstruction->setEndCoors(x, y);
+        createTower(underConstruction->startX, underConstruction->startY, underConstruction->templateForTower, 1);
+        for (int k = 0; k < underConstruction->coorsX.size(); k++) {
+//            for (int k = underConstruction->coorsX.size()-1; k >= 0; k--) {
+                createTower(underConstruction->coorsX.at(k), underConstruction->coorsY.at(k), underConstruction->templateForTower, 1);
+//            }
+        }
+        underConstruction->clearStartCoors();
+        updatePathFinderWalls(); // rerouteForAllUnits();
+    }
+}
+
+//void GameField::towerActions(int x, int y) {
+//    if (field[x][y].isEmpty()) {
+//        createTower(x, y, factionsManager.getRandomTemplateForTowerFromAllFaction(), 1);
+//        rerouteForAllUnits();
+//    } else if (field[x][y].getTower() != null) {
+//        removeTower(x, y);
+//    }
+//}
+
+bool GameField::createTower(int buildX, int buildY, TemplateForTower* templateForTower, int player) {
+    if (gamerGold >= templateForTower->cost) {
+        int towerSize = templateForTower->size;
+        int startX = 0, startY = 0, finishX = 0, finishY = 0;
+        if (towerSize != 1) {
+            // Нижняя карта
+            if (towerSize % 2 == 0) {
+                startX = -(towerSize / 2);
+                startY = -(towerSize / 2);
+                finishX = (towerSize / 2)-1;
+                finishY = (towerSize / 2)-1;
+            } else {
+                startX = -(towerSize / 2);
+                startY = -(towerSize / 2);
+                finishX = (towerSize / 2);
+                finishY = (towerSize / 2);
+            }
+            // Правая карта
+//                if (towerSize % 2 == 0) {
+//                    startX = -(towerSize / 2);
+//                    startY = -((towerSize / 2) - 1);
+//                    finishX = ((towerSize / 2) - 1);
+//                    finishY = (towerSize / 2);
+//                } else {
+//                    startX = -(towerSize / 2);
+//                    startY = -(towerSize / 2);
+//                    finishX = (towerSize / 2);
+//                    finishY = (towerSize / 2);
+//                }
+        }
+        for (int tmpX = startX; tmpX <= finishX; tmpX++)
+            for (int tmpY = startY; tmpY <= finishY; tmpY++)
+                if (!getCell(buildX + tmpX, buildY + tmpY)->isEmpty())
+                    return false;
+
+        // GOVNO CODE
+        QPoint* position = new QPoint(buildX, buildY);
+        Tower* tower = towersManager->createTower(position, templateForTower, player);
+//        qDebug() << "GameField::createTower(); -- templateForTower.towerAttackType:" << templateForTower->towerAttackType;
+//        if (templateForTower.towerAttackType != TowerAttackType.Pit) {
+            for (int tmpX = startX; tmpX <= finishX; tmpX++) {
+                for (int tmpY = startY; tmpY <= finishY; tmpY++) {
+                    getCell(buildX + tmpX, buildY + tmpY)->setTower(tower);
+//                    pathFinder.nodeMatrix[buildY + tmpY][buildX + tmpX].setKey('T');
+                }
+            }
+//        }
+        // GOVNO CODE
+
+//            rerouteForAllUnits();
+        gamerGold -= templateForTower->cost;
+        qDebug() << "GameField::createTower(); -- Now gamerGold:" << gamerGold;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void GameField::removeLastTower() {
+//        if(towersManager.amountTowers() > 0) {
+        Tower* tower = towersManager->getTower();//towersManager->towers.size() - 1);
+        QPoint* pos = tower->position;
+        removeTower(pos->x(), pos->y());
+//        }
+}
+
+void GameField::removeTower(int touchX, int touchY) {
+    Tower* tower = getCell(touchX, touchY)->getTower();
+    if (tower != NULL) {
+        int x = tower->position->x();
+        int y = tower->position->y();
+        int towerSize = tower->templateForTower->size;
+        int startX = 0, startY = 0, finishX = 0, finishY = 0;
+        if (towerSize != 1) {
+            if (towerSize % 2 == 0) {
+                startX = -(towerSize / 2);
+                startY = -(towerSize / 2);
+                finishX = (towerSize / 2)-1;
+                finishY = (towerSize / 2)-1;
+            } else {
+                startX = -(towerSize / 2);
+                startY = -(towerSize / 2);
+                finishX = towerSize / 2;
+                finishY = towerSize / 2;
+            }
+        }
+
+        for (int tmpX = startX; tmpX <= finishX; tmpX++) {
+            for (int tmpY = startY; tmpY <= finishY; tmpY++) {
+                getCell(x + tmpX, y + tmpY)->removeTower();
+//                pathFinder.getNodeMatrix()[y + tmpY][x + tmpX].setKey('.');
+            }
+        }
+        towersManager->removeTower(tower);
+//        rerouteForAllUnits();
+        updatePathFinderWalls();
+        gamerGold += tower->templateForTower->cost;//*0.5;
+    }
+}
+
+bool GameField::deleteTower(int x, int y) {
+    Tower* tower = towersManager->getTower(x, y);
+    if (tower != NULL) {
+        int towerX = tower->position->x();
+        int towerY = tower->position->y();
+        int size = tower->templateForTower->size;
+        towersManager->deleteTower(towerX, towerY);
+        for (int tmpX = 0; tmpX < size; tmpX++) {
+            for (int tmpY = 0; tmpY < size; tmpY++) {
+                this->getCell(tmpX+towerX, tmpY+towerY)->removeTower();
+            }
+        }
+        return true;
+    }
+    return false;
 }

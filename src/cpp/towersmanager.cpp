@@ -10,8 +10,8 @@ TowersManager::~TowersManager() {
     towers.clear();
 }
 
-Tower* TowersManager::createTower(int x, int y, TemplateForTower* templateForTower) {
-    Tower* tower = new Tower(x, y, templateForTower);
+Tower* TowersManager::createTower(QPoint *position, TemplateForTower* templateForTower, int player) {
+    Tower* tower = new Tower(position, templateForTower, player);
     towers.push_back(tower);
     return tower;
 }
@@ -29,15 +29,15 @@ bool TowersManager::deleteTower(int &x, int &y) {
     if (x == -1 && y == -1) {
         if (!towers.empty()) {
             Tower* tower = towers.back();
-            x = tower->currX;
-            y = tower->currY;
+            x = tower->position->x();
+            y = tower->position->y();
             towers.pop_back();
 //            towers.erase(towers.end());
             return true;
         }
     } else {
         foreach (Tower* tower, towers) {
-            if (tower->currX == x && tower->currY == y) {
+            if (tower->position->x() == x && tower->position->y() == y) {
                 return removeTower(tower);
             }
         }
@@ -54,7 +54,7 @@ Tower* TowersManager::getTower(int x, int y) {
         return towers.back();
     } else {
         foreach (Tower* tower, towers) {
-            if (tower->currX == x && tower->currY == y) {
+            if (tower->position->x() == x && tower->position->y() == y) {
                 return tower;
             }
         }

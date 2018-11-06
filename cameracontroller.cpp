@@ -173,7 +173,7 @@ bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {
 //    qDebug() << "CameraController::whichCell(); -grph- mouseX:" << mouseX << " mouseY:" << mouseY;
     float gameX = (mouseX / halfSizeCellX + mouseY / halfSizeCellY) / 2;
     float gameY = (mouseY / halfSizeCellY -(mouseX / halfSizeCellX))/ 2;
-    qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " map:" << map << " -new- gameX:" << gameX << " gameY:" << gameY;
+//    qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " map:" << map << " -new- gameX:" << gameX << " gameY:" << gameY;
     int cellX = qAbs((int) gameX);
     int cellY = qAbs((int) gameY);
     if(gameY < 0) {
@@ -184,7 +184,7 @@ bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {
     // если это убирать то нужно будет править Cell::setGraphicCoordinates() для 3 и 4 карты-java // c++ ?? or ??
     mouseX = cellX;
     mouseY = cellY;
-    qDebug() << "CameraController::whichCell(); -cell- cellX:" << cellX << " cellY:" << cellY;
+//    qDebug() << "CameraController::whichCell(); -cell- cellX:" << cellX << " cellY:" << cellY;
     if (cellX < mapWidth && cellY < mapHeight) {
         if (map == 5) {
             return true;

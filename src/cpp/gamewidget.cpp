@@ -3,7 +3,7 @@
 GameWidget::GameWidget(QString mapFile, FactionsManager* factionsManager,
                        int enemyCount, int difficultyLevel, int towersCount,
                        QWidget *parent):
-    QWidget(parent),
+    QOpenGLWidget(parent),
     ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
@@ -17,6 +17,8 @@ GameWidget::GameWidget(QString mapFile, FactionsManager* factionsManager,
     gameTimer->start(0);
 
     setMouseTracking(true);
+//    setFixedSize(200, 200);
+//    setAutoFillBackground(false);
 //    ui->loadMaps->setHidden(true);
 //    ui->clearMap->setHidden(true);
 //    ui->goUnits->setHidden(true);
@@ -82,6 +84,11 @@ void GameWidget::paintEvent(QPaintEvent* event) {
     this->fps = 1000 / elapsedTime;
 
     cameraController->painter->begin(this);
+//    cameraController->painter->setRenderHint(QPainter::Antialiasing);
+    cameraController->painter->fillRect(event->rect(), QColor(0, 0, 0));
+//    cameraController->painter->translate(100, 100);
+//    cameraController->painter->rotate(fps);
+
     gameField->render(elapsedTime/1000, cameraController);
 //    cameraController->update(elapsedTime);
     cameraController->painter->setPen(QColor(255, 0, 0));
@@ -110,8 +117,7 @@ void GameWidget::paintEvent(QPaintEvent* event) {
     cameraController->painter->drawText(10, 200, "cameraController->isDrawableGridNav:" + QString::number(cameraController->isDrawableGridNav));
     cameraController->painter->drawText(10, 210, "cameraController->isDrawableRoutes:" + QString::number(cameraController->isDrawableRoutes));
     if (gameField->getUnderConstruction() != NULL) {
-        cameraController->painter->drawText(10, 230, "gameField->underConstruction->endX:" + QString::number(gameField->underConstruction->endX));
-        cameraController->painter->drawText(10, 240, "gameField->underConstruction->endY:" + QString::number(gameField->underConstruction->endY));
+        cameraController->painter->drawText(10, 230, "gameField->underConstruction->endX:" + QString::number(gameField->underConstruction->endX) + " endY:" + QString::number(gameField->underConstruction->endY));
     }
     cameraController->painter->end();
 }
@@ -258,12 +264,23 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
         gameField->createdRandomUnderConstruction();
     } else if(key == Qt::Key_Escape || key == Qt::Key_N) {
         gameField->cancelUnderConstruction();
-    } else if(key == Qt::Key_Space || key == Qt::Key_Escape) {
-//        gamePause = !gamePause;
-//        qDebug() << "GameWidget::keyPressEvent(); -- gamePause: " << gamePause;
+        gameField->gamePaused = !gameField->gamePaused;
+//    } else if(key == Qt::Key_Space) {
+//        gameInterface.addActionToHistory("-- gameField->gamePaused:" + gameField->gamePaused);
+        qDebug() << "GameWidget::keyPressEvent(); -- gameField->gamePaused: " << gameField->gamePaused;
     } else if (key == Qt::Key_Enter) {
         signal_closeWidget();
         return;
+    } else if (key == Qt::Key_Plus) {
+        qDebug() << "GameScreen::inputHandler(); -- isKeyJustPressed(Key_Plus)";
+        gameField->gameSpeed += 0.1;
+        //        gameInterface.addActionToHistory("-- gameField->gameSpeed:" + gameField->gameSpeed);
+        qDebug() << "GameScreen::inputHandler(); -- gameField->gameSpeed:" << gameField->gameSpeed;
+    } else if (key == Qt::Key_Minus) {
+        qDebug() << "GameScreen::inputHandler(); -- isKeyJustPressed(Key_Minus)";
+        gameField->gameSpeed -= 0.1;
+        //        gameInterface.addActionToHistory("-- gameField->gameSpeed:" + gameField->gameSpeed);
+        qDebug() << "GameScreen::inputHandler(); -- gameField->gameSpeed:" << gameField->gameSpeed;
     } else if (key == Qt::Key_A) {
         qDebug() << "GameScreen::inputHandler(); -- isKeyJustPressed(Input.Keys.A)";
         gameField->turnLeft();
@@ -301,8 +318,6 @@ void GameWidget::keyPressEvent(QKeyEvent * event) {
 //            mainCoorMapY -= pixelsShiftMap;
 //        }
     }
-//    field->setMainCoorMap(mainCoorMapX, mainCoorMapY);
-//    cameraController->x
 }
 
 void GameWidget::mousePressEvent(QMouseEvent* event) {
@@ -314,6 +329,13 @@ void GameWidget::mousePressEvent(QMouseEvent* event) {
           (cameraController->panMidMouseButton && button == Qt::MidButton) ) {
         cameraController->touchDown(mouseX, mouseY, 0, button);
         setCursor(Qt::ClosedHandCursor);
+    }
+    if (button == Qt::LeftButton) {
+        if (gameField->getUnderConstruction() != NULL) {
+            if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers)) {
+                gameField->getUnderConstruction()->setStartCoors(mouseX, mouseY);
+            }
+        }
     }
 //    if(whichCell(mouseX,mouseY)) {
 //        prevMouseX = event->x();
@@ -336,11 +358,17 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
         setCursor(Qt::ArrowCursor);
     }
     if (button == Qt::LeftButton) {
-        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits)) {
-            if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
-                gameField->updateHeroDestinationPoint(mouseX, mouseY);
+        if (gameField->getUnderConstruction() != NULL) {
+            if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers)) {
+                gameField->buildTowersWithUnderConstruction(mouseX, mouseY);
             }
-            qDebug() << "GameWidget::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
+        } else {
+            if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits)) {
+                if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
+                    gameField->updateHeroDestinationPoint(mouseX, mouseY);
+                }
+                qDebug() << "GameWidget::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
+            }
         }
 //    } else if (button == Qt::MidButton && cameraController->panMidMouseButton) {
 //        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGridNav) != NULL) {
@@ -379,7 +407,7 @@ void GameWidget::mouseMoveEvent(QMouseEvent* event) {
         if (gameField->getUnderConstruction() != NULL) {
             gameField->getUnderConstruction()->setEndCoors(mouseX, mouseY);
         }
-        qDebug() << "GameWidget::mouseMoveEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
+//        qDebug() << "GameWidget::mouseMoveEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
     }
 //    if (gameInterface.pan(x, y, deltaX, deltaY)) {
 //        lastCircleTouched = true;
@@ -485,6 +513,7 @@ void GameWidget::resizeEvent(QResizeEvent* event) {
     qDebug() << "GameWidget::resizeEvent(); -- newSize" << newSize;
     cameraController->viewportWidth = newSize.width();
     cameraController->viewportHeight = newSize.height();
+//    cameraController->painter->w
 //    cameraController->update();
 }
 

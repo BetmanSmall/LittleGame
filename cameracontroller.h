@@ -11,16 +11,16 @@ public:
     float viewportWidth = 0;
     float viewportHeight = 0;
     int mapWidth, mapHeight;
-    int cameraX = 600, cameraY = 800;
+    int cameraX = 800, cameraY = 0;
 
-    int isDrawableGrid = 1;
-    int isDrawableUnits = 1;
-    int isDrawableTowers = 1;
-    int isDrawableBackground = 1;
-    int isDrawableGround = 1;
-    int isDrawableForeground = 1;
+    int isDrawableGrid = 3;
+    int isDrawableUnits = 3;
+    int isDrawableTowers = 3;
+    int isDrawableBackground = 3;
+    int isDrawableGround = 3;
+    int isDrawableForeground = 3;
     int isDrawableGridNav = 0;
-    int isDrawableRoutes = 1;
+    int isDrawableRoutes = 3;
     int drawOrder = 8;
 
     bool flinging = false;

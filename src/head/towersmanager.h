@@ -16,7 +16,7 @@ public: // we are friendly to all!
 public:
     TowersManager(int difficultyLevel);
     ~TowersManager();
-    Tower* createTower(int x, int y, TemplateForTower* templateForTower);
+    Tower* createTower(QPoint* position, TemplateForTower* templateForTower, int player);
     bool removeTower(Tower* tower);
     bool deleteTower(int &x, int &y);
     Tower* getTower(int number);
