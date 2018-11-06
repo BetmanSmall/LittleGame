@@ -367,7 +367,7 @@ void GameWidget::mouseReleaseEvent(QMouseEvent* event) {
                 if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
                     gameField->updateHeroDestinationPoint(mouseX, mouseY);
                 }
-                qDebug() << "GameWidget::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
+                qDebug() << "GameWidget::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY << " isEmpty:" << gameField->getCell(mouseX, mouseY)->isEmpty();
             }
         }
 //    } else if (button == Qt::MidButton && cameraController->panMidMouseButton) {

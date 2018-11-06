@@ -26,29 +26,29 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
 
     createField();
 //    int terrainType = rand()%2;
-//    if (mapFile.contains("randomMap")) {
-//        for (int x = 0; x < map->width; x++) {
-//            for (int y = 0; y < map->height; y++) {
-//                if( (rand()%100) < 30 ) {
-//                    int randNumber = ( 43+(rand()%4) );
-//                    QPixmap pixmap = map->getTileSets()->getTileSet(1)->getLocalTile(randNumber)->getPixmap();
-//                    getCell(x, y)->setTerrain(pixmap);
-//                }
-//            }
-//        }
-//    } else {
-//        for (int x = 0; x < map->width; x++) {
-//            for (int y = 0; y < map->height; y++) {
-//                if( (rand()%100) < 10 ) {
-//                    if (getCell(x, y)->isEmpty()) {
-//                        int randNumber = ( 125+(rand()%2) );
-//                        QPixmap pixmap = map->getTileSets()->getTileSet(0)->getLocalTile(randNumber)->getPixmap();
-//                        getCell(x, y)->setTerrain(pixmap);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    if (mapFile.contains("randomMap")) {
+        for (int x = 0; x < map->width; x++) {
+            for (int y = 0; y < map->height; y++) {
+                if( (rand()%100) < 30 ) {
+                    int randNumber = ( 43+(rand()%4) );
+                    QPixmap pixmap = map->getTileSets()->getTileSet(1)->getLocalTile(randNumber)->getPixmap();
+                    getCell(x, y)->setTerrain(pixmap);
+                }
+            }
+        }
+    } else {
+        for (int x = 0; x < map->width; x++) {
+            for (int y = 0; y < map->height; y++) {
+                if( (rand()%100) < 10 ) {
+                    if (getCell(x, y)->isEmpty()) {
+                        int randNumber = ( 125+(rand()%2) );
+                        QPixmap pixmap = map->getTileSets()->getTileSet(0)->getLocalTile(randNumber)->getPixmap();
+                        getCell(x, y)->setTerrain(pixmap);
+                    }
+                }
+            }
+        }
+    }
     qDebug() << "GameField::GameField(); -- towersCount:" << towersCount;
     for (int k = 0; k < towersCount; k++) {
         int randomX = rand()%map->width;
@@ -70,10 +70,7 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
         }
     }
     qDebug() << "GameField::GameField(); -- map:" << map;
-    // camera 1
-//    mainCoorMapX = 0, mainCoorMapY = 0;
-//    spaceWidget = 0; // fix this. 16 and launch
-    // camera 2
+
     timeOfGame = 0.0;
     gameSpeed = 1.0;
     gamePaused = false;
@@ -172,7 +169,7 @@ void GameField::createField() {
     pathFinder = new AStar::PathFinder();
     pathFinder->setWorldSize({map->width, map->height});
     pathFinder->setHeuristic(AStar::Heuristic::euclidean);
-    pathFinder->setDiagonalMovement(true);
+    pathFinder->setDiagonalMovement(false);
     updatePathFinderWalls();
     qDebug() << "GameField::createField(); -- pathFinder:" << pathFinder;
 }
@@ -868,25 +865,25 @@ void GameField::drawUnit(CameraController* cameraController, Unit* unit) {
     if(cameraController->isDrawableUnits == 1 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle1->x - deltaX;
         fVy += unit->circle1->y - deltaY;
-        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
     if(cameraController->isDrawableUnits == 2 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle2->x - deltaX;
         fVy += unit->circle2->y - deltaY;
-        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
     if(cameraController->isDrawableUnits == 3 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle3->x - deltaX;
         fVy += unit->circle3->y - deltaY;
-        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
     if(cameraController->isDrawableUnits == 4 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle4->x - deltaX;
         fVy += unit->circle4->y - deltaY;
-        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
 //    qDebug() << "GameField::drawUnit(); -- fVx:" << fVx << " fVy:" << fVy;
