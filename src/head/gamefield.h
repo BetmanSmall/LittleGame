@@ -27,6 +27,7 @@ public: // we are friendly!
     AStar::PathFinder* pathFinder;
     Map* map;
     Cell* field;
+//    WaveManager* waveManager; // ALL public for all || we are friendly :)
     FactionsManager* factionsManager;
     TowersManager* towersManager;
     UnitsManager* unitsManager;

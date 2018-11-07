@@ -165,7 +165,6 @@ void FactionsManager::loadFaction(QString factionFile) {
 //                qDebug() << "FactionsManager::loadFaction(); -- templateFile:" << templateFile;
                 TemplateForUnit* templateForUnit = new TemplateForUnit(templateFile);
 //                templateForUnit->setFaction(faction);
-//                templateForUnit->healthPoints = templateForUnit->healthPoints*levelOfDifficulty; // simple level of difficulty
                 faction->units.push_back(templateForUnit);
             }
         }

@@ -51,7 +51,6 @@ SOURCES += src/cpp/main.cpp\
     wavemanager.cpp \
     wave.cpp \
     cameracontroller.cpp \
-    circle.cpp \
     src/cpp/gamefield.cpp
 
 HEADERS  += \
@@ -92,7 +91,8 @@ HEADERS  += \
     wave.h \
     cameracontroller.h \
     circle.h \
-    src/head/gamefield.h
+    src/head/gamefield.h \
+    towerattacktype.h
 
 FORMS    += \
     src/uis/mainmenu.ui \

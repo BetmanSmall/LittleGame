@@ -12,15 +12,11 @@ class Template
 {
 public:
     QString templateName;
-//    Faction* faction;
-    QString factionName;
-    QString name;
-    QString type;
     QMap<QString, QString> properties;
     QMap<int, Tile*> tiles;
     QMap<int, AnimatedTile*> animatedTiles;
 
-//    Template();
+    Template();
 //    ~Template();
     void loadBasicTemplate(QString templateFile);
     void basicValidate();
