@@ -11,6 +11,7 @@
 #include "cameracontroller.h"
 #include "animation.h"
 #include "circle.h"
+#include "shelleffecttype.h"
 
 class Unit
 {
@@ -18,13 +19,14 @@ public:
     AStar::CoordinateList route;
     AStar::Vec2i oldPosition;
     AStar::Vec2i newPosition;
-    int hp;
+    float hp;
     float speed;
     float stepsInTime;
     float deathElapsedTime;
 
     int player;
 //    int coorByMapX, coorByMapY;
+//    QPointF* currentPoint;
     Circle* circle1;
     Circle* circle2;
     Circle* circle3;
@@ -38,6 +40,7 @@ public:
 
     Direction::type direction;
     Animation* animation;
+    std::vector<ShellEffectType*> shellEffectTypes;
 //    QPixmap pixmap;
 //    std::vector<QPixmap> activePixmaps;
 //    int animationLastAliveIter;
@@ -50,6 +53,9 @@ public:
     void setAnimation(QString action);
     void correct_fVc(float &fVx, float &fVy, Direction::type direction, float sizeCellX);
     AStar::Vec2i* move(float deltaTime, CameraController* cameraController);
+    bool die(float damage, ShellEffectType shellEffectType);
+//    bool addEffect(ShellEffectType *shellEffectType);
+
     bool changeDeathFrame(float delta);
 //    QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
     bool isAlive();
@@ -57,6 +63,7 @@ public:
     QPixmap getCurrentFrame();
     QPixmap getCurrentDeathFrame();
     QString toString();
+    QString toString(bool full);
 };
 
 #endif // UNIT_H

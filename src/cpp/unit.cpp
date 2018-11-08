@@ -130,7 +130,7 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
             } else if (newX < oldX && newY == oldY) {
                 correct_fVc(fVx, fVy, Direction::type::UP_LEFT, sizeCellX);
             }
-//            currentPoint.set(fVx, fVy);
+//            currentPoint->set(fVx, fVy);
             circle3->set(fVx, fVy, 16.0);
         }
         if(isDrawableUnits == 2 || isDrawableUnits == 5) {
@@ -257,6 +257,29 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
     }
 }
 
+bool Unit::die(float damage, ShellEffectType shellEffectType) {
+    if(hp > 0) {
+        hp -= damage;
+//        addEffect(shellEffectType);
+        if(hp <= 0) {
+            deathElapsedTime = 0;
+            setAnimation("death_");
+            return true;
+        }
+        return false;
+    }
+    return false;
+}
+
+//bool Unit::addEffect(ShellEffectType *shellEffectType) {
+//    if(shellEffectType != NULL){
+//        if(!shellEffectTypes.contains(shellEffectType, false)) {
+//            shellEffectTypes.add(new ShellEffectType(shellEffectType));
+//        }
+//    }
+//    return true;
+//}
+
 bool Unit::changeDeathFrame(float delta) {
     if (hp <= 0) {
         if (deathElapsedTime >= speed) {
@@ -294,6 +317,10 @@ QPixmap Unit::getCurrentDeathFrame() {
 }
 
 QString Unit::toString() {
+    return toString(false);
+}
+
+QString Unit::toString(bool full) {
     QString sb("Unit[");
 //    sb.append(QString("path:%1").arg(path));
     sb.append(QString("oldPosition:%1").arg(oldPosition.toString().c_str()));
@@ -312,8 +339,8 @@ QString Unit::toString() {
 //    sb.append(QString(",type:%1").arg(type));
     sb.append(QString(",templateForUnit:%1").arg(templateForUnit->toString()));
     sb.append(QString(",direction:%1").arg(direction));
-//    sb.append(",animation:" + animation);
-//    sb.append("shellEffectTypes:" + shellEffectTypes + ",");
+//    sb.append(",animation:" + animation->);
+//    sb.append("shellEffectTypes:" + shellEffectTypes);
     sb.append("]");
     return sb;
 }

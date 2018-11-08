@@ -31,7 +31,7 @@ namespace Ui {
     class GameWidget;
 }
 
-class GameWidget : public QOpenGLWidget {
+class GameWidget : public QWidget {
     Q_OBJECT
 
 #ifdef QT_DEBUG

@@ -9,22 +9,31 @@
 #include "src/head/unit.h"
 
 class Cell {
+    class Tree {
+        QPixmap* textureRegion;
+        int width, height;
+
+        Tree(QPixmap* textureRegion, int width, int height) {
+            this->textureRegion = textureRegion;
+            this->width = width;
+            this->height = height;
+        }
+    };
 public:
-    std::vector<QPixmap> backgroundTiles;
-    std::vector<QPixmap> groundTiles;
-    std::vector<QPixmap> foregroundTiles;
-//    std::vector<Tree> trees;
-//    int unitStepWA;
+    std::vector<Tile*> backgroundTiles;
+    std::vector<Tile*> groundTiles;
+    std::vector<Tile*> foregroundTiles;
+    std::vector<Tree> trees;
     bool empty;
-    bool removableTerrain;
     bool terrain;
+    bool removableTerrain;
+
     Tower* tower;
     std::vector<Unit*> units;
+    bool spawn, exit;
 
     int cellX, cellY;
     QPointF* graphicCoordinatesBottom, *graphicCoordinatesRight, *graphicCoordinatesTop, *graphicCoordinatesLeft;
-
-    bool spawn, exit;
 
 public:
     Cell();
@@ -35,7 +44,7 @@ public:
 
     bool isEmpty();
     bool isTerrain();
-    bool setTerrain(QPixmap pixmap = QPixmap(), bool removable = true);
+    bool setTerrain(Tile* tile, bool removable = true);
     bool removeTerrain(bool force = false);
     bool isPassable();
 
@@ -47,9 +56,7 @@ public:
     Unit* getUnit();
     bool setUnit(Unit* unit);
     int containUnit(Unit* unit = NULL);
-    bool clearUnit(Unit* unit = NULL);
     int removeUnit(Unit* unit = NULL);
-    void dispose();
     QString toString();
 };
 

@@ -1,17 +1,8 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2013-03-26T18:48:39
-# new clear/Version 2018-10-10 22:22
-#
-#-------------------------------------------------
-
-QT       += core gui multimedia xml # opengl
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core opengl xml multimedia # gui # widgets quick
 
 TARGET = LittleGame
 TEMPLATE = app
-CONFIG += c++11
+CONFIG += c++14
 RC_FILE = myicon.rc
 RESOURCES = resources.qrc
 
@@ -20,6 +11,7 @@ SOURCES += src/cpp/main.cpp\
     src/cpp/widgetcontroller.cpp \
     src/cpp/optionmenu.cpp \
     src/cpp/gamewidget.cpp \
+    src/cpp/gamescreengl.cpp \
     src/cpp/factionsmanager.cpp \
     src/cpp/faction.cpp \
     src/cpp/tower.cpp \
@@ -58,6 +50,7 @@ HEADERS  += \
     src/head/widgetcontroller.h \
     src/head/optionmenu.h \
     src/head/gamewidget.h \
+    src/head/gamescreengl.h \
     src/head/factionsmanager.h \
     src/head/faction.h \
     src/head/tower.h \
@@ -92,11 +85,14 @@ HEADERS  += \
     cameracontroller.h \
     circle.h \
     src/head/gamefield.h \
-    towerattacktype.h
+    towerattacktype.h \ \
+    shelleffecttype.h
+    shellattacktype.h
 
 FORMS    += \
     src/uis/mainmenu.ui \
     src/uis/optionmenu.ui \
+    src/uis/gamescreengl.ui \
     src/uis/gamewidget.ui
 
 DISTFILES += \

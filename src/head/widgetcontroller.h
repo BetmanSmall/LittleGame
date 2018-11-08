@@ -14,7 +14,8 @@
 
 #include "src/head/mainmenu.h"
 #include "src/head/optionmenu.h"
-#include "src/head/gamewidget.h"
+//#include "src/head/gamewidget.h"
+#include "src/head/gamescreengl.h"
 #include "src/head/factionsmanager.h"
 
 class WidgetController : public QWidget
@@ -45,7 +46,7 @@ private:
     bool panMidMouseButtonBool = true;
     OptionMenu* optionMenu;
 
-    GameWidget* gameWidget;
+    GameScreenGL* gameWidget;
     QPainter painter;
     void paintEvent(QPaintEvent* );
     void loadMap(QString mapPath);
@@ -54,7 +55,7 @@ private slots:
     void showMainMenu();
     void loadRandomMap();
     void loadNormalMap();
-    void showGameWidget(GameWidget *gameWidget);
+    void showGameWidget(GameScreenGL *gameWidget);
     void changeWindowState();
 
     void showOptionMenu();

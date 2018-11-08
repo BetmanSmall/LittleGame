@@ -3,6 +3,7 @@
 TemplateForTower::TemplateForTower(QString templateFile) {
     qDebug() << "TemplateForTower::TemplateForTower(); -- templateFile:" << templateFile;
     this->radiusDetection = 0.0;
+    this->radiusFlyShell = 0.0;
 //    this->reloadTime = 3000;
     loadBasicTemplate(templateFile);
     specificLoad();
@@ -14,45 +15,64 @@ TemplateForTower::~TemplateForTower() {
     qDebug() << "TemplateForTower::~TemplateForTower(); -- ";
 }
 
+void TemplateForTower::loadFireBall(SimpleTemplate* fireBall) {
+    if (fireBall != NULL) {
+        foreach (AnimatedTile* animatedTile, fireBall->animatedTiles.values()) {
+            QString tileName = animatedTile->getProperties()->value("tileName", NULL);
+            if (tileName != NULL) {
+                if(tileName.contains("fireball_")) {
+                    qDebug() << "TemplateForTower::loadFireBall(); -setAmmoTiles- tileName:" << tileName;
+                    setAmmoTiles(tileName.replace("fireball_", "ammo_"), animatedTile);
+                }
+            }
+        }
+    }
+}
+
 void TemplateForTower::specificLoad() {
-//    qDebug() << "TemplateForTower::specificLoad(); -- tiles.size():" << tiles.size();
     foreach (Tile* tile, tiles) {
-//        qDebug() << "TemplateForTower::specificLoad(); -- tile->getId():" << tile->getId();
-//        qDebug() << "TemplateForTower::specificLoad(); -- tile:" << tile;
-//        if (AnimatedTile* animatedTile = dynamic_cast<AnimatedTile*>(tile)) {
-//        }
         QString tileName = tile->getProperties()->value("tileName", NULL);
         if (tileName != NULL) {
             if(tileName == "idleTile") {
                 idleTile = tile;
-            } else if(tileName.contains("ammo_")) {
-                qDebug() << "TemplateForTower::specificLoad(); -setAmmoTiles- tileName:" << tileName;
-                setAmmoTiles(tileName, tile);
+//            } else if(tileName.contains("ammo_")) {
+//                qDebug() << "TemplateForTower::specificLoad(); -setAmmoTiles- tileName:" << tileName;
+//                setAmmoTiles(tileName, tile);
             }
         }
     }
-//    qDebug() << "TemplateForTower::specificLoad(); -- idleTile:" << idleTile;
-//    qDebug() << "TemplateForTower::specificLoad(); -- ammunitionPictures.size:" << ammunitionPictures.size();
-//    qDebug() << "TemplateForTower::specificLoad(); -end- ";
 }
 
-void TemplateForTower::setAmmoTiles(QString tileName, Tile* tile) {
+void TemplateForTower::setAmmoTiles(QString tileName, AnimatedTile* tile) {
     if(tile != NULL) {
         if(tileName == ("ammo_" + Direction::UP)) {
-            ammunitionPictures.insert("ammo_" + Direction::UP, tile);
+            animations.insert("ammo_" + Direction::UP, tile);
         } else if(tileName == ("ammo_" + Direction::UP_RIGHT)) {
-            ammunitionPictures.insert("ammo_" + Direction::UP_RIGHT, tile);
-//            ammunitionPictures.insert("ammo_" + Direction::UP_LEFT, flipTiledMapTile(tile));
+            animations.insert("ammo_" + Direction::UP_RIGHT, tile);
+            animations.insert("ammo_" + Direction::UP_LEFT, flipAnimatedTiledMapTile(tile));
         } else if(tileName == ("ammo_" + Direction::RIGHT)) {
-            ammunitionPictures.insert("ammo_" + Direction::RIGHT, tile);
-//            ammunitionPictures.insert("ammo_" + Direction::LEFT, flipTiledMapTile(tile));
+            animations.insert("ammo_" + Direction::RIGHT, tile);
+            animations.insert("ammo_" + Direction::LEFT, flipAnimatedTiledMapTile(tile));
         } else if(tileName == ("ammo_" + Direction::DOWN_RIGHT)) {
-            ammunitionPictures.insert("ammo_" + Direction::DOWN_RIGHT, tile);
-//            ammunitionPictures.insert("ammo_" + Direction::DOWN_LEFT, flipTiledMapTile(tile));
+            animations.insert("ammo_" + Direction::DOWN_RIGHT, tile);
+            animations.insert("ammo_" + Direction::DOWN_LEFT, flipAnimatedTiledMapTile(tile));
         } else if(tileName == ("ammo_" + Direction::DOWN)) {
-            ammunitionPictures.insert("ammo_" + Direction::DOWN, tile);
+            animations.insert("ammo_" + Direction::DOWN, tile);
         }
     }
+}
+
+AnimatedTile* TemplateForTower::flipAnimatedTiledMapTile(AnimatedTile* animatedTiledMapTile) {
+    QVector<StaticTile*> frames = QVector<StaticTile*>(animatedTiledMapTile->getFrameTiles());
+    for (int k = 0; k < frames.length(); k++) {
+        QPixmap textureRegion = QPixmap(frames.at(k)->getPixmap());
+        textureRegion = QPixmap::fromImage(textureRegion.toImage().mirrored(true, false));
+        StaticTile* frame = new StaticTile(textureRegion);
+        frames.replace(k, frame);
+    }
+    QVector<int> intervals = QVector<int>(animatedTiledMapTile->getAnimationIntervals());
+    AnimatedTile* an = new AnimatedTile(intervals, frames);
+    return an;
 }
 
 //Tile TemplateForTower::flipTiledMapTile(Tile tiledMapTile) {
@@ -74,11 +94,11 @@ void TemplateForTower::validate() {
     } else {
         name = properties.value("name");
     }
-    if (!properties.contains("type")) {
-        qDebug() << "TemplateForTower::validate(); -- Not Found: type";
-    } else {
-        type = properties.value("type");
-    }
+//    if (!properties.contains("type")) {
+//        qDebug() << "TemplateForTower::validate(); -- Not Found: type";
+//    } else {
+//        type = properties.value("type");
+//    }
     if (!properties.contains("radiusDetection")) {
         qDebug() << "TemplateForTower::validate(); -- Not Found: radiusDetection";
     } else {
@@ -124,16 +144,16 @@ void TemplateForTower::validate() {
     } else {
         towerAttackType = TowerAttackType::from_string(properties.value("towerAttackType").toStdString());
     }
-//    if (!properties.contains("shellAttackType") && towerAttackType != TowerAttackType.Pit) {
-//        qDebug() << "TemplateForTower::validate(); -- Not Found: shellAttackType";
-//    } else {
-//        shellAttackType = ShellAttackType.from_string(properties.value("shellAttackType"));
-//    }
-//    if (!properties.contains("shellEffectType")) {
-//        qDebug() << "TemplateForTower::validate(); -- Not Found: shellEffectType";
-//    } else {
-//        shellEffectType = new ShellEffectType(ShellEffectType.ShellEffectEnum.from_string(properties.value("shellEffectType")));
-//    }
+    if (!properties.contains("shellAttackType") && towerAttackType != TowerAttackType::Pit) {
+        qDebug() << "TemplateForTower::validate(); -- Not Found: shellAttackType";
+    } else {
+        shellAttackType = ShellAttackType::from_string(properties.value("shellAttackType").toStdString());
+    }
+    if (!properties.contains("shellEffectType")) {
+        qDebug() << "TemplateForTower::validate(); -- Not Found: shellEffectType";
+    } else {
+        shellEffectType = new ShellEffectType(ShellEffectType::from_string(properties.value("shellEffectType").toStdString()));
+    }
     if (towerAttackType == TowerAttackType::Pit && properties.contains("capacity")) {
         capacity = properties.value("capacity").toInt();
     } else if (towerAttackType == TowerAttackType::Pit) {
@@ -149,8 +169,9 @@ void TemplateForTower::validate() {
 
     if(idleTile == NULL)
         qDebug() << "TemplateForTower::validate(); -- Not Found: idleTile";
-    else if(ammunitionPictures.size() == 0)
+    else if(animations.size() == 0)
         qDebug() << "TemplateForTower::validate(); -- Not Found: ammunitionPictures";
+
 //    foreach (QString key, ammunitionPictures.keys()) {
 //        qDebug() << "TemplateForTower::validate(); -- Dir:" << key << " properties:" << ammunitionPictures.value(key)->properties;
 //    }
@@ -165,7 +186,9 @@ QString TemplateForTower::toString(bool full) {
     QString sb("TemplateForTower[");
     sb.append(toStringBasicParam());
     if(full) {
-        sb.append(toStringProperties());
+//        sb.append(toStringProperties());
+        sb.append(QString(",factionName:%1").arg(factionName));
+        sb.append(QString(",name:%1").arg(name));
         sb.append(QString(",radiusDetection:%1").arg(radiusDetection));
         sb.append(QString(",radiusFlyShell:%1").arg(radiusFlyShell));
         sb.append(QString(",damage:%1").arg(damage));
@@ -179,7 +202,7 @@ QString TemplateForTower::toString(bool full) {
 //        sb += ",shellEffectEnum:" + shellEffectType;
         sb.append(",capacity:%1" + QString::number(capacity));
         sb.append(QString(",idleTile!= NULL:%1").arg( idleTile!= NULL ));
-        sb.append(QString(",ammunitionPictures.size():%1").arg(ammunitionPictures.size()));
+        sb.append(QString(",ammunitionPictures.size():%1").arg(animations.size()));
     }
     sb.append("]");
     return sb;

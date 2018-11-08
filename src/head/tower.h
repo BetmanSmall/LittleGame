@@ -17,16 +17,27 @@ public:
     TemplateForTower* templateForTower;
 
     int player;
-//    int capacity;
+    int capacity;
     std::vector<Bullet*> bullets;
     Circle* radiusDetectionCircle;
-//    Circle* radiusFlyShellСircle;
-//    int radius;
-//    QPixmap pixmap;
+    Circle* radiusFlyShellCircle;
 
+public:
     Tower(QPoint* position, TemplateForTower* templateForTower, int player);
+    ~Tower();
+
     bool recharge(float delta);
+    bool shoot(Unit* unit, CameraController* cameraController);
     void createBullets(int difficultyLevel);
+    void moveAllShells(float delta);
+    void moveShell(float delta, Bullet* bullet);
+
+    QPointF* getCenterGraphicCoord(CameraController* cameraController);
+    QPointF* getCenterGraphicCoord(int map, CameraController* cameraController);
+    QPointF* getCenterGraphicCoord(int cellX, int cellY, int map, CameraController* cameraController);
+
+    QString toString();
+    QString toString(bool full);
 };
 
 #endif // TOWER_H

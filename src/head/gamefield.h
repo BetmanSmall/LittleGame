@@ -6,9 +6,10 @@
 #include <QPainter>
 
 //#include "src/head/libs/astar.h"
+#include "src/head/factionsmanager.h"
+#include "wavemanager.h"
 #include "src/head/unitsmanager.h"
 #include "src/head/towersmanager.h"
-#include "src/head/factionsmanager.h"
 #include "src/head/bullet.h"
 #include "src/head/cell.h"
 #include "src/head/underconstruction.h"
@@ -24,41 +25,30 @@ class GameField
 #endif
 
 public: // we are friendly!
-    AStar::PathFinder* pathFinder;
-    Map* map;
-    Cell* field;
-//    WaveManager* waveManager; // ALL public for all || we are friendly :)
     FactionsManager* factionsManager;
+    WaveManager* waveManager;
     TowersManager* towersManager;
     UnitsManager* unitsManager;
-
-//    int sizeFieldX, sizeFieldY;
-//    int sizeCellX, sizeCellY;
-//    int halfSizeCellX, halfSizeCellY;
+    Map* map;
+    Cell* field;
+    AStar::PathFinder* pathFinder;
 
     UnderConstruction* underConstruction;
     QPixmap* greenCheckmark;
     QPixmap* redCross;
 
     bool isometric;
-//    int tileMapWidth, tileMapHeight;
     QPixmap global_pixmap;
     QPixmap global_pixmap_PathPoint;
     QPixmap global_pixmap_EnemyPathPoint;
     QPixmap global_pixmap_DestinationPoint;
 //    QPixmap global_pixmap_ExitPoint;
 
-//    int mouseX, mouseY;
-//    int mainCoorMapX, mainCoorMapY; // camera need create
-//    int spaceWidget; // fix this. 16 and launch
-
     float timeOfGame;
     float gameSpeed;
     bool gamePaused;
     int gamerGold;
-//    bool gameStart;
-//    int spawnPointX, spawnPointY;
-//    int exitPointX, exitPointY;
+
     Cell* cellSpawnHero;
     Cell* cellExitHero;
     int gameOverLimitUnits;
@@ -68,6 +58,7 @@ public:
     GameField(QString mapFile, FactionsManager* factionsManager, int enemyCount, int difficultyLevel, int towersCount);
     ~GameField();
     void createField();
+    bool landscapeGenerator(QString mapFile);
     void turnRight();
     void turnLeft();
     void flipX();
@@ -104,20 +95,23 @@ public:
     void drawTowerUnderConstructionAndMarks(CameraController* cameraController, int map, TemplateForTower* templateForTower, Cell* mainCell, QPoint startDrawCell, QPoint finishDrawCell);
 //    void drawTowerUnderConstruction(QPainter* painter, int buildX, int buildY, TemplateForTower* tower);
 
-    void setMainCoorMap(int mainCoorMapX, int mainCoorMapY);
-    void setSizeCell(int sizeCellX);
-    int getMainCoorMapX();
-    int getMainCoorMapY();
-    int getSizeCell();
+//    void setMainCoorMap(int mainCoorMapX, int mainCoorMapY);
+//    void setSizeCell(int sizeCellX);
+//    int getMainCoorMapX();
+//    int getMainCoorMapY();
+//    int getSizeCell();
 
-    bool towersAttack(float deltaTime);
-    void setMousePress(int x, int y);
-    bool getMousePress(int x = -1, int y = -1);
+//    void setMousePress(int x, int y);
+//    bool getMousePress(int x = -1, int y = -1);
 //    bool isSetSpawnPoint(int x = -1, int y = -1);
 //    bool isSetExitPoint(int x = -1, int y = -1);
     void stepAllUnits(float deltaTime, CameraController* cameraController);
 //    int stepOneUnit(Unit* unit);
-    //bool towersAttack(int deltaTime);
+    void shotAllTowers(float deltaTime);
+    bool shotMeleeTower(Tower *tower);
+    bool fireBallTowerAttack(int deltaTime, Tower *fireBallTower);
+    void moveAllShells(float delta);
+
 //    Unit* getUnit(int x, int y);
 //    std::vector<Unit *> getUnits(int x, int y);
 //    Unit* getUnitWithLowHP(int x, int y);

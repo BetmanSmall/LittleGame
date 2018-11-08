@@ -15,56 +15,24 @@
 class TemplateForUnit : public Template
 {
 public:
-//    float bounty;
-//    float cost;
+//    Faction* faction;
+    QString factionName;
+    QString name;
+
     float healthPoints;
+    float bounty;
+    float cost;
     float speed;
+    QString type;
+
     QMap<QString, AnimatedTile*> animations;
-
-//    QPixmap pixmap;
-//    QPixmap idle_up;
-//    QPixmap idle_up_right;
-//    QPixmap idle_right;
-//    QPixmap idle_down_right;
-//    QPixmap idle_down;
-//    QPixmap idle_down_left;
-//    QPixmap idle_left;
-//    QPixmap idle_up_left;
-
-//    std::vector<QPixmap> idle;
-//    std::vector<QPixmap> walk_up;
-//    std::vector<QPixmap> walk_up_right;
-//    std::vector<QPixmap> walk_right;
-//    std::vector<QPixmap> walk_down_right;
-//    std::vector<QPixmap> walk_down;
-//    std::vector<QPixmap> walk_down_left;
-//    std::vector<QPixmap> walk_left;
-//    std::vector<QPixmap> walk_up_left;
-
-//    std::vector<QPixmap> attack_up;
-//    std::vector<QPixmap> attack_up_right;
-//    std::vector<QPixmap> attack_right;
-//    std::vector<QPixmap> attack_down_right;
-//    std::vector<QPixmap> attack_down;
-//    std::vector<QPixmap> attack_down_left;
-//    std::vector<QPixmap> attack_left;
-//    std::vector<QPixmap> attack_up_left;
-
-//    std::vector<QPixmap> death_up;
-//    std::vector<QPixmap> death_up_right;
-//    std::vector<QPixmap> death_right;
-//    std::vector<QPixmap> death_down_right;
-//    std::vector<QPixmap> death_down;
-//    std::vector<QPixmap> death_down_left;
-//    std::vector<QPixmap> death_left;
-//    std::vector<QPixmap> death_up_left;
-
     std::vector<QPixmap> explosion;
 
+public:
     TemplateForUnit(QString templateFile);
     ~TemplateForUnit();
-    void clearVectors();
-//    void setFaction(Faction* faction);
+
+//    void loadExplosion(SimpleTemplate explosion);
     void specificLoad();
 
 private:

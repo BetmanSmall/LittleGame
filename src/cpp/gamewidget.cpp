@@ -3,7 +3,7 @@
 GameWidget::GameWidget(QString mapFile, FactionsManager* factionsManager,
                        int enemyCount, int difficultyLevel, int towersCount,
                        QWidget *parent):
-    QOpenGLWidget(parent),
+    QWidget(parent),
     ui(new Ui::GameWidget)
 {
     ui->setupUi(this);

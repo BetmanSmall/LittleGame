@@ -41,7 +41,7 @@ void WidgetController::paintEvent(QPaintEvent *) {
 
 void WidgetController::loadMap(QString mapPath) {
     qDebug() << "WidgetController::loadMap(); -- mapPath:" << mapPath;
-    gameWidget = new GameWidget(ASSETS_PATH + mapPath, factionsManager, enemyCount, difficultyLevel, towersCount, this);
+    gameWidget = new GameScreenGL(ASSETS_PATH + mapPath, factionsManager, enemyCount, difficultyLevel, towersCount, this);
 
 //    gameWidget->cameraController->panMidMouseButton = panMidMouseButtonBool;
 
@@ -76,7 +76,8 @@ void WidgetController::loadRandomMap() {
 void WidgetController::loadNormalMap() {
     loadMap("maps/island.tmx");
 }
-void WidgetController::showGameWidget(GameWidget* gameWidget) {
+
+void WidgetController::showGameWidget(GameScreenGL *gameWidget) {
     qDebug() << "WidgetController::showGameWidget(); -- gameWidget:" << gameWidget;
     connect(gameWidget, SIGNAL(signal_closeWidget()), this, SLOT(closeWidget()));
     connect(gameWidget, SIGNAL(signal_changeWindowState()), this, SLOT(changeWindowState()));

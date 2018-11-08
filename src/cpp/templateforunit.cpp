@@ -2,9 +2,9 @@
 
 TemplateForUnit::TemplateForUnit(QString templateFile) {
     qDebug() << "TemplateForUnit::TemplateForUnit(); -- templateFile:" << templateFile;
-    loadBasicTemplate(templateFile);
-    specificLoad();
 //    try {
+        loadBasicTemplate(templateFile);
+        specificLoad();
         validate();
 //    } catch (Exception exp) {
 //        qDebug() << "TemplateForUnit::TemplateForUnit(); -- Could not load TemplateForUnit from " + templateFile.path() + " Exp:" + exp);
@@ -15,43 +15,7 @@ TemplateForUnit::TemplateForUnit(QString templateFile) {
 
 TemplateForUnit::~TemplateForUnit() {
     qDebug() << "TemplateForUnit::~TemplateForUnit(); -- ";
-    clearVectors();
 }
-
-void TemplateForUnit::clearVectors() {
-//    idle.clear();
-
-//    walk_up.clear();
-//    walk_up_right.clear();
-//    walk_right.clear();
-//    walk_down_right.clear();
-//    walk_down.clear();
-//    walk_down_left.clear();
-//    walk_left.clear();
-//    walk_up_left.clear();
-
-//    attack_up.clear();
-//    attack_up_right.clear();
-//    attack_right.clear();
-//    attack_down_right.clear();
-//    attack_down.clear();
-//    attack_down_left.clear();
-//    attack_left.clear();
-//    attack_up_left.clear();
-
-//    death_up.clear();
-//    death_up_right.clear();
-//    death_right.clear();
-//    death_down_right.clear();
-//    death_down.clear();
-//    death_down_left.clear();
-//    death_left.clear();
-//    death_up_left.clear();
-}
-
-//void TemplateForUnit::setFaction(Faction* faction) {
-//    this->faction = faction;
-//}
 
 void TemplateForUnit::specificLoad() {
 //    qDebug() << "TemplateForUnit::specificLoad(); -- animatedTiles.size():" << animatedTiles.size();
@@ -87,47 +51,64 @@ void TemplateForUnit::specificLoad() {
 }
 
 AnimatedTile* TemplateForUnit::flipAnimatedTiledMapTile(AnimatedTile* animatedTiledMapTile) {
-//    qDebug() << "TemplateForUnit::flipAnimatedTiledMapTile(); -- animatedTiledMapTile:" << animatedTiledMapTile;
     QVector<StaticTile*> frames = QVector<StaticTile*>(animatedTiledMapTile->getFrameTiles());
-//    qDebug() << "TemplateForUnit::flipAnimatedTiledMapTile(); -- frames.length():" << frames.length();
     for (int k = 0; k < frames.length(); k++) {
-        if (frames.at(k) == NULL) {
-            qDebug() << "TemplateForUnit::flipAnimatedTiledMapTile(); -1- k:" << k;
-            qDebug() << "TemplateForUnit::flipAnimatedTiledMapTile(); -- frames.at(k):" << frames.at(k);
-        }
-//        qDebug() << "TemplateForUnit::flipAnimatedTiledMapTile(); -2- frames.at(k)->getPixmap():" << frames.at(k)->getPixmap();
         QPixmap textureRegion = QPixmap(frames.at(k)->getPixmap());
-//        qDebug() << "TemplateForUnit::flipAnimatedTiledMapTile(); -3- textureRegion:" << textureRegion;
         textureRegion = QPixmap::fromImage(textureRegion.toImage().mirrored(true, false));
         StaticTile* frame = new StaticTile(textureRegion);
         frames.replace(k, frame);
     }
     QVector<int> intervals = QVector<int>(animatedTiledMapTile->getAnimationIntervals());
     AnimatedTile* an = new AnimatedTile(intervals, frames);
-//    qDebug() << "TemplateForUnit::flipAnimatedTiledMapTile(); -- an:" << an;
     return an;
 }
 
 void TemplateForUnit::validate() {
     basicValidate();
     // Need check range values
+    if (!properties.contains("factionName")) {
+        qDebug() << "TemplateForUnit::validate(); -- Not Found: factionName";
+    } else {
+        factionName = properties.value("factionName");
+    }
+    if (!properties.contains("name")) {
+        qDebug() << "TemplateForUnit::validate(); -- Not Found: name";
+    } else {
+        name = properties.value("name");
+    }
     if (!properties.contains("healthPoints")) {
-        qDebug() << "TemplateForUnit::validate(); -- Can't get 'healthPoints'! Check the file";
+        qDebug() << "TemplateForUnit::validate(); -- Not Found: healthPoints";
     } else {
         healthPoints = properties.value("healthPoints").toFloat();
     }
+    if (!properties.contains("bounty")) {
+        qDebug() << "TemplateForUnit::validate(); -- Not Found: bounty";
+    } else {
+        bounty = properties.value("bounty").toFloat();
+    }
+    if (!properties.contains("cost")) {
+        qDebug() << "TemplateForUnit::validate(); -- Not Found: cost";
+    } else {
+        cost = properties.value("cost").toFloat();
+    }
     if (!properties.contains("speed")) {
-        qDebug() << "TemplateForUnit::validate(); -- Can't get 'speed'! Check the file";
+        qDebug() << "TemplateForUnit::validate(); -- Not Found: speed";
     } else {
         speed = properties.value("speed").toFloat();
     }
-//    speed = 0.1f;
+    if (!properties.contains("type")) {
+        qDebug() << "TemplateForUnit::validate(); -- Not Found: type";
+    } else {
+        type = properties.value("type");
+    }
+
+    if(animations.size() == 0)
+         qDebug() << "TemplateForUnit::validate(); -- NotFound: animations";
+
 //    foreach (QString key, animations.keys()) {
 //        qDebug() << "TemplateForUnit::validate(); -- Dir:" << key << " Lenght:" << animations.value(key)->getFrameTiles().length();
 //    }
-//    qDebug() << "TemplateForUnit::validate(); --" << toString(true).toStdString().c_str();
-//    qDebug() << "TemplateForUnit::validate(); -- animations.size():" << animations.size();
-//    qDebug() << "TemplateForUnit::validate(); -- ------end-------";
+    qDebug() << "TemplateForUnit::validate(); --" << toString(true).toStdString().c_str();
 }
 
 QString TemplateForUnit::toString() {
@@ -139,10 +120,13 @@ QString TemplateForUnit::toString(bool full) {
     sb.append(toStringBasicParam());
     if(full) {
         sb.append(toStringProperties());
-//        sb.append("," + "bounty:" + bounty);
-//        sb.append("," + "cost:" + cost);
+        sb.append(",factionName:" + factionName);
+        sb.append(",name:" + name);
         sb.append(QString(",healthPoints:%1").arg(healthPoints));
+        sb.append(QString(",speed:%1").arg(bounty));
+        sb.append(QString(",cost:%1").arg(cost));
         sb.append(QString(",speed:%1").arg(speed));
+        sb.append(",type:" + type);
         sb.append(QString(",animations.size:%1").arg(animations.size()));
     }
     sb.append("]");

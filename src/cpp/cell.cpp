@@ -1,22 +1,24 @@
 #include "src/head/cell.h"
 
 Cell::Cell() {
-//    unitStepWA = 0;
+//    qDebug() << "Cell::Cell(); -- ";
+//    this.backgroundTiles = new Array<TiledMapTile>();
+//    this.foregroundTiles = new Array<TiledMapTile>();
+//    this.trees = new Array<Tree>();
     this->empty = true;
-    this->removableTerrain = true;
     this->terrain = false;
-    this->tower = NULL;
-//    this->units;
+    this->removableTerrain = true;
 
-//    cellX, cellY
-//    qPointF
+    this->tower = NULL;
+//    this->units = NULL;
+    this->spawn = false;
+    this->exit = false;
+
+//    setGraphicCoordinates(cellX, cellY, halfSizeCellX, halfSizeCellY);
     graphicCoordinatesBottom = new QPointF();
     graphicCoordinatesRight = new QPointF();
     graphicCoordinatesTop = new QPointF();
     graphicCoordinatesLeft = new QPointF();
-
-    this->spawn = false;
-    this->exit = false;
 }
 
 Cell::~Cell() {
@@ -24,7 +26,14 @@ Cell::~Cell() {
     backgroundTiles.clear();
     groundTiles.clear();
     foregroundTiles.clear();
+    trees.clear();
+
+    tower = NULL;
     units.clear();
+    delete graphicCoordinatesBottom;
+    delete graphicCoordinatesRight;
+    delete graphicCoordinatesTop;
+    delete graphicCoordinatesLeft;
 //    qDebug() << "Cell::~Cell(); -end- ";
 }
 
@@ -73,9 +82,9 @@ bool Cell::isTerrain() {
     return terrain;
 }
 
-bool Cell::setTerrain(QPixmap pixmap, bool removable) {//int x, int y, QPixmap pixmap) {
-    if (!pixmap.isNull()) { // Not good!
-        groundTiles.push_back(pixmap);
+bool Cell::setTerrain(Tile *tile, bool removable) {
+    if (tile != NULL) {
+        groundTiles.push_back(tile);
     }
     if (empty && !spawn && !exit) {
         removableTerrain = removable;
@@ -173,21 +182,6 @@ int Cell::containUnit(Unit* unit) {
     return 0;
 }
 
-bool Cell::clearUnit(Unit* unit) {
-    if(!empty && units.size()) {
-        if(unit == NULL) {
-            units.clear();
-        } else if(int num = containUnit(unit)) {
-            units.erase(units.begin()+(num-1));
-        }
-        if(units.empty()) {
-            empty = true;
-        }
-        return true;
-    }
-    return false;
-}
-
 int Cell::removeUnit(Unit* unit) {
     if (!empty && units.size()) {
         if(unit == NULL) {
@@ -216,7 +210,7 @@ QString Cell::toString() {
     sb.append(QString(",spawn:%1").arg(spawn));
     sb.append(QString(",exit:%1").arg(exit));
     sb.append(QString(",backgroundTiles:%1").arg(backgroundTiles.size()));
-    sb.append(QString(",terrainTiles:%1").arg(groundTiles.size()));
+    sb.append(QString(",groundTiles:%1").arg(groundTiles.size()));
     sb.append(QString(",foregroundTiles:%1").arg(foregroundTiles.size()));
 //    sb.append(QString(",graphicCoordinatesBottom:%1").arg(graphicCoordinatesBottom));
     sb.append("]");

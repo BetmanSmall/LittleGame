@@ -1,10 +1,10 @@
-#ifndef TOWERATTACKTYPE_H
-#define TOWERATTACKTYPE_H
+#ifndef SHELLATTACKTYPE_H
+#define SHELLATTACKTYPE_H
 
-class TowerAttackType
+class ShellAttackType
 {
 public:
-    enum type { Pit, FireBall, Melee, Range, RangeFly };
+    enum type { FireBall, AutoTarget, FirstTarget, SingleTarget, MultipleTarget, MassAddEffect };
     static const QString toString(type enumVal) {
         return QString(to_string(enumVal).c_str());
     }
@@ -35,34 +35,37 @@ private:
     static const std::vector<type> _make_values()
     {
         std::vector<type> valueVector;
-        valueVector.reserve(5);
-        valueVector.push_back(Pit);
+        valueVector.reserve(6);
         valueVector.push_back(FireBall);
-        valueVector.push_back(Melee);
-        valueVector.push_back(Range);
-        valueVector.push_back(RangeFly);
+        valueVector.push_back(AutoTarget);
+        valueVector.push_back(FirstTarget);
+        valueVector.push_back(SingleTarget);
+        valueVector.push_back(MultipleTarget);
+        valueVector.push_back(MassAddEffect);
         return valueVector;
     }
     static std::map<type,std::string> _make_enum_strings_map()
     {
         std::map<type,std::string> enumStringsMap;
-        enumStringsMap.insert(std::make_pair(Pit, "Pit"));
         enumStringsMap.insert(std::make_pair(FireBall, "FireBall"));
-        enumStringsMap.insert(std::make_pair(Melee, "Melee"));
-        enumStringsMap.insert(std::make_pair(Range, "Range"));
-        enumStringsMap.insert(std::make_pair(RangeFly, "RangeFly"));
+        enumStringsMap.insert(std::make_pair(AutoTarget, "AutoTarget"));
+        enumStringsMap.insert(std::make_pair(FirstTarget, "FirstTarget"));
+        enumStringsMap.insert(std::make_pair(SingleTarget, "SingleTarget"));
+        enumStringsMap.insert(std::make_pair(MultipleTarget, "MultipleTarget"));
+        enumStringsMap.insert(std::make_pair(MassAddEffect, "MassAddEffect"));
         return enumStringsMap;
     }
     static std::map<std::string,type> _make_strings_enum_map()
     {
         std::map<std::string,type> stringsEnumMap;
-        stringsEnumMap.insert(std::make_pair("Pit", Pit));
         stringsEnumMap.insert(std::make_pair("FireBall", FireBall));
-        stringsEnumMap.insert(std::make_pair("Melee", Melee));
-        stringsEnumMap.insert(std::make_pair("Range", Range));
-        stringsEnumMap.insert(std::make_pair("RangeFly", RangeFly));
+        stringsEnumMap.insert(std::make_pair("AutoTarget", AutoTarget));
+        stringsEnumMap.insert(std::make_pair("FirstTarget", FirstTarget));
+        stringsEnumMap.insert(std::make_pair("SingleTarget", SingleTarget));
+        stringsEnumMap.insert(std::make_pair("MultipleTarget", MultipleTarget));
+        stringsEnumMap.insert(std::make_pair("MassAddEffect", MassAddEffect));
         return stringsEnumMap;
     }
 };
 
-#endif // TOWERATTACKTYPE_H
+#endif // SHELLATTACKTYPE_H

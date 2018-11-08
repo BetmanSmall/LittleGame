@@ -3,37 +3,51 @@
 
 #include <QPixmap>
 
-//#include "src/head/unit.h"
+#include "src/head/unit.h"
 #include "src/head/templatefortower.h"
 #include "src/head/direction.h"
 
 class Bullet {
 public:
-    int speed;
+    Unit* unit;
+    float ammoExpSize;
+    float ammoSize;
+    float ammoSpeed;
+    TemplateForTower* templateForTower;
+
+    QPixmap pixmap;
+    QMap<QString, Tile*> ammunitionPictures;
+//    std::vector<QPixmap> activePixmaps;
+
     bool flying;
     int lastCellX, lastCellY;
     int currCellX, currCellY;
+    QPointF* currentPoint;
+    Circle* circle;
+    Circle* endPoint;
+    QPointF* velocity;
 
     Direction::type direction;
     int animationCurrIter;
     int animationMaxIter;
-    QPixmap pixmap;
-    std::vector<QPixmap> activePixmaps;
+    Animation* animation;
 
-    TemplateForTower* templateForTower;
+public:
+    Bullet(QPointF *currentPoint, TemplateForTower *templateForTower, Unit *unit);
+    Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower *templateForTower);
+    ~Bullet();
 
-    Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower* defTower);
-    void setSpeed(int speed);
-    void setCurrCellCoordinate(int currCellX, int currCellY);
-    QPixmap getAnimationInformation(int *lastCellX, int *lastCellY, int *animationCurrIter, int *animationMaxIter);
+    void setAnimation(QString action);
+    int flightOfShell(float delta);
+    bool tryToHitUnits();
+//    void setCurrCellCoordinate(int currCellX, int currCellY);
+//    QPixmap getAnimationInformation(int *lastCellX, int *lastCellY, int *animationCurrIter, int *animationMaxIter);
 
 //    void setUnit(Unit* unit);
-    void setPixmap(QPixmap pixmap);
-    int getSpeed();
-    int getCurrCellX();
-    int getCurrCellY();
-
-    QPixmap getPixmap();
+//    void setPixmap(QPixmap pixmap);
+//    int getCurrCellX();
+//    int getCurrCellY();
+//    QPixmap getPixmap();
 
 //public slots:
 
