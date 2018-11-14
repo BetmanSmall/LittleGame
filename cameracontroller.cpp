@@ -49,8 +49,8 @@ bool CameraController::pan(float x, float y) {
         float deltaX = x - prevMouseX;
         float deltaY = y - prevMouseY;
 //        qDebug() << "CameraController::pan(); -- x:" << x << " y:" << y << " deltaX:" << deltaX << " deltaY:" << deltaY;
-        float newCameraX = cameraX + (deltaX * zoom);
-        float newCameraY = cameraY + (deltaY * zoom);
+        float newCameraX = cameraX + (deltaX * (1/zoom) );
+        float newCameraY = cameraY + (deltaY * (1/zoom) );
 //        if (borderLeftX != null && borderRightX != null && borderUpY != null && borderDownY != null) {
 //            if (borderLeftX < newCameraX && newCameraX < borderRightX &&
 //                    borderUpY > newCameraY && newCameraY > borderDownY) {
@@ -75,10 +75,10 @@ bool CameraController::scrolled(int amount) {
             zoom -= 0.1;
         }
     }
-    sizeCellX = defSizeCellX*zoom;
-    sizeCellY = defSizeCellY*zoom;
-    halfSizeCellX = sizeCellX/2;
-    halfSizeCellY = sizeCellY/2;
+//    sizeCellX = defSizeCellX*zoom;
+//    sizeCellY = defSizeCellY*zoom;
+//    halfSizeCellX = sizeCellX/2;
+//    halfSizeCellY = sizeCellY/2;
     qDebug() << "CameraController::scrolled(); -- zoom:" << zoom;
     qDebug() << "CameraController::scrolled(); -- sizeCellX:" << sizeCellX;
     qDebug() << "CameraController::scrolled(); -- sizeCellY:" << sizeCellY;
@@ -117,8 +117,8 @@ void CameraController::update(float deltaTime) {
 
 void CameraController::unproject(int &screenX, int &screenY) {
 //    qDebug() << "CameraController::unproject(); -- screenX:" << screenX << " screenY:" << screenY << " cameraX:" << cameraX << " cameraY:" << cameraY;
-    screenX -= cameraX;
-    screenY -= cameraY;
+    screenX -= (cameraX*zoom);
+    screenY -= (cameraY*zoom);
 //    qDebug() << "CameraController::unproject(); -- screenX:" << screenX << " screenY:" << screenY << " cameraX:" << cameraX << " cameraY:" << cameraY;
 }
 
@@ -171,8 +171,8 @@ bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {
 //    qDebug() << "CameraController::whichCell(); -wind- mouseX:" << mouseX << " mouseY:" << mouseY;
     unproject(mouseX, mouseY);
 //    qDebug() << "CameraController::whichCell(); -grph- mouseX:" << mouseX << " mouseY:" << mouseY;
-    float gameX = (mouseX / halfSizeCellX + mouseY / halfSizeCellY) / 2;
-    float gameY = (mouseY / halfSizeCellY -(mouseX / halfSizeCellX))/ 2;
+    float gameX = ( (mouseX / (halfSizeCellX*zoom)) + (mouseY / (halfSizeCellY*zoom)) ) / 2;
+    float gameY = ( (mouseY / (halfSizeCellY*zoom)) - (mouseX / (halfSizeCellX*zoom)) ) / 2;
 //    qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " map:" << map << " -new- gameX:" << gameX << " gameY:" << gameY;
     int cellX = qAbs((int) gameX);
     int cellY = qAbs((int) gameY);
@@ -220,6 +220,45 @@ QPointF* CameraController::getCorrectGraphicTowerCoord(QPointF* towerPos, int to
     }
     return retTowerPos;
 }
+
+//QPointF* CameraController::getCenterGraphicCoord(CameraController* cameraController) {
+//    return getCenterGraphicCoord(cameraController->isDrawableTowers, cameraController);
+//}
+
+//QPointF* CameraController::getCenterGraphicCoord(int map, CameraController* cameraController) {
+//    return getCenterGraphicCoord(position->x(), position->y(), map, cameraController);
+//}
+
+Vector2* CameraController::getCenterTowerGraphicCoord(int cellX, int cellY) {
+    QPointF* p = getCenterGraphicCoord(cellX, cellY, isDrawableTowers);
+    return new Vector2(p->x(), p->y());
+}
+
+QPointF* CameraController::getCenterGraphicCoord(int cellX, int cellY, int map) {
+    float pxlsX = 0.0, pxlsY = 0.0;
+//        float offsetX = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellX) : ( (templateForTower.size == 1) ? 0 : (templateForTower.size-1)*halfSizeCellX));
+//        float offsetY = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellY) : ( (templateForTower.size == 1) ? 0 : (templateForTower.size-1)*halfSizeCellY));
+////        float offsetX = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellX) : (templateForTower.size-1)*halfSizeCellX);
+////        float offsetY = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellY) : (templateForTower.size-1)*halfSizeCellY);
+    if(map == 1) {
+        pxlsX = (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX));
+        pxlsY = (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY));
+    } else if(map == 2) {
+        pxlsX = ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX;
+        pxlsY = ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY;
+    } else if(map == 3) {
+        pxlsX = (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX));
+        pxlsY = ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY*2;
+    } else if(map == 4) {
+        pxlsX = (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX;
+        pxlsY = ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY;
+    }
+//        return new Vector2(pxlsX - halfSizeCellX, pxlsY + halfSizeCellY*templateForTower.size);
+//    if (radiusDetectionCircle == NULL) {
+//        radiusDetectionCircle = new Circle(pxlsX, pxlsY, templateForTower->radiusDetection);
+//    }
+    return new QPointF(pxlsX, pxlsY);
+} // -------------------------------------------------------------- TODD It is analog GameField::getGraphicCoordinates() func!
 
 QString CameraController::toString() {
     QString str = "Camera:[";

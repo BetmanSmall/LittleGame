@@ -1,7 +1,7 @@
 #include "template.h"
 
 Template::Template() {
-    qDebug() << "Template::Template(); -- ";
+//    qDebug() << "Template::Template(); -- ";
     templateName = "NULL";
 //    properties = new ObjectMap<String, String>();
 //    tiles = new ObjectMap<Integer, TiledMapTile>();
@@ -13,7 +13,7 @@ Template::Template() {
 //}
 
 void Template::loadBasicTemplate(QString templateFile) {
-    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
+//    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
     QDomDocument* domDocument = MapLoader::loadDomDocument(templateFile);
     QDomElement templateORtileset = domDocument->documentElement();
     this->templateName = templateORtileset.attribute("name", NULL);
@@ -29,6 +29,7 @@ void Template::loadBasicTemplate(QString templateFile) {
     QString source = imageElement.attribute("source", NULL);
     QString textureFile = MapLoader::findFile(templateFile, source);
     QPixmap texture(textureFile);
+    qDebug() << "Template::loadBasicTemplate(); -- textureFile:" << textureFile;
     qDebug() << "Template::loadBasicTemplate(); -- texture:" << texture;
 
     int stopWidth = texture.width() - tilewidth;

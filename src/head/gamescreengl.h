@@ -59,8 +59,8 @@ public:
                         QWidget *parent = 0);
     ~GameScreenGL();
 
-    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-    QSize sizeHint() const Q_DECL_OVERRIDE;
+//    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
+//    QSize sizeHint() const Q_DECL_OVERRIDE;
 //    void rotateBy(int xAngle, int yAngle, int zAngle);
 //    void setClearColor(const QColor &color);
 

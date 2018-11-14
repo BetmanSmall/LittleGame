@@ -65,6 +65,7 @@ public:
     void flipY();
     Cell* getCell(int x, int y);
     void updateCellsGraphicCoordinates(float halfSizeCellX, float halfSizeCellY);
+    void updateTowersGraphicCoordinates(CameraController *cameraController);
     void updateHeroDestinationPoint();
     void updateHeroDestinationPoint(int x, int y);
     void updatePathFinderWalls();
@@ -105,9 +106,9 @@ public:
 //    bool getMousePress(int x = -1, int y = -1);
 //    bool isSetSpawnPoint(int x = -1, int y = -1);
 //    bool isSetExitPoint(int x = -1, int y = -1);
-    void stepAllUnits(float deltaTime, CameraController* cameraController);
+    void stepAllUnits(float deltaTime, CameraController *cameraController);
 //    int stepOneUnit(Unit* unit);
-    void shotAllTowers(float deltaTime);
+    void shotAllTowers(float deltaTime, CameraController *cameraController);
     bool shotMeleeTower(Tower *tower);
     bool fireBallTowerAttack(int deltaTime, Tower *fireBallTower);
     void moveAllShells(float delta);

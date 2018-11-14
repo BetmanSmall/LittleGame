@@ -22,10 +22,10 @@ public:
     bool flying;
     int lastCellX, lastCellY;
     int currCellX, currCellY;
-    QPointF* currentPoint;
+    Vector2* currentPoint;
     Circle* circle;
     Circle* endPoint;
-    QPointF* velocity;
+    Vector2* velocity;
 
     Direction::type direction;
     int animationCurrIter;
@@ -33,7 +33,7 @@ public:
     Animation* animation;
 
 public:
-    Bullet(QPointF *currentPoint, TemplateForTower *templateForTower, Unit *unit);
+    Bullet(Vector2 *currentPoint, TemplateForTower *templateForTower, Unit *unit);
     Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower *templateForTower);
     ~Bullet();
 

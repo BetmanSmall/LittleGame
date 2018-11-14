@@ -1,7 +1,6 @@
 #include "src/head/bullet.h"
 
-
-Bullet::Bullet(QPointF* currentPoint, TemplateForTower* templateForTower, Unit* unit) {
+Bullet::Bullet(Vector2 *currentPoint, TemplateForTower* templateForTower, Unit* unit) {
     qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint << " templateForTower:" << templateForTower->toString(true).toStdString().c_str() << " unit:" << unit;
     this->unit = unit;
     this->ammoExpSize = templateForTower->ammoSize;
@@ -13,8 +12,8 @@ Bullet::Bullet(QPointF* currentPoint, TemplateForTower* templateForTower, Unit* 
     this->pixmap = (tiledMapTile != NULL) ? tiledMapTile->getPixmap() : templateForTower->idleTile->getPixmap();
 //    this->ammunitionPictures = templateForTower->animations;
 
-    this->currentPoint = new QPointF(currentPoint->x(), currentPoint->y());
-    this->circle = new Circle(*currentPoint, ammoSize);
+    this->currentPoint = new Vector2(currentPoint->x, currentPoint->y);
+    this->circle = new Circle(currentPoint, ammoSize);
     if(templateForTower->shellAttackType == ShellAttackType::MultipleTarget || templateForTower->shellAttackType == ShellAttackType::FirstTarget) {
 //        this->endPoint = new Circle(unit->currentPoint.x + unit.displacement.x, unit.currentPoint.y + unit.displacement.y, 3f);
     } else if(templateForTower->shellAttackType == ShellAttackType::AutoTarget) {
@@ -100,11 +99,11 @@ int Bullet::flightOfShell(float delta) {
     if(unit->isAlive()) {
 //            Gdx.app.log("Bullet", "flightOfShell(" + delta + "); -- " + currentPoint + ", " + endPoint + ", " + velocity);
         if(templateForTower->shellAttackType == ShellAttackType::MultipleTarget || templateForTower->shellAttackType == ShellAttackType::FirstTarget) {
-            float displacementX = velocity->x() * delta * ammoSpeed;
-            float displacementY = velocity->y() * delta * ammoSpeed;
+//            float displacementX = velocity->x() * delta * ammoSpeed;
+//            float displacementY = velocity->y() * delta * ammoSpeed;
 
 //            currentPoint->add(displacementX, displacementY);
-            circle->setPosition(*currentPoint);
+            circle->setPosition(currentPoint);
 
             if (templateForTower->shellAttackType == ShellAttackType::MultipleTarget) {
                 if(circle->overlaps(endPoint)) {
@@ -120,7 +119,7 @@ int Bullet::flightOfShell(float delta) {
         } else if(templateForTower->shellAttackType == ShellAttackType::AutoTarget) {
 //            velocity = new Vector2(endPoint.x - currentPoint.x, endPoint.y - currentPoint.y).nor().scl(Math.min(currentPoint.dst(endPoint.x, endPoint.y), ammoSpeed));
 //            currentPoint.add(velocity.x * delta * ammoSpeed, velocity.y * delta * ammoSpeed);
-            circle->setPosition(*currentPoint);
+            circle->setPosition(currentPoint);
             // endPoint2 == endPoint == unit.currentPoint ~= unit.circle1
             if (circle->overlaps(unit->circle1)) {
                 if (unit->die(templateForTower->damage, templateForTower->shellEffectType)) {

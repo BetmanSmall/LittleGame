@@ -4,6 +4,7 @@ TemplateForTower::TemplateForTower(QString templateFile) {
     qDebug() << "TemplateForTower::TemplateForTower(); -- templateFile:" << templateFile;
     this->radiusDetection = 0.0;
     this->radiusFlyShell = 0.0;
+    this->capacity = 0;
 //    this->reloadTime = 3000;
     loadBasicTemplate(templateFile);
     specificLoad();
@@ -200,7 +201,7 @@ QString TemplateForTower::toString(bool full) {
         sb.append(QString(",towerAttackType:%1").arg(towerAttackType));
 //        sb += ",shellAttackType:" + shellAttackType;
 //        sb += ",shellEffectEnum:" + shellEffectType;
-        sb.append(",capacity:%1" + QString::number(capacity));
+        sb.append(",capacity:" + QString::number(capacity));
         sb.append(QString(",idleTile!= NULL:%1").arg( idleTile!= NULL ));
         sb.append(QString(",ammunitionPictures.size():%1").arg(animations.size()));
     }

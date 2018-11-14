@@ -29,23 +29,21 @@ GameScreenGL::GameScreenGL(QString mapFile, FactionsManager* factionsManager,
 }
 
 GameScreenGL::~GameScreenGL() {
-//    if (scanMouseMove_TimerId)
-//        killTimer(scanMouseMove_TimerId);
     delete gameField;
     delete cameraController;
     delete gameTimer;
     delete ui;
 }
 
-QSize GameScreenGL::minimumSizeHint() const
-{
-    return QSize(50, 50);
-}
+//QSize GameScreenGL::minimumSizeHint() const
+//{
+//    return QSize(50, 50);
+//}
 
-QSize GameScreenGL::sizeHint() const
-{
-    return QSize(200, 200);
-}
+//QSize GameScreenGL::sizeHint() const
+//{
+//    return QSize(200, 200);
+//}
 
 void GameScreenGL::initializeGL() {
     initializeOpenGLFunctions();
@@ -95,7 +93,7 @@ void GameScreenGL::initializeGL() {
 void GameScreenGL::paintGL() {
     glClearColor(0, 0, 0, 255);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//void GameScreenGL::paintEvent(QPaintEvent* event) {
+
     lastTime = currentTime;
     currentTime = QTime::currentTime();
 //    elapsedTime = (currentTime.second()*1000 + currentTime.msec()) - (lastTime.second()*1000 + lastTime.msec()); // /!\ max = 59 seconds 999 ms
@@ -104,15 +102,21 @@ void GameScreenGL::paintGL() {
     this->fps = 1000 / elapsedTime;
 
     cameraController->painter->begin(this);
+    cameraController->painter->scale(cameraController->zoom, cameraController->zoom);
 //    cameraController->painter->setRenderHint(QPainter::Antialiasing);
 //    cameraController->painter->fillRect(event->rect(), QColor(0, 0, 0));
-//    cameraController->painter->translate(100, 100);
+    cameraController->painter->translate(cameraController->cameraX, cameraController->cameraY);
 //    cameraController->painter->rotate(fps);
 
     gameField->render(elapsedTime/1000, cameraController);
-//    cameraController->update(elapsedTime);
     cameraController->painter->setPen(QColor(255, 0, 0));
-    cameraController->painter->drawEllipse(QPoint(cameraController->cameraX, cameraController->cameraY), 5, 5);
+    cameraController->painter->drawEllipse(QPoint(0, 0), 5, 5);
+    cameraController->painter->end();
+
+    cameraController->painter->begin(this);
+//    cameraController->update(elapsedTime);
+//    cameraController->painter->scale(cameraController->zoom, -cameraController->zoom);
+//    cameraController->painter->translate(-cameraController->cameraX, -cameraController->cameraY);
     cameraController->painter->setPen(QColor(0, 255, 0));
     cameraController->painter->drawEllipse(QPoint(0, 0), 5, 5);
     cameraController->painter->drawText(10, 10, "FPS:" + QString::number(fps));
@@ -121,12 +125,9 @@ void GameScreenGL::paintGL() {
     cameraController->painter->drawText(10, 40, "elapsedTime:" + QString::number(elapsedTime));
     cameraController->painter->drawText(10, 50, "cameraController->cameraX:" + QString::number(cameraController->cameraX));
     cameraController->painter->drawText(10, 60, "cameraController->cameraY:" + QString::number(cameraController->cameraY));
-    cameraController->painter->drawText(10, 70, "cameraController->sizeCellX:" + QString::number(cameraController->sizeCellX));
-    cameraController->painter->drawText(10, 80, "cameraController->sizeCellY:" + QString::number(cameraController->sizeCellY));
-    cameraController->painter->drawText(10, 90, "cameraController->halfSizeCellX:" + QString::number(cameraController->halfSizeCellX));
-    cameraController->painter->drawText(10, 100, "cameraController->halfSizeCellY:" + QString::number(cameraController->halfSizeCellY));
-    cameraController->painter->drawText(10, 110, "cameraController->paning:" + QString::number(cameraController->paning));
-    cameraController->painter->drawText(10, 120, "cameraController->flinging:" + QString::number(cameraController->flinging));
+    cameraController->painter->drawText(10, 70, "cameraController->zoom:" + QString::number(cameraController->zoom));
+    cameraController->painter->drawText(10, 80, "cameraController->paning:" + QString::number(cameraController->paning));
+    cameraController->painter->drawText(10, 90, "cameraController->flinging:" + QString::number(cameraController->flinging));
     cameraController->painter->drawText(10, 130, "cameraController->drawOrder:" + QString::number(cameraController->drawOrder));
     cameraController->painter->drawText(10, 140, "cameraController->isDrawableGrid:" + QString::number(cameraController->isDrawableGrid));
     cameraController->painter->drawText(10, 150, "cameraController->isDrawableUnits:" + QString::number(cameraController->isDrawableUnits));
@@ -336,7 +337,6 @@ void GameScreenGL::wheelEvent(QWheelEvent* event) {
 //    update();
 }
 
-
 void GameScreenGL::keyPressEvent(QKeyEvent * event) {
 //    int mainCoorMapX = field->getMainCoorMapX();
 //    int mainCoorMapY = field->getMainCoorMapY();
@@ -344,8 +344,9 @@ void GameScreenGL::keyPressEvent(QKeyEvent * event) {
 //    int sizeFieldX = field->sizeFieldX;
 //    int sizeFieldY = field->sizeFieldY;
     int key = event->key();
-    qDebug() << "GameScreenGL::keyPressEvent(); -- Qt::Key_Tab:" << Qt::Key_Tab;
-    qDebug() << "GameScreenGL::keyPressEvent(); -- key: " << key;
+    int modifiers = event->modifiers();
+    qDebug() << "GameScreenGL::keyPressEvent(); -- Key_" << QKeySequence(key).toString().toStdString().c_str();
+    qDebug() << "GameScreenGL::keyPressEvent(); -- Modifiers_" << QKeySequence(modifiers).toString().toStdString().c_str();
     if(key == Qt::Key_0) {
         signal_changeWindowState();
         qDebug() << "GameScreenGL::keyPressEvent(); -- parentWidget()->windowState():" << parentWidget()->windowState();
@@ -353,12 +354,19 @@ void GameScreenGL::keyPressEvent(QKeyEvent * event) {
         cameraController->cameraY = 0;
     } else if(key == Qt::Key_F1) {
         qDebug() << "GameScreenGL::keyPressEvent(); -- isKeyJustPressed(Qt::Key_F1)";
-        cameraController->isDrawableGrid--;
-        if (cameraController->isDrawableGrid < 0) {
-            cameraController->isDrawableGrid = 5;
+        if (modifiers == Qt::ShiftModifier) {
+            cameraController->isDrawableGrid++;
+            if (cameraController->isDrawableGrid >= 5) {
+                cameraController->isDrawableGrid = 0;
+            }
+        } else {
+            cameraController->isDrawableGrid--;
+            if (cameraController->isDrawableGrid < 0) {
+                cameraController->isDrawableGrid = 5;
+            }
         }
         cameraController->isDrawableUnits = cameraController->isDrawableGrid;
-        cameraController->isDrawableTowers= cameraController->isDrawableGrid;
+        cameraController->isDrawableTowers = cameraController->isDrawableGrid;
         cameraController->isDrawableBackground = cameraController->isDrawableGrid;
         cameraController->isDrawableGround = cameraController->isDrawableGrid;
         cameraController->isDrawableForeground = cameraController->isDrawableGrid;

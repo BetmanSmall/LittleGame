@@ -8,9 +8,8 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
     this->waveManager = new WaveManager();
     this->towersManager = new TowersManager(difficultyLevel);
     this->unitsManager = new UnitsManager(difficultyLevel);
-    qDebug() << "GameField::GameField(); -1- map:" << map;
     this->map = (new MapLoader())->load(mapFile);
-    qDebug() << "GameField::GameField(); -2- map:" << map;
+    qDebug() << "GameField::GameField(); -- map:" << map;
 
     global_pixmap = map->tileSets.getTileSet(0)->getLocalTile(8)->getPixmap();
     global_pixmap_PathPoint = map->tileSets.getTileSet(0)->getLocalTile(9)->getPixmap();
@@ -40,7 +39,7 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
     } else {
         for (int x = 0; x < map->width; x++) {
             for (int y = 0; y < map->height; y++) {
-                if( (rand()%100) < 10 ) {
+                if ( (rand()%100) < 10 ) {
                     if (getCell(x, y)->isEmpty()) {
                         int randNumber = ( 125+(rand()%2) );
                         Tile* tile = map->getTileSets()->getTileSet(0)->getLocalTile(randNumber);
@@ -104,9 +103,7 @@ GameField::~GameField() {
     delete greenCheckmark;
     delete redCross;
 
-    qDebug() << "GameField::~GameField(); -- cellSpawnHero:" << (cellSpawnHero != NULL);
     delete cellSpawnHero;
-    qDebug() << "GameField::~GameField(); -- cellExitHero:" << (cellExitHero != NULL);
     delete cellExitHero;
 
 //    delete global_pixmap;
@@ -114,7 +111,6 @@ GameField::~GameField() {
 //    delete global_pixmap_EnemyPathPoint;
 //    delete global_pixmap_DestinationPoint;
 //    delete global_pixmap_ExitPoint;
-
 }
 
 void GameField::createField() {
@@ -190,7 +186,7 @@ void GameField::createField() {
     pathFinder = new AStar::PathFinder();
     pathFinder->setWorldSize({map->width, map->height});
     pathFinder->setHeuristic(AStar::Heuristic::euclidean);
-    pathFinder->setDiagonalMovement(false);
+    pathFinder->setDiagonalMovement(true);
     updatePathFinderWalls();
     qDebug() << "GameField::createField(); -- pathFinder:" << pathFinder;
 }
@@ -299,6 +295,12 @@ void GameField::updateCellsGraphicCoordinates(float halfSizeCellX, float halfSiz
     }
 }
 
+void GameField::updateTowersGraphicCoordinates(CameraController *cameraController) {
+    for (Tower* tower : towersManager->towers) {
+        tower->updateGraphicCoordinates(cameraController);
+    }
+}
+
 void GameField::updateHeroDestinationPoint() {
     qDebug() << "GameField::updateHeroDestinationPoint(); -- ";
 //    Unit* hero = unitsManager->hero;
@@ -329,23 +331,18 @@ void GameField::updateHeroDestinationPoint(int x, int y) {
 }
 
 void GameField::updatePathFinderWalls() {
-    qDebug() << "GameField::updatePathFinderWalls(); -- ";
-    qDebug() << "GameField::updatePathFinderWalls(); -1- pathFinder->walls.size():" << pathFinder->walls.size();
+    qDebug() << "GameField::updatePathFinderWalls(); -start- pathFinder->walls.size():" << pathFinder->walls.size();
     pathFinder->clearCollisions();
-    qDebug() << "GameField::updatePathFinderWalls(); -2- pathFinder->walls.size():" << pathFinder->walls.size();
     for (int x = 0; x < map->width; x++) {
         for (int y = 0; y < map->height; y++) {
             Cell* cell = getCell(x, y);
             if (cell->isTerrain() || cell->getTower() != NULL) {
                 cell->isPassable();
-//                qDebug() << "GameField::updatePathFinderWalls(); -- " << cell->toString().toStdString().c_str();
-//                qDebug() << "GameField::updatePathFinderWalls(); -- pathFinder->addCollision";
                 pathFinder->addCollision({x, y});
             }
         }
     }
-    qDebug() << "GameField::updatePathFinderWalls(); -3- pathFinder->walls.size():" << pathFinder->walls.size();
-    qDebug() << "GameField::updatePathFinderWalls(); -end- ";
+    qDebug() << "GameField::updatePathFinderWalls(); -end- pathFinder->walls.size():" << pathFinder->walls.size();
 }
 
 void GameField::render(float deltaTime, CameraController* cameraController) {
@@ -355,7 +352,7 @@ void GameField::render(float deltaTime, CameraController* cameraController) {
         timeOfGame += deltaTime;
 //        spawnUnits(delta);
         stepAllUnits(deltaTime, cameraController);
-        shotAllTowers(deltaTime);
+//        shotAllTowers(deltaTime, cameraController);
 //        moveAllShells(delta);
 
 //        if (int result = field->stepAllUnits()) {
@@ -425,8 +422,8 @@ void GameField::drawFullField(CameraController* cameraController) {
 
 void GameField::drawGrid(CameraController* cameraController) {
     cameraController->painter->setPen(QPen(QColor(100, 60, 21), 1));
-    int cameraX = cameraController->cameraX;
-    int cameraY = cameraController->cameraY;
+    int cameraX = 0;//cameraController->cameraX;
+    int cameraY = 0;//cameraController->cameraY;
     float halfSizeCellX = cameraController->halfSizeCellX;
     float halfSizeCellY = cameraController->halfSizeCellY;
 //    qDebug() << "GameField::drawGrid(camera); -- cameraX:" << cameraX << " cameraY:" << cameraY << " halfSizeCellX:" << halfSizeCellX << " halfSizeCellY:" << halfSizeCellY;
@@ -566,16 +563,16 @@ void GameField::drawBackGroundCell(CameraController* cameraController, int cellX
     foreach (Tile* tile, cell->backgroundTiles) {
         QPixmap textureRegion = tile->getPixmap();
         if (cameraController->isDrawableBackground == 1 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableBackground == 2 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableBackground == 3 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableBackground == 4 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
     }
 }
@@ -687,16 +684,16 @@ void GameField::drawGroundCellWithUnitsAndTower(CameraController* cameraControll
     foreach (Tile* tile, cell->groundTiles) {
         QPixmap textureRegion = tile->getPixmap();
         if(cameraController->isDrawableGround == 1 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if(cameraController->isDrawableGround == 2 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if(cameraController->isDrawableGround == 3 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if(cameraController->isDrawableGround == 4 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
     }
     foreach (Unit* unit, cell->getUnits()) {
@@ -840,16 +837,16 @@ void GameField::drawForeGroundCell(CameraController* cameraController, int cellX
     foreach (Tile* tile, cell->foregroundTiles) {
         QPixmap textureRegion = tile->getPixmap();
         if (cameraController->isDrawableForeground == 1 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableForeground == 2 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableForeground == 3 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableForeground == 4 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
     }
 }
@@ -872,35 +869,34 @@ void GameField::drawUnit(CameraController* cameraController, Unit* unit) {
     } else {
         currentFrame = unit->getCurrentDeathFrame();
     }
-//        int deltaX = (currentFrame.getRegionWidth()) / 2;
-//        int deltaY = (currentFrame.getRegionHeight()) / 2;
     int deltaX = (cameraController->sizeCellX)/2;
     int deltaY = (cameraController->sizeCellY) + cameraController->sizeCellY/2;
 
-    float fVx = cameraController->cameraX , fVy = cameraController->cameraY;
+    float fVx = 0;//cameraController->cameraX;
+    float fVy = 0;//cameraController->cameraY;
 //    qDebug() << "GameField::drawUnit(); -- unit->circle1->x :" << unit->circle1->x  << " unit->circle1->y:" << unit->circle1->y;
     if(cameraController->isDrawableUnits == 1 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle1->x - deltaX;
         fVy += unit->circle1->y - deltaY;
-//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+        cameraController->painter->drawEllipse(unit->circle1->getPosition()->getPointF(), unit->circle1->radius, unit->circle1->radius);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
     if(cameraController->isDrawableUnits == 2 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle2->x - deltaX;
         fVy += unit->circle2->y - deltaY;
-//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+        cameraController->painter->drawEllipse(unit->circle2->getPosition()->getPointF(), unit->circle2->radius, unit->circle2->radius);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
     if(cameraController->isDrawableUnits == 3 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle3->x - deltaX;
         fVy += unit->circle3->y - deltaY;
-//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+        cameraController->painter->drawEllipse(unit->circle3->getPosition()->getPointF(), unit->circle3->radius, unit->circle3->radius);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
     if(cameraController->isDrawableUnits == 4 || cameraController->isDrawableUnits == 5) {
         fVx += unit->circle4->x - deltaX;
         fVy += unit->circle4->y - deltaY;
-//        cameraController->painter->drawEllipse(QPoint(fVx, fVy), cameraController->sizeCellY/5, cameraController->sizeCellY/5);
+        cameraController->painter->drawEllipse(unit->circle4->getPosition()->getPointF(), unit->circle4->radius, unit->circle4->radius);
         cameraController->painter->drawPixmap(fVx, fVy, cameraController->sizeCellX, cameraController->sizeCellY*2, currentFrame);
     }
 //    qDebug() << "GameField::drawUnit(); -- fVx:" << fVx << " fVy:" << fVy;
@@ -913,15 +909,23 @@ void GameField::drawTower(CameraController* cameraController, Tower* tower) {
     int towerSize = tower->templateForTower->size;
     Cell* cell = getCell(cellPosition->x(), cellPosition->y());
     QPointF* towerPos = cell->getGraphicCoordinates(cameraController->isDrawableTowers);
+    cameraController->painter->drawEllipse(*towerPos, 3, 3);
     QPixmap currentFrame = tower->templateForTower->idleTile->getPixmap();
     if(cameraController->isDrawableTowers == 5) {
         for(int m = 1; m < cameraController->isDrawableTowers; m++) {
             towerPos = cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, m);
-            cameraController->painter->drawPixmap(cameraController->cameraX+towerPos->x(), cameraController->cameraY+towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, currentFrame);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/towerPos->x(), /*cameraController->cameraY+*/towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, currentFrame);
+//            towerPos->operator +=(QPointF(cameraController->cameraX, cameraController->cameraY));
+//            qDebug() << "GameField::drawTower(); -- towerPos:" << towerPos << " radius:" << tower->radiusDetectionCircle->radius;
+//            cameraController->painter->drawEllipse(*towerPos, tower->radiusDetectionCircle->radius, tower->radiusDetectionCircle->radius);
         }
     } else if(cameraController->isDrawableTowers != 0) {
         towerPos = cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, cameraController->isDrawableTowers);
-        cameraController->painter->drawPixmap(cameraController->cameraX+towerPos->x(), cameraController->cameraY+towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, currentFrame);
+        cameraController->painter->drawPixmap(/*cameraController->cameraX+*/towerPos->x(), /*cameraController->cameraY+*/towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, currentFrame);
+//        towerPos->operator +=(QPointF(cameraController->cameraX, cameraController->cameraY));
+//        qDebug() << "GameField::drawTower(); -- towerPos:" << towerPos << " radius:" << tower->radiusDetectionCircle->radius;
+//        cameraController->painter->drawEllipse(*towerPos, tower->radiusDetectionCircle->radius, tower->radiusDetectionCircle->radius);
+//        cameraController->painter->drawEllipse(tower->radiusDetectionCircle->getPosition()->getPointF(), tower->radiusDetectionCircle->radius, tower->radiusDetectionCircle->radius);
     }
 }
 
@@ -1145,16 +1149,16 @@ void GameField::drawGridNavCell(CameraController* cameraController, int cellX, i
 //    foreach (QPixmap textureRegion, cell->backgroundTiles) {
         QPixmap textureRegion = global_pixmap;
         if (cameraController->isDrawableGridNav == 1 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableGridNav == 2 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableGridNav == 3 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
         if (cameraController->isDrawableGridNav == 4 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
         }
 //    }
     }
@@ -1193,31 +1197,31 @@ void GameField::drawRoutes(CameraController *cameraController) {
                 AStar::Vec2i point = unitRoute[k];
                 Cell* cell = getCell(point.x, point.y);
                 if (cameraController->isDrawableRoutes == 1 || cameraController->isDrawableRoutes == 5) {
-                    cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
+                    cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
                 }
                 if (cameraController->isDrawableRoutes == 2 || cameraController->isDrawableRoutes == 5) {
-                    cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
+                    cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
                 }
                 if (cameraController->isDrawableRoutes == 3 || cameraController->isDrawableRoutes == 5) {
-                    cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
+                    cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
                 }
                 if (cameraController->isDrawableRoutes == 4 || cameraController->isDrawableRoutes == 5) {
-                    cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
+                    cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, pixmapPathPoint);
                 }
             }
             AStar::Vec2i destinationPoint = unitRoute.front();
             Cell* cell = getCell(destinationPoint.x, destinationPoint.y);
             if (cameraController->isDrawableRoutes == 1 || cameraController->isDrawableRoutes == 5) {
-                cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
+                cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesBottom->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesBottom->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
             }
             if (cameraController->isDrawableRoutes == 2 || cameraController->isDrawableRoutes == 5) {
-                cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
+                cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesRight->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesRight->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
             }
             if (cameraController->isDrawableRoutes == 3 || cameraController->isDrawableRoutes == 5) {
-                cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
+                cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesTop->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesTop->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
             }
             if (cameraController->isDrawableRoutes == 4 || cameraController->isDrawableRoutes == 5) {
-                cameraController->painter->drawPixmap(cameraController->cameraX+cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), cameraController->cameraY+cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
+                cameraController->painter->drawPixmap(/*cameraController->cameraX+*/cell->graphicCoordinatesLeft->x()-(cameraController->halfSizeCellX), /*cameraController->cameraY+*/cell->graphicCoordinatesLeft->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, global_pixmap_DestinationPoint);
             }
         }
     }
@@ -1311,7 +1315,6 @@ void GameField::drawTowerUnderConstruction(CameraController* cameraController, i
     QPoint startDrawCell(startX, startY);
     QPoint finishDrawCell(finishX, finishY);
 //    qDebug() << "GameField::drawTowerUnderConstruction(); -2- finishX:" << finishX << " finishY:" << finishY;
-//    exit(0);
     for (int x = startX; x <= finishX; x++) {
         for (int y = startY; y <= finishY; y++) {
             Cell* cell = getCell(buildX + x, buildY + y);
@@ -1330,16 +1333,16 @@ void GameField::drawTowerUnderConstruction(CameraController* cameraController, i
         Cell* mainCell = getCell(buildX, buildY);
 //        qDebug() << "GameField::drawTowerUnderConstruction(); -4- mainCell:" << mainCell;
         if(mainCell != NULL) {
-//            cameraController->painter->get
-//            Color oldColorSB = spriteBatch.getColor();
-//            Color oldColorSR = shapeRenderer.getColor();
-//            if (enoughGold && canBuild) {
-//                spriteBatch.setColor(0, 1f, 0, 0.55f);
-//                shapeRenderer.setColor(0, 1f, 0, 0.55f);
-//            } else {
-//                spriteBatch.setColor(1f, 0, 0, 0.55f);
-//                shapeRenderer.setColor(1f, 0, 0, 0.55f);
-//            }
+//            cameraController->painter->save();
+//            cameraController->painter->setCompositionMode(QPainter::CompositionMode_SourceIn);
+            if (enoughGold && canBuild) {
+//                cameraController->painter->setBrush(QColor(0, 255, 0));
+//                cameraController->painter->setPen(QColor(0, 255, 0, 80));
+            } else {
+//                cameraController->painter->setBrush(QColor(255, 0, 0));
+//                cameraController->painter->setPen(QColor(255, 0, 0, 80));
+            }
+//            cameraController->painter->setOpacity(0.5);
 //            qDebug() << "GameField::drawTowerUnderConstruction(); -5- isDrawableTowers:" << cameraController->isDrawableTowers;
             if (cameraController->isDrawableTowers == 5) {
                 for (int map = 1; map < cameraController->isDrawableTowers; map++) {
@@ -1348,9 +1351,7 @@ void GameField::drawTowerUnderConstruction(CameraController* cameraController, i
             } else if (cameraController->isDrawableTowers != 0) {
                 drawTowerUnderConstructionAndMarks(cameraController, cameraController->isDrawableTowers, templateForTower, mainCell, startDrawCell, finishDrawCell);
             }
-//            qDebug() << "GameField::drawTowerUnderConstruction(); -6- ";
-//            spriteBatch.setColor(oldColorSB);
-//            shapeRenderer.setColor(oldColorSR);
+//            cameraController->painter->restore();
         }
     }
 }
@@ -1369,30 +1370,32 @@ void GameField::drawTowerUnderConstructionAndMarks(CameraController* cameraContr
 //    cameraController->painter->setPen(QColor(255, 0, 0));
     towerPos = cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, map);
 //    cameraController->painter->drawEllipse(*cameraPoint + *towerPos, 3, 3);//templateForTower->radiusDetection, templateForTower->radiusDetection);
-    cameraController->painter->drawPixmap(cameraController->cameraX+towerPos->x(), cameraController->cameraY+towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, textureRegion);
-////    qDebug() << "GameField::drawTowerUnderConstructionAndMarks(); -- towerPos:" << towerPos << " textureRegion:" << textureRegion;
-//    if(greenCheckmark != NULL && redCross != NULL) {
-////        Vector2 markPos = new Vector2();
-//        QPoint* markPos;
-//        for (int x = startDrawCell.x(); x <= finishDrawCell.x(); x++) {
-//            for (int y = startDrawCell.y(); y <= finishDrawCell.y(); y++) {
-//                Cell* markCell = getCell(mainCell.cellX + x, mainCell.cellY + y);
-//                if (markCell != NULL) {
-////                        Gdx.app.log("GameField::drawTowerUnderConstructionAndMarks()", "-- markCell:" + markCell);
-//                    markPos = markCell->getGraphicCoordinates(map);
-////                    markPos->
-////                    markPos->
-////                    markPos.add(-(halfSizeCellX), -(halfSizeCellY));
-//////                        if (cellIsEmpty(mainCell.cellX + x, mainCell.cellY + y)) {
-////                    if(markCell.isEmpty()) {
-////                        spriteBatch.draw(greenCheckmark, markPos.x, markPos.y, sizeCellX, sizeCellY * 2);
-////                    } else {
-////                        spriteBatch.draw(redCross, markPos.x, markPos.y, sizeCellX, sizeCellY * 2);
-////                    }
-//                }
-//            }
-//        }
-//    }
+    cameraController->painter->drawPixmap(/*cameraController->cameraX+*/towerPos->x(), /*cameraController->cameraY+*/towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, textureRegion);
+//    cameraController->painter->fillRect(towerPos->x(), towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, cameraController->painter->pen().color());
+//    qDebug() << "GameField::drawTowerUnderConstructionAndMarks(); -- towerPos:" << towerPos << " textureRegion:" << textureRegion;
+    if(greenCheckmark != NULL && redCross != NULL) {
+//        Vector2 markPos = new Vector2();
+        QPointF* markPos;
+        for (int x = startDrawCell.x(); x <= finishDrawCell.x(); x++) {
+            for (int y = startDrawCell.y(); y <= finishDrawCell.y(); y++) {
+                Cell* markCell = getCell(mainCell->cellX + x, mainCell->cellY + y);
+                if (markCell != NULL) {
+//                        Gdx.app.log("GameField::drawTowerUnderConstructionAndMarks()", "-- markCell:" + markCell);
+                    markPos = markCell->getGraphicCoordinates(map);
+//                    markPos->setX(markPos->x() -(cameraController->halfSizeCellX));
+//                    markPos->setY(markPos->y() -(cameraController->halfSizeCellY));
+//                        if (cellIsEmpty(mainCell.cellX + x, mainCell.cellY + y)) {
+                    if(markCell->isEmpty()) {
+                        cameraController->painter->drawPixmap(markPos->x()-cameraController->halfSizeCellX, markPos->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, *greenCheckmark);
+//                        spriteBatch.draw(greenCheckmark, markPos.x, markPos.y, sizeCellX, sizeCellY * 2);
+                    } else {
+                        cameraController->painter->drawPixmap(markPos->x()-cameraController->halfSizeCellX, markPos->y()-(cameraController->sizeCellY*2), cameraController->sizeCellX, cameraController->sizeCellY*2, *redCross);
+//                        spriteBatch.draw(redCross, markPos.x, markPos.y, sizeCellX, sizeCellY * 2);
+                    }
+                }
+            }
+        }
+    }
 }
 
 //void GameField::drawTowerUnderConstruction(QPainter* painter, int buildX, int buildY, TemplateForTower *tower) {
@@ -1716,13 +1719,15 @@ void GameField::stepAllUnits(float deltaTime, CameraController* cameraController
 //    return 0;
 //}
 
-void GameField::shotAllTowers(float deltaTime) {
+void GameField::shotAllTowers(float deltaTime, CameraController *cameraController) {
+//    qDebug() << "GameField::shotAllTowers(); -- deltaTime:" << deltaTime;
+    updateTowersGraphicCoordinates(cameraController);
     for (Tower* tower : towersManager->towers) {
         TowerAttackType::type towerAttackType = tower->templateForTower->towerAttackType;
         if (towerAttackType == TowerAttackType::Pit) {
             Unit* unit = getCell(tower->position->x(), tower->position->y())->getUnit();
             if (unit != NULL && (unit->templateForUnit->type != "fly") && unit->player != tower->player) {
-//                Gdx.app.log("GameField", "shotAllTowers(); -- tower.capacity:" + tower.capacity + " unit.getHp:" + unit.getHp());
+                qDebug() << "GameField::shotAllTowers(); -- tower.capacity:" << tower->capacity << " unit.getHp:" << unit->hp;
 //                    unit.die(unit.getHp());
                 unitsManager->removeUnit(unit);
                 getCell(tower->position->x(), tower->position->y())->removeUnit(unit);
@@ -1731,7 +1736,6 @@ void GameField::shotAllTowers(float deltaTime) {
                     towersManager->removeTower(tower);
                 }
             }
-//                Gdx.app.log("GameField::shotAllTowers(" + deltaTime + ")", "-- towerAttackType.pit -- unit:" + unit);
         } else if (towerAttackType == TowerAttackType::Melee) {
             shotMeleeTower(tower);
         } else if (towerAttackType == TowerAttackType::Range || towerAttackType == TowerAttackType::RangeFly) {
@@ -1741,8 +1745,15 @@ void GameField::shotAllTowers(float deltaTime) {
                         if ( ( (unit->templateForUnit->type == "fly") && towerAttackType == TowerAttackType::RangeFly) ||
                                 ((unit->templateForUnit->type != "fly") && towerAttackType == TowerAttackType::Range)) { // Тупо но работает, потом переделать need =)
 //                            if (Intersector.overlaps(tower.getRadiusDetectionСircle(), unit.circle1)) {
-                            if (tower->radiusDetectionCircle->overlaps(unit->circle3)) { // circle1 2 3 4?
-                                    qDebug() << "GameField::shotAllTowers(); -- Intersector.overlaps(" << tower->toString() << ", " << unit->toString();
+//                            qDebug() << "GameField::shotAllTowers(); -1- tower->radiusDetectionCircle:" << tower->radiusDetectionCircle;
+//                            qDebug() << "GameField::shotAllTowers(); -- unit->circle1:" << unit->circle1;
+//                            qDebug() << "GameField::shotAllTowers(); -- unit->circle2:" << unit->circle2;
+//                            qDebug() << "GameField::shotAllTowers(); -- unit->circle3:" << unit->circle3;
+//                            qDebug() << "GameField::shotAllTowers(); -- unit->circle4:" << unit->circle4;
+                            if (tower->radiusDetectionCircle != NULL && tower->radiusDetectionCircle->overlaps(unit->circle3)) { // circle1 2 3 4?
+                                    qDebug() << "GameField::shotAllTowers(); -- Intersector.overlaps()";
+                                    qDebug() << "GameField::shotAllTowers(); -- tower:" << tower->toString(true).toStdString().c_str();
+                                    qDebug() << "GameField::shotAllTowers(); -- unit:" << unit->toString(true).toStdString().c_str();
 //                                if (tower->shoot(unit)) {
 //                                    if(tower->templateForTower->shellAttackType != ShellAttackType.MassAddEffect) {
 //                                        break;
@@ -1760,6 +1771,7 @@ void GameField::shotAllTowers(float deltaTime) {
             }
         }
     }
+//    qDebug() << "GameField::shotAllTowers(); -end- ";
 }
 
 bool GameField::shotMeleeTower(Tower *tower) {
@@ -2023,7 +2035,6 @@ UnderConstruction* GameField::createdRandomUnderConstruction() {
 }
 
 UnderConstruction* GameField::createdUnderConstruction(TemplateForTower* templateForTower) {
-    qDebug() << "GameField::createdUnderConstruction(); -- templateForTower:" << templateForTower;
     qDebug() << "GameField::createdUnderConstruction(); -- templateForTower:" << templateForTower->toString(true).toStdString().c_str();
     if (underConstruction != NULL) {
         delete underConstruction;

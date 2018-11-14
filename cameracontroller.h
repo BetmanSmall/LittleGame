@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QPainter>
 
+#include "vector2.h"
+
 class CameraController
 {
 public:
@@ -11,7 +13,8 @@ public:
     float viewportWidth = 0;
     float viewportHeight = 0;
     int mapWidth, mapHeight;
-    int cameraX = 800, cameraY = 0;
+    float cameraX = 800;
+    float cameraY = 0;
 
     int isDrawableGrid = 3;
     int isDrawableUnits = 3;
@@ -30,6 +33,7 @@ public:
     float defSizeCellX, defSizeCellY;
     float sizeCellX, sizeCellY;
     float halfSizeCellX, halfSizeCellY;
+//    static float _halfSizeCellX, _halfSizeCellY;
     float zoomMax = 50.0;
     float zoomMin = 0.2;
     float zoom = 1;
@@ -57,6 +61,8 @@ public:
 //    bool whichCell(int &mouseX, int &mouseY);
     bool whichCell(int &mouseX, int &mouseY, int map);
     QPointF* getCorrectGraphicTowerCoord(QPointF* towerPos, int towerSize, int map);
+    Vector2* getCenterTowerGraphicCoord(int cellX, int cellY);
+    QPointF* getCenterGraphicCoord(int cellX, int cellY, int map);
     QString toString();
 };
 

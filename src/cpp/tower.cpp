@@ -1,7 +1,7 @@
 #include "src/head/tower.h"
 
 Tower::Tower(QPoint *position, TemplateForTower *templateForTower, int player) {
-    qDebug() << "Tower::Tower(); -- x:" << position << " templateForTower:" << templateForTower << " player:" << player;
+    qDebug() << "Tower::Tower(); -- position:" << position << " templateForTower:" << templateForTower << " player:" << player;
     this->position = position;
     this->elapsedReloadTime = templateForTower->reloadTime;
     this->templateForTower = templateForTower;
@@ -9,14 +9,25 @@ Tower::Tower(QPoint *position, TemplateForTower *templateForTower, int player) {
     this->player = player;
     this->capacity = templateForTower->capacity;
 //    this->bullets = new Array<Bullet>();
-    this->radiusDetectionCircle = new Circle(0.0, 0.0, templateForTower->radiusDetection);
-    if(templateForTower->shellAttackType == ShellAttackType::FirstTarget && templateForTower->radiusFlyShell != 0.0 && templateForTower->radiusFlyShell >= templateForTower->radiusDetection) {
-//        this->radiusFlyShellСircle = new Circle(getCenterGraphicCoord(1), templateForTower->radiusFlyShell);
-    }
+    radiusDetectionCircle = NULL;
+    radiusFlyShellCircle = NULL;
 }
 
 Tower::~Tower() {
     qDebug() << "Tower::~Tower(); -- ";
+}
+
+void Tower::updateGraphicCoordinates(CameraController *cameraController) {
+    if (radiusDetectionCircle != NULL) {
+        delete radiusDetectionCircle;
+    }
+    this->radiusDetectionCircle = new Circle(cameraController->getCenterTowerGraphicCoord(position->x(), position->y()), templateForTower->radiusDetection);
+    if (templateForTower->shellAttackType == ShellAttackType::FirstTarget && templateForTower->radiusFlyShell != 0.0 && templateForTower->radiusFlyShell >= templateForTower->radiusDetection) {
+        if (radiusFlyShellCircle != NULL) {
+            delete radiusFlyShellCircle;
+        }
+        this->radiusFlyShellCircle = new Circle(cameraController->getCenterTowerGraphicCoord(position->x(), position->y()), templateForTower->radiusFlyShell);
+    }
 }
 
 bool Tower::recharge(float delta) {
@@ -43,7 +54,7 @@ bool Tower::shoot(Unit* unit, CameraController* cameraController) {
         } else if (templateForTower->shellAttackType == ShellAttackType::FireBall) {
 
         } else {
-            bullets.push_back(new Bullet(getCenterGraphicCoord(cameraController), templateForTower, unit));
+            bullets.push_back(new Bullet(cameraController->getCenterTowerGraphicCoord(position->x(), position->y()), templateForTower, unit));
         }
         elapsedReloadTime = 0.0;
         return true;
@@ -100,47 +111,14 @@ void Tower::moveShell(float delta, Bullet* bullet) {
     }
 }
 
-QPointF* Tower::getCenterGraphicCoord(CameraController* cameraController) {
-    return getCenterGraphicCoord(cameraController->isDrawableTowers, cameraController);
-}
-
-QPointF* Tower::getCenterGraphicCoord(int map, CameraController* cameraController) {
-    return getCenterGraphicCoord(position->x(), position->y(), map, cameraController);
-}
-
-QPointF* Tower::getCenterGraphicCoord(int cellX, int cellY, int map, CameraController* cameraController) {
-    int halfSizeCellX = cameraController->halfSizeCellX;
-    int halfSizeCellY = cameraController->halfSizeCellY;
-    float pxlsX = 0.0, pxlsY = 0.0;
-//        float offsetX = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellX) : ( (templateForTower.size == 1) ? 0 : (templateForTower.size-1)*halfSizeCellX));
-//        float offsetY = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellY) : ( (templateForTower.size == 1) ? 0 : (templateForTower.size-1)*halfSizeCellY));
-////        float offsetX = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellX) : (templateForTower.size-1)*halfSizeCellX);
-////        float offsetY = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellY) : (templateForTower.size-1)*halfSizeCellY);
-    if(map == 1) {
-        pxlsX = (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX));
-        pxlsY = (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY));
-    } else if(map == 2) {
-        pxlsX = ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX;
-        pxlsY = ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY;
-    } else if(map == 3) {
-        pxlsX = (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX));
-        pxlsY = ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY*2;
-    } else if(map == 4) {
-        pxlsX = (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX;
-        pxlsY = ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY;
-    }
-//        return new Vector2(pxlsX - halfSizeCellX, pxlsY + halfSizeCellY*templateForTower.size);
-    return new QPointF(pxlsX, pxlsY);
-} // -------------------------------------------------------------- TODD It is analog GameField::getGraphicCoordinates() func!
-
 QString Tower::toString() {
     return toString(false);
 }
 
 QString Tower::toString(bool full) {
     QString sb("Tower[");
-    sb.append("position->x():" + position->x());
-    sb.append("position->y():" + position->y());
+    sb.append("position->x():" + QString::number(position->x()));
+    sb.append(",position->y():" + QString::number(position->y()));
     if (full) {
         sb.append(QString(",elapsedReloadTime:%1").arg(elapsedReloadTime));
         sb.append(QString(",templateForTower:%1").arg(templateForTower->toString()));

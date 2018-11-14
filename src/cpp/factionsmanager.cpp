@@ -149,7 +149,6 @@ void FactionsManager::loadFactions() {
 void FactionsManager::loadFaction(QString factionFile) {
     qDebug() << "FactionsManager::loadFaction(); -start- factionFile:" << factionFile;
     QDomDocument* domDocument = MapLoader::loadDomDocument(factionFile);
-
     QDomElement rootElement = domDocument->documentElement();
     QString factionName = rootElement.attribute("name", NULL);
     if (factionName != NULL) {
@@ -159,10 +158,8 @@ void FactionsManager::loadFaction(QString factionFile) {
         for (int k = 0; k < templateForUnitElements.length(); k++) {
             QDomNode tileSetNode = templateForUnitElements.item(k);
             QString source = tileSetNode.toElement().attribute("source", NULL);
-//            qDebug() << "FactionsManager::loadFaction(); -- source:" << source;
             if (source != NULL) {
                 QString templateFile = MapLoader::findFile(factionFile, source);
-//                qDebug() << "FactionsManager::loadFaction(); -- templateFile:" << templateFile;
                 TemplateForUnit* templateForUnit = new TemplateForUnit(templateFile);
 //                templateForUnit->setFaction(faction);
                 faction->units.push_back(templateForUnit);
@@ -173,10 +170,8 @@ void FactionsManager::loadFaction(QString factionFile) {
         for (int k = 0; k < templateForTowerElements.length(); k++) {
             QDomNode tileSetNode = templateForTowerElements.item(k);
             QString source = tileSetNode.toElement().attribute("source", NULL);
-            qDebug() << "FactionsManager::loadFaction(); -- source:" << source;
             if (source != NULL) {
                 QString templateFile = MapLoader::findFile(factionFile, source);
-//                qDebug() << "FactionsManager::loadFaction(); -- templateFile:" << templateFile;
                 TemplateForTower* templateForTower = new TemplateForTower(templateFile);
 //                templateForTower->setFaction(faction);
                 faction->towers.push_back(templateForTower);
