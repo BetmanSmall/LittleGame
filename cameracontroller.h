@@ -22,7 +22,7 @@ public:
     int isDrawableBackground = 3;
     int isDrawableGround = 3;
     int isDrawableForeground = 3;
-    int isDrawableGridNav = 0;
+    int isDrawableGridNav = 3;
     int isDrawableRoutes = 3;
     int drawOrder = 8;
 
@@ -60,7 +60,7 @@ public:
 //    QPoint unproject(QPoint screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight);
 //    bool whichCell(int &mouseX, int &mouseY);
     bool whichCell(int &mouseX, int &mouseY, int map);
-    QPointF* getCorrectGraphicTowerCoord(QPointF* towerPos, int towerSize, int map);
+    bool getCorrectGraphicTowerCoord(Vector2 *towerPos, int towerSize, int map);
     Vector2* getCenterTowerGraphicCoord(int cellX, int cellY);
     QPointF* getCenterGraphicCoord(int cellX, int cellY, int map);
     QString toString();

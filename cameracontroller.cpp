@@ -201,24 +201,25 @@ bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {
     return false;
 }
 
-QPointF* CameraController::getCorrectGraphicTowerCoord(QPointF* towerPos, int towerSize, int map) {
-    QPointF* retTowerPos = new QPointF();
+bool CameraController::getCorrectGraphicTowerCoord(Vector2 *towerPos, int towerSize, int map) {
+//    qDebug() << "CameraController::getCorrectGraphicTowerCoord(); -- towerSize:" << towerSize << " qweqwe:" << (towerSize - ((towerSize % 2 != 0) ? 0 : 1));
     if(map == 1) {
-        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * towerSize) ) );
-        retTowerPos->setY( towerPos->y() + (-(sizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) ) - sizeCellY );
+        towerPos->x -= ( (halfSizeCellX * towerSize) );
+        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 0))) );
     } else if(map == 2) {
-        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) ) );
-        retTowerPos->setY( towerPos->y() + (-(sizeCellY * towerSize) ) - sizeCellY );
+        towerPos->x -= ( (halfSizeCellX * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) );
+        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize /*- ((towerSize % 2 != 0) ? 0 : 1)*/)) );
     } else if(map == 3) {
-        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * towerSize)) );
-        retTowerPos->setY( towerPos->y() + (-(sizeCellY * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) ) - sizeCellY );
+        towerPos->x -= ( (halfSizeCellX * towerSize) );
+        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize /*- ((towerSize % 2 != 0) ? 0 : 1)*/)) );
     } else if(map == 4) {
-        retTowerPos->setX( towerPos->x() + (-(halfSizeCellX * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) ) );
-        retTowerPos->setY( towerPos->y() + (-(sizeCellY * towerSize) ) - sizeCellY );
+        towerPos->x -= ( (halfSizeCellX * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) );
+        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 0))) );
     } else {
         qDebug() << "CameraController::getCorrectGraphicTowerCoord(" << towerPos << ", " << towerSize << ", " << map << "); -- Bad map[1-4] value:" << map;
+        return false;
     }
-    return retTowerPos;
+    return true;
 }
 
 //QPointF* CameraController::getCenterGraphicCoord(CameraController* cameraController) {
@@ -262,8 +263,8 @@ QPointF* CameraController::getCenterGraphicCoord(int cellX, int cellY, int map) 
 
 QString CameraController::toString() {
     QString str = "Camera:[";
-    str.append("x:" + QString::number(cameraX));
-    str.append(",y:" + QString::number(cameraY));
+    str.append("cameraX:" + QString::number(cameraX));
+    str.append(",cameraY :" + QString::number(cameraY));
     str.append(",sizeCellX:" + QString::number(sizeCellX));
     str.append(",sizeCellY:" + QString::number(sizeCellY));
     str.append(",zoom:" + QString::number(zoom));
@@ -276,4 +277,3 @@ QString CameraController::toString() {
     str.append("]");
     return str;
 }
-

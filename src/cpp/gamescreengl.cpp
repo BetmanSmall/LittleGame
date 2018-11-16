@@ -140,6 +140,8 @@ void GameScreenGL::paintGL() {
     if (gameField->getUnderConstruction() != NULL) {
         cameraController->painter->drawText(10, 230, "gameField->underConstruction->endX:" + QString::number(gameField->underConstruction->endX) + " endY:" + QString::number(gameField->underConstruction->endY));
     }
+    cameraController->painter->drawText(10, 240, "gameField->towersManager->towers.size():" + QString::number(gameField->towersManager->towers.size()));
+    cameraController->painter->drawText(10, 250, "gameField->unitsManager->units.size():" + QString::number(gameField->unitsManager->units.size()));
     cameraController->painter->end();
 }
 
@@ -154,6 +156,11 @@ void GameScreenGL::mousePressEvent(QMouseEvent* event) {
     int mouseX = event->x();
     int mouseY = event->y();
     Qt::MouseButton button = event->button();
+    if (gameField->getUnderConstruction() != NULL) {
+        if (button == Qt::RightButton) {
+            gameField->cancelUnderConstruction();
+        }
+    }
     if ( (!cameraController->panMidMouseButton && button == Qt::RightButton) ||
           (cameraController->panMidMouseButton && button == Qt::MidButton) ) {
         cameraController->touchDown(mouseX, mouseY, 0, button);
@@ -199,29 +206,27 @@ void GameScreenGL::mouseReleaseEvent(QMouseEvent* event) {
                 qDebug() << "GameScreenGL::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY << " isEmpty:" << gameField->getCell(mouseX, mouseY)->isEmpty();
             }
         }
-//    } else if (button == Qt::MidButton && cameraController->panMidMouseButton) {
-//        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGridNav) != NULL) {
-//            qDebug() << "GameScreenGL::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
-//        }
-//    } else if (button == Qt::RightButton && !cameraController->panMidMouseButton) {
-//        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers) != NULL) {
-//            qDebug() << "GameScreenGL::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
-////            if ( panMidMouseButton || (prevMouseCellX == mouseX && prevMouseCellY == mouseY && prevGlobalMouseX == event->globalX() && prevGlobalMouseY == event->globalY()) ) {
-////                Cell* cell = field->getCell(mouseX, mouseY);
-////                if (cell != NULL) {
-////                    if(cell->isEmpty()) {
-////                        int randNumber = ( 124+(rand()%2) );
-////                        QPixmap pixmap = field->map->tileSets.getTileSet(0)->tiles[randNumber]->getPixmap();
-////                        cell->setTerrain(pixmap);
-////                    } else if (cell->isTerrain()) {
-////                        cell->removeTerrain();
-////                    } else {
-////                        qDebug() << "GameScreenGL::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
-////                    }
-////                }
-////                field->updateHeroDestinationPoint();
-////            }
-//        }
+    } else if (button == Qt::RightButton && !cameraController->panMidMouseButton) {
+        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers) != NULL) {
+            qDebug() << "GameScreenGL::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
+            if ( cameraController->panMidMouseButton || (cameraController->prevMouseCellX == mouseX && cameraController->prevMouseCellY == mouseY && cameraController->prevGlobalMouseX == event->globalX() && cameraController->prevGlobalMouseY == event->globalY()) ) {
+                Cell* cell = gameField->getCell(mouseX, mouseY);
+                if (cell != NULL) {
+                    if(cell->isEmpty()) {
+                        gameField->createTower(mouseX, mouseY, gameField->factionsManager->getRandomTemplateForTowerFromAllFaction(), 0);
+                        int randNumber = ( 124+(rand()%2) );
+                        cell->setTerrain(gameField->map->tileSets.getTileSet(0)->tiles[randNumber]);
+                    } else if (cell->isTerrain()) {
+                        cell->removeTerrain();
+                    } else if (cell->getTower() != NULL) {
+                        cell->removeTower();
+                    } else {
+                        qDebug() << "GameScreenGL::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
+                    }
+                }
+                gameField->updateHeroDestinationPoint();
+            }
+        }
     }
 }
 
@@ -352,11 +357,23 @@ void GameScreenGL::keyPressEvent(QKeyEvent * event) {
         qDebug() << "GameScreenGL::keyPressEvent(); -- parentWidget()->windowState():" << parentWidget()->windowState();
         cameraController->cameraX = 0;
         cameraController->cameraY = 0;
+    } else if(key == Qt::Key_Control) {
+        qDebug() << "GameScreenGL::keyPressEvent(); -- isKeyJustPressed(Qt::Key_Control)";
+        for (int x = 0; x < gameField->map->width; x++) {
+            for (int y = 0; y < gameField->map->height; y++) {
+                gameField->getCell(x, y)->removeUnit();
+            }
+        }
+    } else if(key == Qt::Key_Alt) {
+        qDebug() << "GameScreenGL::keyPressEvent(); -- isKeyJustPressed(Qt::Key_Alt)";
+        gameField->gamePaused = !gameField->gamePaused;
+//        gameInterface.addActionToHistory("-- gameField->gamePaused:" + gameField->gamePaused);
+        qDebug() << "GameScreenGL::keyPressEvent(); -- gameField->gamePaused: " << gameField->gamePaused;
     } else if(key == Qt::Key_F1) {
         qDebug() << "GameScreenGL::keyPressEvent(); -- isKeyJustPressed(Qt::Key_F1)";
         if (modifiers == Qt::ShiftModifier) {
             cameraController->isDrawableGrid++;
-            if (cameraController->isDrawableGrid >= 5) {
+            if (cameraController->isDrawableGrid > 5) {
                 cameraController->isDrawableGrid = 0;
             }
         } else {
@@ -457,10 +474,6 @@ void GameScreenGL::keyPressEvent(QKeyEvent * event) {
         gameField->createdRandomUnderConstruction();
     } else if(key == Qt::Key_Escape || key == Qt::Key_N) {
         gameField->cancelUnderConstruction();
-        gameField->gamePaused = !gameField->gamePaused;
-//    } else if(key == Qt::Key_Space) {
-//        gameInterface.addActionToHistory("-- gameField->gamePaused:" + gameField->gamePaused);
-        qDebug() << "GameScreenGL::keyPressEvent(); -- gameField->gamePaused: " << gameField->gamePaused;
     } else if (key == Qt::Key_Enter) {
         signal_closeWidget();
         return;

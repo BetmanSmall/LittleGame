@@ -6,6 +6,7 @@ Unit::Unit(AStar::CoordinateList route, TemplateForUnit *templateForUnit, int pl
         this->oldPosition = route.back();
         this->newPosition = oldPosition;
         route.pop_back();
+//        this->exitCell = exitCell;
         this->hp = templateForUnit->healthPoints;
         this->speed = templateForUnit->speed;
         this->stepsInTime = 0.0;

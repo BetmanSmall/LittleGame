@@ -86,9 +86,9 @@ public:
     void drawTower(CameraController* cameraController, Tower* tower);
 //    void drawUnits(CameraController* cameraController);
 //    void drawTowersByTowers(CameraController* cameraController);
+    void drawGridNav(CameraController *cameraController);
     void drawGridNavs(CameraController *cameraController);
     void drawGridNavCell(CameraController *cameraController, int cellX, int cellY);
-//    void drawGridNav(CameraController *cameraController);
     void drawRoutes(CameraController *cameraController);
 
     void drawTowersUnderConstruction(CameraController* cameraController);
@@ -134,8 +134,8 @@ public:
 //    void towerActions(int x, int y);
     bool createTower(int buildX, int buildY, TemplateForTower *templateForTower, int player);
     void removeLastTower();
-    void removeTower(int touchX, int touchY);
-    bool deleteTower(int x = -1, int y = -1);
+    void removeTower(int cellX, int cellY);
+//    bool deleteTower(int x = -1, int y = -1);
 };
 
 #endif // FIELD_H

@@ -3,6 +3,7 @@
 Cell::Cell() {
 //    qDebug() << "Cell::Cell(); -- ";
 //    this.backgroundTiles = new Array<TiledMapTile>();
+//    this.groundTiles = new Array<TiledMapTile>();
 //    this.foregroundTiles = new Array<TiledMapTile>();
 //    this.trees = new Array<Tree>();
     this->empty = true;
@@ -14,11 +15,10 @@ Cell::Cell() {
     this->spawn = false;
     this->exit = false;
 
-//    setGraphicCoordinates(cellX, cellY, halfSizeCellX, halfSizeCellY);
-    graphicCoordinatesBottom = new QPointF();
-    graphicCoordinatesRight = new QPointF();
-    graphicCoordinatesTop = new QPointF();
-    graphicCoordinatesLeft = new QPointF();
+    graphicCoordinates1 = new Vector2();
+    graphicCoordinates2 = new Vector2();
+    graphicCoordinates3 = new Vector2();
+    graphicCoordinates4 = new Vector2();
 }
 
 Cell::~Cell() {
@@ -30,10 +30,10 @@ Cell::~Cell() {
 
     tower = NULL;
     units.clear();
-    delete graphicCoordinatesBottom;
-    delete graphicCoordinatesRight;
-    delete graphicCoordinatesTop;
-    delete graphicCoordinatesLeft;
+    delete graphicCoordinates1;
+    delete graphicCoordinates2;
+    delete graphicCoordinates3;
+    delete graphicCoordinates4;
 //    qDebug() << "Cell::~Cell(); -end- ";
 }
 
@@ -41,37 +41,33 @@ void Cell::setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, floa
 //    qDebug() << "Cell::setGraphicCoordinates(); -- cellX:" << cellX << " cellY:" << cellY << " halfSizeCellX:" << halfSizeCellX << " halfSizeCellY:" << halfSizeCellY;
     this->cellX = cellX;
     this->cellY = cellY;
-//        if(map == 1) { // Нижняя карта-java // Верхняя карта-с++
-//    graphicCoordinatesBottom = new QPointF( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)));
-    graphicCoordinatesBottom->setX( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)) );
-    graphicCoordinatesBottom->setY( (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY)) );
-//        } else if(map == 2) { // Правая карта
-//    graphicCoordinatesRight = new QPointF(  ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
-    graphicCoordinatesRight->setX( ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX );
-    graphicCoordinatesRight->setY( ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY );
-//        } else if(map == 3) { // Верхняя карта-c++ // Нижняя карта-java
-//    graphicCoordinatesTop = new QPointF(    (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)),                   ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
-    graphicCoordinatesTop->setX( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX)) );
-    graphicCoordinatesTop->setY( ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY * 2);
-//        } else if(map == 4) {// Левая карта
-//    graphicCoordinatesLeft = new QPointF(   (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX,   ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY);
-    graphicCoordinatesLeft->setX( (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX );
-    graphicCoordinatesLeft->setY( ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY );
-//        }
+//    if(map == 1) { // Нижняя карта-java // Верхняя карта-с++
+    graphicCoordinates1->x = ( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX) ) );
+    graphicCoordinates1->y = ( (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY) ) - halfSizeCellY );
+//    } else if(map == 2) { // Правая карта
+    graphicCoordinates2->x = ( ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX) ) + halfSizeCellX );
+    graphicCoordinates2->y = ( ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY) ) );
+//    } else if(map == 3) { // Верхняя карта-c++ // Нижняя карта-java
+    graphicCoordinates3->x = ( (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX) ) );
+    graphicCoordinates3->y = ( ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY) ) + halfSizeCellY );
+//    } else if(map == 4) {// Левая карта
+    graphicCoordinates4->x = ( (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX) ) - halfSizeCellX );
+    graphicCoordinates4->y = ( ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY) ) );
+//    }
 }
 
-QPointF* Cell::getGraphicCoordinates(int map) {
+Vector2 *Cell::getGraphicCoordinates(int map) {
     if(map == 1) {
-        return graphicCoordinatesBottom;
+        return graphicCoordinates1;
     } else if(map == 2) {
-        return graphicCoordinatesRight;
+        return graphicCoordinates2;
     } else if(map == 3) {
-        return graphicCoordinatesTop;
+        return graphicCoordinates3;
     } else if(map == 4) {
-        return graphicCoordinatesLeft;
+        return graphicCoordinates4;
     }
-    qDebug() << "Cell::getGraphicCoordinates(" << map << "); -- Bad map | return null!";
-    return NULL;
+    qDebug() << "Cell::getGraphicCoordinates(" << map << "); -- Bad map | return graphicCoordinates1!";
+    return graphicCoordinates1;
 }
 
 bool Cell::isEmpty() {
@@ -156,6 +152,7 @@ Unit* Cell::getUnit() {
 
 bool Cell::setUnit(Unit* unit) {
     if (empty) {
+//        units = new Array<Unit*>();
         units.push_back(unit);
         empty = false;
         return true;
@@ -167,12 +164,12 @@ bool Cell::setUnit(Unit* unit) {
 }
 
 int Cell::containUnit(Unit* unit) {
-    if(!units.empty()) {
+    if (!units.empty()) {
         int size = units.size();
-        if(unit == NULL) {
+        if (unit == NULL) {
             return size;
         } else {
-            for(int k = 0; k < size; k++) {
+            for (int k = 0; k < size; k++) {
                 if(units[k] == unit) {
                     return k+1;
                 }
@@ -184,12 +181,17 @@ int Cell::containUnit(Unit* unit) {
 
 int Cell::removeUnit(Unit* unit) {
     if (!empty && units.size()) {
-        if(unit == NULL) {
+        if (unit == NULL) {
             units.clear();
-        } else if(int num = containUnit(unit)) {
-            units.erase(units.begin()+(num-1));
+        } else /*if (int num = containUnit(unit))*/ {
+            auto it = std::find(units.begin(), units.end(), unit);
+            if (it != units.end()) {
+//                units.erase(units.begin()+(num-1));
+                units.erase(it);
+            }
         }
         if (units.size() == 0) {
+//            units = null;
             empty = true;
             return 0;
         }

@@ -10,8 +10,10 @@
 
 class Cell {
     class Tree {
+//    public:
         QPixmap* textureRegion;
-        int width, height;
+        int width;
+        int height;
 
         Tree(QPixmap* textureRegion, int width, int height) {
             this->textureRegion = textureRegion;
@@ -28,19 +30,23 @@ public:
     bool terrain;
     bool removableTerrain;
 
-    Tower* tower;
+    Tower *tower;
     std::vector<Unit*> units;
-    bool spawn, exit;
+    bool spawn;
+    bool exit;
 
     int cellX, cellY;
-    QPointF* graphicCoordinatesBottom, *graphicCoordinatesRight, *graphicCoordinatesTop, *graphicCoordinatesLeft;
+    Vector2 *graphicCoordinates1;
+    Vector2 *graphicCoordinates2;
+    Vector2 *graphicCoordinates3;
+    Vector2 *graphicCoordinates4;
 
 public:
     Cell();
     ~Cell();
 
     void setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, float halfSizeCellY);
-    QPointF* getGraphicCoordinates(int map);
+    Vector2 *getGraphicCoordinates(int map);
 
     bool isEmpty();
     bool isTerrain();

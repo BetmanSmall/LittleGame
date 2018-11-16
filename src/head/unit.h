@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <QPixmap>
 
-//#include "src/head/field.h"
 #include "src/head/libs/astar.h"
+//#include "src/head/cell.h"
 #include "src/head/direction.h"
 #include "src/head/templateforunit.h"
 #include "cameracontroller.h"
@@ -19,6 +19,7 @@ public:
     AStar::CoordinateList route;
     AStar::Vec2i oldPosition;
     AStar::Vec2i newPosition;
+//    Cell *exitCell;
     float hp;
     float speed;
     float stepsInTime;

@@ -39,7 +39,7 @@ public:
     }
 
     QPointF getPointF() {
-        return QPointF(x, y);
+        return QPointF(x, y); // re-write MB!
     }
 
     Vector2 *cpy () {
