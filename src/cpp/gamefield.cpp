@@ -62,7 +62,7 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
         createTower(randomX, randomY, factionsManager->getRandomTemplateForTowerFromAllFaction(), 0); // player0 = comp
         qDebug() << "GameField::GameField(); -- randomX:" << randomX << " randomY:" << randomY;
     }
-//    spawnHeroInSpawnPoint();
+    spawnHeroInSpawnPoint();
 
     qDebug() << "GameField::GameField(); -- enemyCount:" << enemyCount;
     int randomEnemyCount = enemyCount;
@@ -2152,10 +2152,11 @@ void GameField::moveAllShells(float delta) {
 
 void GameField::spawnHeroInSpawnPoint() {
     qDebug() << "GameField::spawnHeroInSpawnPoint(); -- ";
-    qDebug() << "GameField::spawnHeroInSpawnPoint(); -- ";
-    cellSpawnHero->removeTerrain(true);
-    removeTower(cellSpawnHero->cellX, cellSpawnHero->cellY);
-    createUnit(cellSpawnHero->cellX, cellSpawnHero->cellY, cellExitHero->cellX, cellExitHero->cellY, 1); // player1 = hero
+    if (cellSpawnHero != NULL && cellExitHero != NULL) {
+        cellSpawnHero->removeTerrain(true);
+        removeTower(cellSpawnHero->cellX, cellSpawnHero->cellY);
+        createUnit(cellSpawnHero->cellX, cellSpawnHero->cellY, cellExitHero->cellX, cellExitHero->cellY, 1); // player1 = hero
+    }
 }
 
 void GameField::spawnCompUnitToRandomExit(int x, int y) {
