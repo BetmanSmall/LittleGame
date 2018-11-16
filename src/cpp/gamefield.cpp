@@ -28,7 +28,7 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
     pathFinder = new AStar::PathFinder();
     pathFinder->setWorldSize({map->width, map->height});
     pathFinder->setHeuristic(AStar::Heuristic::euclidean);
-    pathFinder->setDiagonalMovement(true);
+    pathFinder->setDiagonalMovement(false);
     updatePathFinderWalls();
     qDebug() << "GameField::createField(); -- pathFinder:" << pathFinder;
 //    int terrainType = rand()%2;
@@ -62,7 +62,7 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
         createTower(randomX, randomY, factionsManager->getRandomTemplateForTowerFromAllFaction(), 0); // player0 = comp
         qDebug() << "GameField::GameField(); -- randomX:" << randomX << " randomY:" << randomY;
     }
-    spawnHeroInSpawnPoint();
+//    spawnHeroInSpawnPoint();
 
     qDebug() << "GameField::GameField(); -- enemyCount:" << enemyCount;
     int randomEnemyCount = enemyCount;
@@ -2151,6 +2151,7 @@ void GameField::moveAllShells(float delta) {
 //}
 
 void GameField::spawnHeroInSpawnPoint() {
+    qDebug() << "GameField::spawnHeroInSpawnPoint(); -- ";
     qDebug() << "GameField::spawnHeroInSpawnPoint(); -- ";
     cellSpawnHero->removeTerrain(true);
     removeTower(cellSpawnHero->cellX, cellSpawnHero->cellY);

@@ -145,6 +145,7 @@ void GameScreenGL::paintGL() {
     cameraController->painter->end();
 }
 
+
 void GameScreenGL::resizeGL(int width, int height) {
     qDebug() << "GameScreenGL::resizeGL(); -- width:" << width << " height:" << height;
     int side = qMin(width, height);

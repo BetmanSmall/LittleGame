@@ -74,7 +74,9 @@ void WidgetController::loadRandomMap() {
 }
 
 void WidgetController::loadNormalMap() {
-    loadMap("maps/randomMap.tmx");//island
+//    loadMap("maps/randomMap.tmx");
+//    loadMap("maps/island.tmx");
+    loadMap("maps/desert.tmx");
 }
 
 void WidgetController::showGameWidget(GameScreenGL *gameWidget) {
