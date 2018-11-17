@@ -37,7 +37,6 @@ public: // we are friendly!
     QPixmap* greenCheckmark;
     QPixmap* redCross;
 
-    bool isometric;
     QPixmap global_pixmap;
     QPixmap global_pixmap_PathPoint;
     QPixmap global_pixmap_EnemyPathPoint;
@@ -49,8 +48,10 @@ public: // we are friendly!
     bool gamePaused;
     int gamerGold;
 
-    Cell* cellSpawnHero;
-    Cell* cellExitHero;
+    bool isometric = false;
+    // GameType need
+    Cell* cellSpawnHero = NULL;
+    Cell* cellExitHero = NULL;
     int gameOverLimitUnits;
     int currentFinishedUnits;
 

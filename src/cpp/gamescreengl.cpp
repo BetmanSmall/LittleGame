@@ -142,6 +142,9 @@ void GameScreenGL::paintGL() {
     }
     cameraController->painter->drawText(10, 240, "gameField->towersManager->towers.size():" + QString::number(gameField->towersManager->towers.size()));
     cameraController->painter->drawText(10, 250, "gameField->unitsManager->units.size():" + QString::number(gameField->unitsManager->units.size()));
+
+    cameraController->painter->drawText(10, 260, "gameField->isometric:" + QString::number(gameField->isometric));
+    cameraController->painter->drawText(10, 270, "gameField->mapName:" + gameField->map->properties.value("name"));
     cameraController->painter->end();
 }
 
