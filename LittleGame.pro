@@ -87,7 +87,8 @@ HEADERS  += \
     src/head/gamefield.h \
     towerattacktype.h \ \
     shelleffecttype.h \
-    vector2.h
+    vector2.h \
+    gametype.h
     shellattacktype.h
 
 FORMS    += \

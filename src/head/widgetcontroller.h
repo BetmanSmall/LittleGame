@@ -38,6 +38,7 @@ private:
     FactionsManager* factionsManager;
     QList<int> gameRecords;
     QFile* gameRecordsFile;
+    std::vector<QString> campaingMaps;
 
     MainMenu* mainMenu;
     QPixmap mainMenuBackground;
@@ -67,6 +68,7 @@ private slots:
 
     void closeWidget();
     void closeWidgetGameFinished(bool win, int timeOfGame);
+    void loadNextCampaingMaps();
 };
 
 #endif // WIDGETCONTROLLER_H

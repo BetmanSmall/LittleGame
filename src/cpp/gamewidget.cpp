@@ -459,7 +459,7 @@ void GameWidget::wheelEvent(QWheelEvent* event) {
     qDebug() << "GameWidget::resizeEvent(); -- event->angleDelta():" << event->angleDelta();
 
     cameraController->scrolled(event->angleDelta().y());
-    gameField->updateCellsGraphicCoordinates(cameraController->halfSizeCellX, cameraController->halfSizeCellY);
+//    gameField->updateCellsGraphicCoordinates(cameraController->halfSizeCellX, cameraController->halfSizeCellY);
 
 //    int mainCoorMapX = field->getMainCoorMapX();
 //    int mainCoorMapY = field->getMainCoorMapY();

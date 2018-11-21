@@ -16,7 +16,7 @@ public:
     int tileWidth, tileHeight;
 
 public:
-    Map();
+    Map(QString mapPath);
     Layer* addNewLayer();
     QMap<QString, QString> *getProperties();
     TileSets *getTileSets();

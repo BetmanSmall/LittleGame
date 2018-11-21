@@ -26,7 +26,7 @@ Cell::~Cell() {
     backgroundTiles.clear();
     groundTiles.clear();
     foregroundTiles.clear();
-    trees.clear();
+//    trees.clear();
 
     tower = NULL;
     units.clear();
@@ -94,6 +94,7 @@ bool Cell::setTerrain(Tile *tile, bool removable) {
 
 bool Cell::removeTerrain(bool force) {
     if (terrain && (removableTerrain || force) ) {
+        groundTiles.clear();
         terrain = false;
         empty = true;
         return true;

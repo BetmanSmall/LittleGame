@@ -21,6 +21,7 @@ class WaveManager
         }
     };
 
+public:
     std::vector<Wave*> waves;
     std::vector<Wave*> wavesForUser;
     QPoint lastExitPoint;

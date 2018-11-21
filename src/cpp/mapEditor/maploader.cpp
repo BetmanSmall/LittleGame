@@ -108,7 +108,7 @@ QVector<QString> MapLoader::loadImages(QDomElement mapElement, QString mapPath) 
 }
 
 Map *MapLoader::loadMap(QDomElement mapElement, QString mapPath, QMap<QString, QPixmap> textures) {
-    Map *map = new Map();
+    Map *map = new Map(mapPath);
 
     QString mapOrientation = mapElement.attribute("orientation", NULL);
     int mapWidth = mapElement.attribute("width", "0").toInt();

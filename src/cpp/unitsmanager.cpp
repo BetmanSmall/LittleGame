@@ -1,8 +1,8 @@
 #include "src/head/unitsmanager.h"
 
-UnitsManager::UnitsManager(int difficultyLevel) {
+UnitsManager::UnitsManager() {
     qDebug() << "UnitsManager::UnitsManager(); -- ";
-    this->difficultyLevel = difficultyLevel;
+//    this->difficultyLevel = difficultyLevel;
 }
 
 UnitsManager::~UnitsManager() {
@@ -10,9 +10,8 @@ UnitsManager::~UnitsManager() {
     units.clear();
 }
 
-
-Unit* UnitsManager::createUnit(AStar::CoordinateList path, TemplateForUnit* templateForUnit, int player){
-    Unit* unit = new Unit(path, templateForUnit, player);
+Unit* UnitsManager::createUnit(AStar::CoordinateList path, TemplateForUnit *templateForUnit, int player, Cell *exitCell){
+    Unit* unit = new Unit(path, templateForUnit, player, exitCell);
     units.push_back(unit);
     if (player != 0) {
         hero.push_back(unit);

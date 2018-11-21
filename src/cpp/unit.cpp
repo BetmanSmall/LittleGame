@@ -1,35 +1,30 @@
 #include "src/head/unit.h"
 
-Unit::Unit(AStar::CoordinateList route, TemplateForUnit *templateForUnit, int player) {
+Unit::Unit(AStar::CoordinateList route, TemplateForUnit *templateForUnit, int player, Cell *exitCell) {
     if (!route.empty()) {
         this->route = route;
         this->oldPosition = route.back();
         this->newPosition = oldPosition;
         route.pop_back();
-//        this->exitCell = exitCell;
+        this->exitCell = exitCell;
         this->hp = templateForUnit->healthPoints;
         this->speed = templateForUnit->speed;
         this->stepsInTime = 0.0;
         this->deathElapsedTime = 0.0;
 
         this->player = player;
-//        this->coorByMapX = coorByMapX;
-//        this->coorByMapY = coorByMapY;
+        this->currentPoint = new Vector2();
+        this->backStepPoint = new Vector2();
         this->circle1 = new Circle(0.0, 0.0, 16.0);
         this->circle2 = new Circle(0.0, 0.0, 16.0);
         this->circle3 = new Circle(0.0, 0.0, 16.0);
         this->circle4 = new Circle(0.0, 0.0, 16.0);
-//        this->alive = true;
-//        this->preDeath = false;
-//        this->type = templateForUnit->type;
 
         this->templateForUnit = templateForUnit;
 
         this->direction = Direction::type::UP;
-//        this->animationCurrIter = 0;
-//        this->animationMaxIter = 0;
         setAnimation("walk_");
-//        this->effects
+//        this->shellEffectTypes = new Array<ShellEffectType>();
     } else {
         qDebug() << "Unit::Unit(); -- path.empty():" << route.empty();
     }
@@ -37,12 +32,24 @@ Unit::Unit(AStar::CoordinateList route, TemplateForUnit *templateForUnit, int pl
 
 Unit::~Unit() {
     route.clear();
-//    activePixmaps.clear();
+//    delete oldPosition;
+//    delete newPosition;
+    exitCell = NULL;
+
+    delete currentPoint;
+    delete backStepPoint;
     delete circle1;
     delete circle2;
     delete circle3;
     delete circle4;
+    delete velocity;
+    delete displacement;
+
+    templateForUnit = NULL;
+
+//    delete direction;
     delete animation;
+    shellEffectTypes.clear();
 }
 
 void Unit::setAnimation(QString action) {
@@ -63,8 +70,10 @@ void Unit::setAnimation(QString action) {
 //    qDebug() << "Unit::setAnimation(); -end- ";
 }
 
-void Unit::correct_fVc(float &fVx, float &fVy, Direction::type direction, float sizeCellX) {
+void Unit::correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX) {
     this->direction = direction;
+    float fVx = fVc->x;
+    float fVy = fVc->y;
     if (direction == Direction::type::UP) {
         fVy += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
     } else if (direction == Direction::type::UP_RIGHT) {
@@ -86,6 +95,7 @@ void Unit::correct_fVc(float &fVx, float &fVy, Direction::type direction, float 
         fVx += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
         fVy += ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
     }
+    fVc->set(fVx, fVy);
 }
 
 AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
@@ -108,108 +118,113 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
         int sizeCellY = cameraController->sizeCellY;
         float halfSizeCellX = sizeCellX/2;
         float halfSizeCellY = sizeCellY/2;
-        float fVx = 0, fVy = 0;
+        Vector2 *fVc = new Vector2(); // fVc = floatVectorCoordinates
+//        float fVx = 0, fVy = 0;
         Direction::type oldDirection = direction;
         int isDrawableUnits = cameraController->isDrawableUnits;
-        if(isDrawableUnits == 3 || isDrawableUnits == 5) {
-            fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
-            fVy = ( (halfSizeCellY * newY) + (newX * halfSizeCellY)) + halfSizeCellY*2;
-            if (newX < oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP, sizeCellX);
-            } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::RIGHT, sizeCellX);
-            } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN, sizeCellX);
-            } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_LEFT, sizeCellX);
-            } else if (newX < oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::LEFT, sizeCellX);
+        if(isDrawableUnits == 4 || isDrawableUnits == 5) {
+//            fVc = new Vector2(getCell(newX, newY).graphicsCoord4);
+            float fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
+            float fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY)) + halfSizeCellY;
+            fVc->set(fVx, fVy);
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
             } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_LEFT, sizeCellX);
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
             }
-//            currentPoint->set(fVx, fVy);
+            circle4->set(fVx, fVy, 16.0);
+        }
+        if(isDrawableUnits == 3 || isDrawableUnits == 5) {
+//            fVc = new Vector2(getCell(newX, newY).graphicsCoord3);
+            float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
+            float fVy = ( (halfSizeCellY * newY) + (newX * halfSizeCellY)) + halfSizeCellY*2;
+            fVc->set(fVx, fVy);
+            if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
+            } else if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
+            }
             circle3->set(fVx, fVy, 16.0);
         }
         if(isDrawableUnits == 2 || isDrawableUnits == 5) {
-            fVx = (halfSizeCellX * newY) + (newX * halfSizeCellX) + halfSizeCellX;
-            fVy = (halfSizeCellY * newY) - (newX * halfSizeCellY) + halfSizeCellY;
+//            fVc = new Vector2(getCell(newX, newY).graphicsCoord2);
+            float fVx = (halfSizeCellX * newY) + (newX * halfSizeCellX) + halfSizeCellX;
+            float fVy = (halfSizeCellY * newY) - (newX * halfSizeCellY) + halfSizeCellY;
+            fVc->set(fVx, fVy);
             if (newX < oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN, sizeCellX);
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
             } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_RIGHT, sizeCellX);
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
             } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::RIGHT, sizeCellX);
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
             } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_RIGHT, sizeCellX);
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
             } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP, sizeCellX);
+                correct_fVc(fVc, Direction::type::UP, sizeCellX);
             } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_LEFT, sizeCellX);
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
             } else if (newX < oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::LEFT, sizeCellX);
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
             } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_LEFT, sizeCellX);
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
             }
-//            currentPoint.set(fVx, fVy);
             circle2->set(fVx, fVy, 16.0);
         }
         if(isDrawableUnits == 1 || isDrawableUnits == 5) {
-            fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
-            fVy = (-(halfSizeCellY * newY) - (newX * halfSizeCellY));
+            float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
+            float fVy = (-(halfSizeCellY * newY) - (newX * halfSizeCellY));
+            fVc->set(fVx, fVy);
             if (newX < oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN, sizeCellX);
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
             } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_RIGHT, sizeCellX);
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
             } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::RIGHT, sizeCellX);
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
             } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_RIGHT, sizeCellX);
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
             } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP, sizeCellX);
+                correct_fVc(fVc, Direction::type::UP, sizeCellX);
             } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_LEFT, sizeCellX);
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
             } else if (newX < oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::LEFT, sizeCellX);
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
             } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_LEFT, sizeCellX);
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
             }
-//            currentPoint.set(fVx, fVy);
             circle1->set(fVx, fVy, 16.0);
         }
-        if(isDrawableUnits == 4 || isDrawableUnits == 5) {
-            fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
-            fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY)) + halfSizeCellY;
-            if (newX < oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN, sizeCellX);
-            } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_RIGHT, sizeCellX);
-            } else if (newX < oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::RIGHT, sizeCellX);
-            } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP, sizeCellX);
-            } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVx, fVy, Direction::type::UP_LEFT, sizeCellX);
-            } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::LEFT, sizeCellX);
-            } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVx, fVy, Direction::type::DOWN_LEFT, sizeCellX);
-            }
-//            currentPoint.set(fVx, fVy);
-            circle4->set(fVx, fVy, 16.0);
-        }
 
-//        backStepPoint = currentPoint;
-//        currentPoint.set(fVx, fVy);
-//        velocity = new Vector2(backStepPoint.x - currentPoint.x,
-//                backStepPoint.y - currentPoint.y).nor().scl(Math.min(currentPoint.dst(backStepPoint.x,
-//                backStepPoint.y), speed));
-//        displacement = new Vector2(velocity.x * deltaTime, velocity.y * deltaTime);
+        backStepPoint->set(currentPoint);
+        currentPoint->set(fVc);
+        delete fVc; // fVc = NULL;
+
+        velocity = new Vector2(backStepPoint->x - currentPoint->x, backStepPoint->y - currentPoint->y);
+        velocity = velocity->nor()->scl(qMin(currentPoint->dst(backStepPoint->x, backStepPoint->y), speed));
+        displacement = new Vector2(velocity->x * deltaTime, velocity->y * deltaTime);
 
 //        qDebug() << "Unit::move(); -- direction:" << direction << " oldDirection:" << oldDirection;
         if(direction != oldDirection) {
@@ -217,7 +232,7 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
         }
         return &newPosition;
     } else {
-//        dispose();`
+//        dispose();
         return NULL;
     }
 }

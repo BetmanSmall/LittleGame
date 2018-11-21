@@ -8,8 +8,8 @@
 //#include "src/head/libs/astar.h"
 #include "src/head/factionsmanager.h"
 #include "wavemanager.h"
-#include "src/head/unitsmanager.h"
 #include "src/head/towersmanager.h"
+#include "src/head/unitsmanager.h"
 #include "src/head/bullet.h"
 #include "src/head/cell.h"
 #include "src/head/underconstruction.h"
@@ -123,8 +123,9 @@ public:
 
     void spawnHeroInSpawnPoint();
     void spawnCompUnitToRandomExit(int x, int y);
+    void createUnit(int x, int y);
     void createUnit(int x, int y, int x2, int y2, int player = 0);
-    void createUnit(QPoint spawnPoint, QPoint exitPoint, TemplateForUnit* templateForUnit, int player = 0);
+    void createUnit(Cell *spawnCell, Cell *destCell, TemplateForUnit* templateForUnit, int player = 0, Cell *exitCell = NULL);
 
     UnderConstruction* createdRandomUnderConstruction();
     UnderConstruction* createdUnderConstruction(TemplateForTower *templateForTower);

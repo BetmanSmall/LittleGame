@@ -5,18 +5,19 @@
 #include <stdlib.h>
 #include <QPixmap>
 
+#include "src/head/cell.h"
 #include "src/head/unit.h"
 
 class UnitsManager {
 public: // we are friendly to all!
     std::vector<Unit*> hero;
     std::vector<Unit*> units;
-    int difficultyLevel;
+//    int difficultyLevel;
 
 public:
-    UnitsManager(int difficultyLevel);
+    UnitsManager();
     ~UnitsManager();
-    Unit* createUnit(AStar::CoordinateList path, TemplateForUnit* templateForUnit, int player);
+    Unit* createUnit(AStar::CoordinateList path, TemplateForUnit *templateForUnit, int player, Cell *exitCell);
     Unit* getUnit(int number);
 //    Unit* getUnit(int x, int y);
 

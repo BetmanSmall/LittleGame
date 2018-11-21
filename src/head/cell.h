@@ -5,27 +5,32 @@
 #include <qstring.h>
 #include <QPixmap>
 
-#include "src/head/tower.h"
 #include "src/head/unit.h"
+#include "src/head/tower.h"
+#include "src/head/mapEditor/tile.h"
+#include "vector2.h"
+
+class Unit;
+class Tower;
 
 class Cell {
-    class Tree {
-//    public:
-        QPixmap* textureRegion;
-        int width;
-        int height;
+//    class Tree {
+////    public:
+//        QPixmap* textureRegion;
+//        int width;
+//        int height;
 
-        Tree(QPixmap* textureRegion, int width, int height) {
-            this->textureRegion = textureRegion;
-            this->width = width;
-            this->height = height;
-        }
-    };
+//        Tree(QPixmap* textureRegion, int width, int height) {
+//            this->textureRegion = textureRegion;
+//            this->width = width;
+//            this->height = height;
+//        }
+//    };
 public:
     std::vector<Tile*> backgroundTiles;
     std::vector<Tile*> groundTiles;
     std::vector<Tile*> foregroundTiles;
-    std::vector<Tree> trees;
+//    std::vector<Tree> trees;
     bool empty;
     bool terrain;
     bool removableTerrain;

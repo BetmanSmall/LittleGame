@@ -6,6 +6,11 @@
 #include "src/head/unit.h"
 #include "src/head/templatefortower.h"
 #include "src/head/direction.h"
+#include "vector2.h"
+#include "circle.h"
+#include "animation.h"
+
+class Unit;
 
 class Bullet {
 public:

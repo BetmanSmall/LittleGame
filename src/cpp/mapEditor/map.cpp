@@ -1,6 +1,7 @@
 #include "src/head/mapEditor/map.h"
 
-Map::Map() {
+Map::Map(QString mapPath) {
+    this->mapPath = mapPath;
 //    properties.insert("key1", "value1");
 }
 

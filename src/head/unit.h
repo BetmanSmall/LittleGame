@@ -5,7 +5,7 @@
 #include <QPixmap>
 
 #include "src/head/libs/astar.h"
-//#include "src/head/cell.h"
+#include "src/head/cell.h"
 #include "src/head/direction.h"
 #include "src/head/templateforunit.h"
 #include "cameracontroller.h"
@@ -13,46 +13,41 @@
 #include "circle.h"
 #include "shelleffecttype.h"
 
+class Cell;
+
 class Unit
 {
 public:
     AStar::CoordinateList route;
     AStar::Vec2i oldPosition;
     AStar::Vec2i newPosition;
-//    Cell *exitCell;
+    Cell *exitCell;
     float hp;
     float speed;
     float stepsInTime;
     float deathElapsedTime;
 
     int player;
-//    int coorByMapX, coorByMapY;
-//    QPointF* currentPoint;
+    Vector2 *currentPoint;
+    Vector2 *backStepPoint;
     Circle* circle1;
     Circle* circle2;
     Circle* circle3;
     Circle* circle4;
-
-//    bool alive;
-//    bool preDeath;
-//    QString type;
+    Vector2 *velocity;
+    Vector2 *displacement;
 
     TemplateForUnit* templateForUnit;
 
     Direction::type direction;
     Animation* animation;
     std::vector<ShellEffectType*> shellEffectTypes;
-//    QPixmap pixmap;
-//    std::vector<QPixmap> activePixmaps;
-//    int animationLastAliveIter;
-//    int animationCurrIter;
-//    int animationMaxIter;
 
 public:
-    Unit(AStar::CoordinateList route, TemplateForUnit* templateForUnit, int player);
+    Unit(AStar::CoordinateList route, TemplateForUnit* templateForUnit, int player, Cell *exitCell);
     ~Unit();
     void setAnimation(QString action);
-    void correct_fVc(float &fVx, float &fVy, Direction::type direction, float sizeCellX);
+    void correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX);
     AStar::Vec2i* move(float deltaTime, CameraController* cameraController);
     bool die(float damage, ShellEffectType shellEffectType);
 //    bool addEffect(ShellEffectType *shellEffectType);

@@ -30,6 +30,9 @@ WidgetController::WidgetController(QWidget *parent) :
            gameRecordsFile->close();
         }
     }
+    if (campaingMaps.empty()) {
+        loadNextCampaingMaps(); // pre-load
+    }
     showMainMenu();
 }
 
@@ -55,7 +58,7 @@ void WidgetController::showMainMenu() {
     qDebug() << "WidgetController::showMainMenu(); -- ";
 
     mainMenu = new MainMenu();
-    connect(mainMenu, SIGNAL(signal_playNormalMap()), this, SLOT(loadNormalMap()));
+    connect(mainMenu, SIGNAL(signal_playNormalMap()), this, SLOT(loadNextCampaingMaps()));
     connect(mainMenu, SIGNAL(signal_openOptionMenu()), this, SLOT(showOptionMenu()));
     connect(mainMenu, SIGNAL(signal_exit()), this, SLOT(closeWidget()));
 
@@ -74,11 +77,7 @@ void WidgetController::loadRandomMap() {
 }
 
 void WidgetController::loadNormalMap() {
-    loadMap("maps/randomMap.tmx");
-//    loadMap("maps/island.tmx");
-//    loadMap("maps/desert.tmx");
-//    loadMap("maps/winter.tmx");
-//    loadMap("maps/summer.tmx");
+    loadMap("maps/island.tmx");
 }
 
 void WidgetController::showGameWidget(GameScreenGL *gameWidget) {
@@ -177,4 +176,25 @@ void WidgetController::closeWidgetGameFinished(bool win, int timeOfGame) {
     mainMenu->updateGameStatus(win);
     closeWidget();
     qDebug() << "WidgetController::closeWidgetGameFinished(); -- END";
+}
+
+void WidgetController::loadNextCampaingMaps() {
+    qDebug() << "WidgetController::loadNextCampaingMaps(); -- ";
+    if (!campaingMaps.empty()) {
+        QString mapPath = campaingMaps.back();
+        campaingMaps.pop_back();
+        loadMap(mapPath);
+    } else {
+        campaingMaps.push_back("maps/arena4_1.tmx");
+        campaingMaps.push_back("maps/arena4.tmx");
+        campaingMaps.push_back("maps/arena2.tmx");
+        campaingMaps.push_back("maps/arena1.tmx");
+        campaingMaps.push_back("maps/arena0.tmx");
+        campaingMaps.push_back("maps/winter.tmx");
+        campaingMaps.push_back("maps/summer.tmx");
+        campaingMaps.push_back("maps/desert.tmx");
+        campaingMaps.push_back("maps/island.tmx");
+        campaingMaps.push_back("maps/randomMap.tmx");
+    }
+    qDebug() << "WidgetController::loadNextCampaingMaps(); -- campaingMaps.size():" << campaingMaps.size();
 }

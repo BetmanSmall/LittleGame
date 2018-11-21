@@ -7,7 +7,7 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
     this->factionsManager = factionsManager;
     this->waveManager = new WaveManager();
     this->towersManager = new TowersManager(difficultyLevel);
-    this->unitsManager = new UnitsManager(difficultyLevel);
+    this->unitsManager = new UnitsManager();
     this->map = (new MapLoader())->load(mapFile);
     qDebug() << "GameField::GameField(); -- map:" << map;
 
@@ -30,7 +30,8 @@ GameField::GameField(QString mapFile, FactionsManager* factionsManager, int enem
     pathFinder->setHeuristic(AStar::Heuristic::euclidean);
     pathFinder->setDiagonalMovement(false);
     updatePathFinderWalls();
-    qDebug() << "GameField::createField(); -- pathFinder:" << pathFinder;
+    qDebug() << "GameField::GameField(); -- pathFinder:" << pathFinder;
+
 //    int terrainType = rand()%2;
 //    if (mapFile.contains("randomMap")) {
 //        for (int x = 0; x < map->width; x++) {
@@ -1495,7 +1496,7 @@ void GameField::drawTowerUnderConstructionAndMarks(CameraController* cameraContr
 
 void GameField::stepAllUnits(float deltaTime, CameraController* cameraController) {
     for (Unit* unit : unitsManager->units) {
-        AStar::Vec2i oldPosition = unit->oldPosition;
+        AStar::Vec2i oldPosition = unit->newPosition;
         if (unit->isAlive()) {
             AStar::Vec2i* newPosition = unit->move(deltaTime, cameraController);
             if (newPosition != NULL) {
@@ -1967,7 +1968,7 @@ void GameField::moveAllShells(float delta) {
 //}
 
 void GameField::spawnHeroInSpawnPoint() {
-    qDebug() << "GameField::spawnHeroInSpawnPoint(); -- ";
+    qDebug() << "GameField::spawnHeroInSpawnPoint(); -- cellSpawnHero:" << cellSpawnHero << " cellExitHero:" << cellExitHero;
     if (cellSpawnHero != NULL && cellExitHero != NULL) {
         cellSpawnHero->removeTerrain(true);
         removeTower(cellSpawnHero->cellX, cellSpawnHero->cellY);
@@ -1983,48 +1984,47 @@ void GameField::spawnCompUnitToRandomExit(int x, int y) {
     createUnit(x, y, randomX, randomY, 0);
 }
 
+void GameField::createUnit(int x, int y) {
+    Cell *spawnCell = getCell(x, y);
+    Cell *destExitCell = getCell(waveManager->lastExitPoint.x(), waveManager->lastExitPoint.y());
+    createUnit(spawnCell, destExitCell, factionsManager->getRandomTemplateForUnitFromFirstFaction(), 0, destExitCell); // create computer0 Unit
+}
+
 void GameField::createUnit(int x, int y, int x2, int y2, int player) {
     qDebug() << "GameField::createUnit(); -- x:" << x << " y:" << y << " x2:" << x2 << " y2:" << y2 << " player:" << player;
-//    int coorByMapX, coorByMapY;
-//    if(!isometric) {
-//        coorByMapX = mainCoorMapX + x*sizeCellX;
-//        coorByMapY = mainCoorMapY + y*sizeCellX;
-//    } else {
-//        int isometricCoorX = halfSizeCellX*map->height;
-//        int isometricCoorY = halfSizeCellY*y;
-//        coorByMapX = mainCoorMapX + isometricCoorX - halfSizeCellX + x*halfSizeCellX;
-//        coorByMapY = mainCoorMapY + isometricCoorY - halfSizeCellY*2 + x*halfSizeCellY;
-//    }
     if (player == 0) {
-        createUnit(QPoint(x, y), QPoint(x2, y2), factionsManager->getRandomTemplateForUnitFromFirstFaction(), player);
+        createUnit(getCell(x, y), getCell(x2, y2), factionsManager->getRandomTemplateForUnitFromFirstFaction(), player, NULL);
     } else if (player == 1) {
-        createUnit(QPoint(x, y), QPoint(x2, y2), factionsManager->getTemplateForUnitByName("unit3_footman"), player);
+        createUnit(getCell(x, y), getCell(x2, y2), factionsManager->getTemplateForUnitByName("unit3_footman"), player, cellExitHero);
 //        updateHeroDestinationPoint(exitPointX, exitPointY);
     }
 }
 
-void GameField::createUnit(QPoint spawnPoint, QPoint exitPoint, TemplateForUnit* templateForUnit, int player) {
+void GameField::createUnit(Cell *spawnCell, Cell *destCell, TemplateForUnit* templateForUnit, int player, Cell *exitCell) {
 //    qDebug() << "GameField::createUnit(); -- spawnPoint:" << spawnPoint;
 //    qDebug() << "GameField::createUnit(); -- exitPoint:" << exitPoint;
     qDebug() << "GameField::createUnit(); -- templateForUnit:" << templateForUnit->toString().toStdString().c_str();
 //    qDebug() << "GameField::createUnit(); -- player:" << player;
-    if (!spawnPoint.isNull() && !exitPoint.isNull() && templateForUnit != NULL/* && pathFinder != NULL*/) {
-        AStar::CoordinateList path = pathFinder->findPath({spawnPoint.x(), spawnPoint.y()}, {exitPoint.x(), exitPoint.y()});
-        qDebug() << "GameField::createUnit(); -- path:" << path.size();
+//    qDebug() << "GameField::createUnit(); -- exitCell:" << exitCell;
+//    if (destCell == NULL) {
+//        destCell = waveManager.lastExitCell;
+//    }
+    if ( spawnCell != NULL && destCell != NULL/* && pathFinder != NULL*/) {
+        AStar::CoordinateList path = pathFinder->findPath({spawnCell->cellX, spawnCell->cellY}, {destCell->cellX, destCell->cellY});
         if (!path.empty()) {
-            Unit* unit = unitsManager->createUnit(path, templateForUnit, player);
-            getCell(spawnPoint.x(), spawnPoint.y())->setUnit(unit);
+            Unit* unit = unitsManager->createUnit(path, templateForUnit, player, exitCell);
+            getCell(spawnCell->cellX, spawnCell->cellY)->setUnit(unit);
             qDebug() << "GameField::createUnit(); -- unit:" << unit;
         } else {
-//            Gdx.app.log("GameField::createUnit()", "-- Not found route for createUnit!");
-//            if(towersManager.amountTowers() > 0) {
-//                Gdx.app.log("GameField::createUnit()", "-- Remove one last tower! And retry call createUnit()");
-//                removeLastTower();
-//                createUnit(spawnPoint, exitPoint, templateForUnit, player);
-//            }
+            qDebug() << "GameField::createUnit(); -- Not found route for createUnit!";
+            if(towersManager->towers.size() > 0) {
+                qDebug() << "GameField::createUnit(); -- Remove one last tower! And retry call createUnit()";
+                removeLastTower();
+                createUnit(spawnCell, destCell, templateForUnit, player, exitCell);
+            }
         }
     } else {
-        qDebug() << "GameField::createUnit(); -- Bad spawnPoint:" << spawnPoint << " || exitPoint:" << exitPoint << " || pathFinder:" << pathFinder;
+        qDebug() << "GameField::createUnit(); -- Bad spawnCell:" << spawnCell << " || destCell:" << destCell << " || pathFinder:" << pathFinder;
     }
 }
 

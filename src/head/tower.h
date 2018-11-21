@@ -8,6 +8,11 @@
 #include "src/head/templatefortower.h"
 #include "circle.h"
 #include "cameracontroller.h"
+#include "src/head/unit.h"
+
+class Cell;
+class Unit;
+class Bullet;
 
 class Tower
 {

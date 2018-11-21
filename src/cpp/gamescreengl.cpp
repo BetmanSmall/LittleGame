@@ -144,7 +144,7 @@ void GameScreenGL::paintGL() {
     cameraController->painter->drawText(10, 250, "gameField->unitsManager->units.size():" + QString::number(gameField->unitsManager->units.size()));
 
     cameraController->painter->drawText(10, 260, "gameField->isometric:" + QString::number(gameField->isometric));
-    cameraController->painter->drawText(10, 270, "gameField->mapName:" + gameField->map->properties.value("name"));
+    cameraController->painter->drawText(10, 270, "gameField->map->mapPath:" + gameField->map->mapPath);
     cameraController->painter->end();
 }
 
@@ -297,7 +297,7 @@ void GameScreenGL::wheelEvent(QWheelEvent* event) {
     qDebug() << "GameScreenGL::resizeEvent(); -- event->angleDelta():" << event->angleDelta();
 
     cameraController->scrolled(event->angleDelta().y());
-    gameField->updateCellsGraphicCoordinates(cameraController->halfSizeCellX, cameraController->halfSizeCellY);
+//    gameField->updateCellsGraphicCoordinates(cameraController->halfSizeCellX, cameraController->halfSizeCellY);
 
 //    int mainCoorMapX = field->getMainCoorMapX();
 //    int mainCoorMapY = field->getMainCoorMapY();
