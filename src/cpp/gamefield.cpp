@@ -438,12 +438,12 @@ void GameField::drawGrid(CameraController* cameraController) {
         int cameraY = 0;//cameraController->cameraY;
         float halfSizeCellX = cameraController->halfSizeCellX;
         float halfSizeCellY = cameraController->halfSizeCellY;
-    //    qDebug() << "GameField::drawGrid(camera); -- cameraX:" << cameraX << " cameraY:" << cameraY << " halfSizeCellX:" << halfSizeCellX << " halfSizeCellY:" << halfSizeCellY;
+//    qDebug() << "GameField::drawGrid(camera); -- cameraX:" << cameraX << " cameraY:" << cameraY << " halfSizeCellX:" << halfSizeCellX << " halfSizeCellY:" << halfSizeCellY;
         int widthForTop = map->height * halfSizeCellX; // A - B
         int heightForTop = map->height * halfSizeCellY; // B - Top
         int widthForBottom = map->width * halfSizeCellX; // A - C
         int heightForBottom = map->height * halfSizeCellY; // C - Bottom
-    //    qDebug() << "GameField::drawGrid(camera); -- widthForTop:" << widthForTop << " heightForTop:" << heightForTop << " widthForBottom:" << widthForBottom << " heightForBottom:" << heightForBottom;
+//    qDebug() << "GameField::drawGrid(camera); -- widthForTop:" << widthForTop << " heightForTop:" << heightForTop << " widthForBottom:" << widthForBottom << " heightForBottom:" << heightForBottom;
         if(cameraController->isDrawableGrid == 1 || cameraController->isDrawableGrid == 5) {
             for (int x = 0; x <= map->width; x++)
                 cameraController->painter->drawLine(cameraX+(halfSizeCellX*x),cameraY-(halfSizeCellY*x)/*+halfSizeCellY*/,cameraX-(widthForTop)+(halfSizeCellX*x),cameraY-(heightForTop)-(x*halfSizeCellY)/*+halfSizeCellY*/);
