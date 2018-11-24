@@ -26,6 +26,17 @@ TemplateForUnit* FactionsManager::getRandomTemplateForUnitFromFirstFaction() {
     return NULL;
 }
 
+TemplateForUnit* FactionsManager::getRandomTemplateForUnitFromSecondFaction() {
+    Faction* faction = factions.at(1);
+    if (faction != NULL) {
+        TemplateForUnit* templateForUnit = faction->units[rand()%faction->units.size()];
+        if (templateForUnit != NULL) {
+            return templateForUnit;
+        }
+    }
+    return NULL;
+}
+
 TemplateForTower* FactionsManager::getRandomTemplateForTowerFromFirstFaction() {
     Faction* faction = factions.front();
     if (faction != NULL) {

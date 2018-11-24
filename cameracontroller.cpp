@@ -1,15 +1,25 @@
 #include "cameracontroller.h"
 
-CameraController::CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY) {
+//CameraController::CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY) {
+CameraController::CameraController(GameField *gameField) {
     this->painter = new QPainter();
-    this->mapWidth = mapWidth;
-    this->mapHeight = mapHeight;
-    this->defSizeCellX = sizeCellX;
-    this->defSizeCellY = sizeCellY;
-    this->sizeCellX = sizeCellX;
-    this->sizeCellY = sizeCellY;
+
+    this->gameField = gameField;
+//    this->gameInterface = gameInterface;
+//    this->camera = camera;
+
+    this->mapWidth = gameField->map->width;
+    this->mapHeight = gameField->map->height;
+    this->sizeCellX = gameField->map->tileWidth;
+    this->sizeCellY = gameField->map->tileHeight;
     this->halfSizeCellX = sizeCellX/2;
     this->halfSizeCellY = sizeCellY/2;
+}
+
+CameraController::~CameraController() {
+    delete painter;
+
+//    gameField = NULL;
 }
 
 bool CameraController::touchDown(int screenX, int screenY, int pointer, int button) {
@@ -17,8 +27,77 @@ bool CameraController::touchDown(int screenX, int screenY, int pointer, int butt
     this->prevMouseX = screenX;
     this->prevMouseY = screenY;
     this->paning = true;
-    this->flinging = false;
+//    this->flinging = false;
+//    initialScale = camera.zoom;
+
+//    if (!gameInterface.interfaceTouched) {
+//        UnderConstruction underConstruction = gameField.getUnderConstruction();
+//        Vector3 touch = new Vector3(screenX, screenY, 0.0f);
+//        if (underConstruction != null) {
+//            if (button == 0) {
+//                if (whichCell(touch, isDrawableTowers)) {
+//                    underConstruction.setStartCoors((int) touch.x, (int) touch.y);
+//                }
+//            } else if (button == 1) {
+//                gameField.cancelUnderConstruction();
+////                    gameField.removeTower((int) touch.x, (int) touch.y);
+//            }
+//        }
+//    }
+//    UnderConstruction underConstruction = gameField.getUnderConstruction();
+//    Vector3 touch = new Vector3(screenX, screenY, 0.0f);
+//    if (underConstruction == null) {
+//        if (gameField.gameSettings.gameType == GameType.LittleGame) {
+//            if (button == 0) {
+//                if (whichCell(touch, isDrawableUnits)) {
+//                    gameField.updateHeroDestinationPoint((int) touch.x, (int) touch.y);
+//                }
+//            } else if (button == 1) {
+//                if (whichCell(touch, isDrawableGround)) {
+//                    Cell cell = gameField.getCell((int) touch.x, (int) touch.y);
+//                    if (cell.isTerrain()) {
+//                        cell.removeTerrain( ( ((int)(Math.random()*2))==0 ) ? true : false );
+//                        Gdx.app.log("CameraController::tap()", "-- x:" + cell.cellX + " y:" + cell.cellY + " cell.isTerrain():" + cell.isTerrain());
+//                    } else if (cell.getTower() != null) {
+//                        Tower tower = cell.getTower();
+//                        gameField.removeTower(tower.cell.cellX, tower.cell.cellY);
+//                    } else if (cell.isEmpty()) {
+////                                gameField.towerActions(cell.cellX, cell.cellY);
+//                        gameField.createTower(cell.cellX, cell.cellY, gameField.factionsManager.getRandomTemplateForTowerFromAllFaction(), ( (int)(Math.random()*3) ) );
+//                        if ( ( ((int)(Math.random()*2))==0 ) ? true : false ) {
+//                            int randNumber = (125 + (int) (Math.random() * 2));
+//                            cell.setTerrain(gameField.map.getTileSets().getTileSet(0).getTile(randNumber), true, true);
+//                        }
+////                            gameField.updateHeroDestinationPoint();
+//                    }
+//                }
+//            } else if (button == 2) {
+//                if (whichCell(touch, isDrawableUnits)) {
+//                    if ( ((int)(Math.random()*5) == 0) ) {
+//                        gameField.spawnHero((int) touch.x, (int) touch.y);
+//                    } else {
+//                        gameField.spawnCompUnitToRandomExit((int) touch.x, (int) touch.y);
+//                    }
+//                }
+//            }
+//        } else if (gameField.gameSettings.gameType == GameType.TowerDefence) {
+//            if (button == 0 || button == 1) {
+//                if (whichCell(touch, isDrawableTowers)) {
+//                    gameField.towerActions((int) touch.x, (int) touch.y);
+//                }
+//            } else if (button == 2) {
+//                if (whichCell(touch, isDrawableUnits)) {
+//                    gameField.spawnCompUnitToRandomExit((int) touch.x, (int) touch.y);
+//                }
+//            } else if (button == 4) {
+//                if (whichCell(touch, isDrawableUnits)) {
+////                            gameField.setExitPoint((int) touch.x, (int) touch.y);
+//                }
+//            }
+//        }
+//    }
     qDebug() << "CameraController::touchDown(); -- cameraX:" << cameraX << " cameraY:" << cameraY;
+    return false;
 }
 
 bool CameraController::touchUp(int screenX, int screenY, int pointer, int button) {
@@ -29,17 +108,30 @@ bool CameraController::touchUp(int screenX, int screenY, int pointer, int button
         this->paning = false;
 //        fling((float)(screenX)-(prevMouseX), (float)(screenY)-(prevMouseY), button);
     }
+//    if (!gameInterface.interfaceTouched) {
+//        Vector3 touch = new Vector3(screenX, screenY, 0.0f);
+//        if (gameField.getUnderConstruction() != null) {
+//            if (button == 0) {
+//                if (whichCell(touch, isDrawableTowers)) {
+//                    gameField.buildTowersWithUnderConstruction((int) touch.x, (int) touch.y);
+//                }
+//            }
+//        }
+//    }
+//    gameInterface.interfaceTouched = false;
     qDebug() << "CameraController::touchUp(); -- cameraX:" << cameraX << " cameraY:" << cameraY;
+    return false;
 }
 
 bool CameraController::fling(float velocityX, float velocityY, int button) {
     qDebug() << "CameraController::fling(); -- velocityX:" << velocityX << " velocityY:" << velocityY << " button:" << button;
 //    if (!lastCircleTouched) {
-        flinging = true;
-        velX = zoom * velocityX * 0.5f;
-        velY = zoom * velocityY * 0.5f;
+//        flinging = true;
+//        velX = zoom * velocityX * 0.5f;
+//        velY = zoom * velocityY * 0.5f;
 //    }
-    qDebug() << "CameraController::fling(); -- velX:" << velX << " velY:" << velY;
+//    qDebug() << "CameraController::fling(); -- velX:" << velX << " velY:" << velY;
+    return false;
 }
 
 bool CameraController::pan(float x, float y) {
@@ -66,6 +158,9 @@ bool CameraController::pan(float x, float y) {
 
 bool CameraController::scrolled(int amount) {
     qDebug() << "CameraController::scrolled(); -- amount:" << amount;
+//    if (gameInterface.scrolled(amount)) {
+//        return false;
+//    }
     if (amount > 0) {
         if (zoom <= zoomMax) {
             zoom += 0.1;
@@ -75,44 +170,51 @@ bool CameraController::scrolled(int amount) {
             zoom -= 0.1;
         }
     }
-//    sizeCellX = defSizeCellX*zoom;
-//    sizeCellY = defSizeCellY*zoom;
-//    halfSizeCellX = sizeCellX/2;
-//    halfSizeCellY = sizeCellY/2;
+//    camera.update();
     qDebug() << "CameraController::scrolled(); -- zoom:" << zoom;
-    qDebug() << "CameraController::scrolled(); -- sizeCellX:" << sizeCellX;
-    qDebug() << "CameraController::scrolled(); -- sizeCellY:" << sizeCellY;
-    qDebug() << "CameraController::scrolled(); -- halfSizeCellX:" << halfSizeCellX;
-    qDebug() << "CameraController::scrolled(); -- halfSizeCellY:" << halfSizeCellY;
+    return false;
 }
+
+// Android-libgGDX
+//@Override
+//public boolean zoom(float initialDistance, float distance) {
+//public boolean touchDown(float x, float y, int pointer, int button)
+//public boolean tap(float x, float y, int count, int button) {
+//public boolean longPress(float x, float y) {
+//public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+//public boolean keyDown(int keycode) {
+//public boolean keyUp(int keycode) {
+//public boolean keyTyped(char character) {
+// Android-libgGDX
 
 void CameraController::update(float deltaTime) {
 //    qDebug() << "CameraController::update(); -- deltaTime:" << deltaTime;
 //    qDebug() << "CameraController::update(); -- flinging:" << flinging;
 //    qDebug() << "CameraController::update(); -- velX:" << velX;
 //    qDebug() << "CameraController::update(); -- velY:" << velY;
-    if (flinging) {
-        velX *= 0.98f;
-        velY *= 0.98f;
-        float newCameraX = cameraX + (velX * deltaTime);
-        float newCameraY = cameraY + (velY * deltaTime);
-//        if (borderLeftX != null && borderRightX != null && borderUpY != null && borderDownY != null) {
-//            if (borderLeftX < newCameraX && newCameraX < borderRightX &&
-//                    borderUpY > newCameraY && newCameraY > borderDownY) {
-//                this->cameraX = newCameraX;
-//                this->cameraY = newCameraY;
-//            }
-//        } else {
-            this->cameraX = newCameraX;
-            this->cameraY = newCameraY;
-//        }
-        if (qAbs(velX) < 0.01) velX = 0.0;
-        if (qAbs(velY) < 0.01) velY = 0.0;
-//        if (velX == 0.0 && velY == 0.0) {
-//            flinging = false;
-//        }
-        qDebug() << "CameraController::update(); -- newCameraX:" << newCameraX << " newCameraY:" << newCameraY;
-    }
+//    if (flinging) {
+//        velX *= 0.98f;
+//        velY *= 0.98f;
+//        float newCameraX = cameraX + (velX * deltaTime);
+//        float newCameraY = cameraY + (velY * deltaTime);
+////        if (borderLeftX != null && borderRightX != null && borderUpY != null && borderDownY != null) {
+////            if (borderLeftX < newCameraX && newCameraX < borderRightX &&
+////                    borderUpY > newCameraY && newCameraY > borderDownY) {
+////                this->cameraX = newCameraX;
+////                this->cameraY = newCameraY;
+////            }
+////        } else {
+//            this->cameraX = newCameraX;
+//            this->cameraY = newCameraY;
+////        }
+//        if (qAbs(velX) < 0.01) velX = 0.0;
+//        if (qAbs(velY) < 0.01) velY = 0.0;
+////        if (velX == 0.0 && velY == 0.0) {
+////            flinging = false;
+////        }
+//        qDebug() << "CameraController::update(); -- newCameraX:" << newCameraX << " newCameraY:" << newCameraY;
+//    }
+//    camera.update();
 }
 
 void CameraController::unproject(int &screenX, int &screenY) {
@@ -121,25 +223,6 @@ void CameraController::unproject(int &screenX, int &screenY) {
     screenY -= (cameraY*zoom);
 //    qDebug() << "CameraController::unproject(); -- screenX:" << screenX << " screenY:" << screenY << " cameraX:" << cameraX << " cameraY:" << cameraY;
 }
-
-//QPoint CameraController::unproject(QPoint screenCoords) {
-//    qDebug() << "CameraController::unproject(); -- screenCoords:" << screenCoords;
-//    return unproject(screenCoords, 0, 0, this->viewportWidth, this->viewportHeight);
-//}
-
-//QPoint CameraController::unproject(QPoint screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight) {
-//    qDebug() << "CameraController::update(); -- viewportX:" << viewportX << " viewportY:" << viewportY;
-//    qDebug() << "CameraController::update(); -- viewportWidth:" << viewportWidth << " viewportHeight:" << viewportHeight;
-//    float x = screenCoords.x, y = screenCoords.y;
-//    x = x - viewportX;
-//    y = Gdx.graphics.getHeight() - y - 1;
-//    y = y - viewportY;
-//    screenCoords.x = (2 * x) / viewportWidth - 1;
-//    screenCoords.y = (2 * y) / viewportHeight - 1;
-//    screenCoords.z = 2 * screenCoords.z - 1;
-//    screenCoords.prj(invProjectionView);
-//    return screenCoords;
-//}
 
 //bool CameraController::whichCell(int &mouseX, int &mouseY) {
 //    int mainCoorMapX = cameraX;
@@ -221,14 +304,6 @@ bool CameraController::getCorrectGraphicTowerCoord(Vector2 *towerPos, int towerS
     }
     return true;
 }
-
-//QPointF* CameraController::getCenterGraphicCoord(CameraController* cameraController) {
-//    return getCenterGraphicCoord(cameraController->isDrawableTowers, cameraController);
-//}
-
-//QPointF* CameraController::getCenterGraphicCoord(int map, CameraController* cameraController) {
-//    return getCenterGraphicCoord(position->x(), position->y(), map, cameraController);
-//}
 
 Vector2* CameraController::getCenterTowerGraphicCoord(int cellX, int cellY) {
     QPointF* p = getCenterGraphicCoord(cellX, cellY, isDrawableTowers);

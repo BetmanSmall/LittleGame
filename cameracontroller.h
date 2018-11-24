@@ -4,17 +4,25 @@
 #include <QDebug>
 #include <QPainter>
 
+#include "src/head/gamefield.h"
 #include "vector2.h"
+
+class GameField;
 
 class CameraController
 {
 public:
     QPainter* painter;
-    float viewportWidth = 0;
-    float viewportHeight = 0;
-    int mapWidth, mapHeight;
+
+    GameField* gameField;
+//    GameInterface gameInterface;
+
     float cameraX = 800;
     float cameraY = 0;
+//    OrthographicCamera camera;
+    int mapWidth, mapHeight;
+//    float viewportWidth = 0;
+//    float viewportHeight = 0;
 
     int isDrawableGrid = 3;
     int isDrawableUnits = 3;
@@ -26,16 +34,16 @@ public:
     int isDrawableRoutes = 3;
     int drawOrder = 8;
 
-    bool flinging = false;
-    float velX;
-    float velY;
+//    bool flinging = false;
+//    float initialScale = 2f;
+//    boolean lastCircleTouched = false;
+//    float velX;
+//    float velY;
 
-    float defSizeCellX, defSizeCellY;
     float sizeCellX, sizeCellY;
     float halfSizeCellX, halfSizeCellY;
-//    static float _halfSizeCellX, _halfSizeCellY;
-    float zoomMax = 50.0;
-    float zoomMin = 0.2;
+    float zoomMax = 5.0;
+    float zoomMin = 0.1;
     float zoom = 1;
 //    float borderLeftX, borderRightX;
 //    float borderUpY, borderDownY;
@@ -47,7 +55,10 @@ public:
     int prevGlobalMouseX, prevGlobalMouseY;
 
 public:
-    CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY);
+//    CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY);
+    CameraController(GameField *gameField);
+    ~CameraController();
+
 //    void setBorders(float borderLeftX, float borderRightX, float borderUpY, float borderDownY);
     bool touchDown(int screenX, int screenY, int pointer, int button);
     bool touchUp(int screenX, int screenY, int pointer, int button);

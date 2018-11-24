@@ -67,37 +67,37 @@ void TemplateForUnit::validate() {
     basicValidate();
     // Need check range values
     if (!properties.contains("factionName")) {
-        qDebug() << "TemplateForUnit::validate(); -- Not Found: factionName";
+        qDebug() << "TemplateForUnit::validate(); -- NotFound: factionName";
     } else {
         factionName = properties.value("factionName");
     }
     if (!properties.contains("name")) {
-        qDebug() << "TemplateForUnit::validate(); -- Not Found: name";
+        qDebug() << "TemplateForUnit::validate(); -- NotFound: name";
     } else {
         name = properties.value("name");
     }
     if (!properties.contains("healthPoints")) {
-        qDebug() << "TemplateForUnit::validate(); -- Not Found: healthPoints";
+        qDebug() << "TemplateForUnit::validate(); -- NotFound: healthPoints";
     } else {
         healthPoints = properties.value("healthPoints").toFloat();
     }
     if (!properties.contains("bounty")) {
-        qDebug() << "TemplateForUnit::validate(); -- Not Found: bounty";
+        qDebug() << "TemplateForUnit::validate(); -- NotFound: bounty";
     } else {
         bounty = properties.value("bounty").toFloat();
     }
     if (!properties.contains("cost")) {
-        qDebug() << "TemplateForUnit::validate(); -- Not Found: cost";
+        qDebug() << "TemplateForUnit::validate(); -- NotFound: cost";
     } else {
         cost = properties.value("cost").toFloat();
     }
     if (!properties.contains("speed")) {
-        qDebug() << "TemplateForUnit::validate(); -- Not Found: speed";
+        qDebug() << "TemplateForUnit::validate(); -- NotFound: speed";
     } else {
         speed = properties.value("speed").toFloat();
     }
     if (!properties.contains("type")) {
-        qDebug() << "TemplateForUnit::validate(); -- Not Found: type";
+        qDebug() << "TemplateForUnit::validate(); -- NotFound: type";
     } else {
         type = properties.value("type");
     }

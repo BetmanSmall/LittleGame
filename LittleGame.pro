@@ -10,7 +10,6 @@ SOURCES += src/cpp/main.cpp\
     src/cpp/mainmenu.cpp \
     src/cpp/widgetcontroller.cpp \
     src/cpp/optionmenu.cpp \
-    src/cpp/gamewidget.cpp \
     src/cpp/gamescreengl.cpp \
     src/cpp/factionsmanager.cpp \
     src/cpp/faction.cpp \
@@ -43,13 +42,13 @@ SOURCES += src/cpp/main.cpp\
     wavemanager.cpp \
     wave.cpp \
     cameracontroller.cpp \
-    src/cpp/gamefield.cpp
+    src/cpp/gamefield.cpp \
+    gamesettings.cpp
 
 HEADERS  += \
     src/head/mainmenu.h \
     src/head/widgetcontroller.h \
     src/head/optionmenu.h \
-    src/head/gamewidget.h \
     src/head/gamescreengl.h \
     src/head/factionsmanager.h \
     src/head/faction.h \
@@ -85,17 +84,17 @@ HEADERS  += \
     cameracontroller.h \
     circle.h \
     src/head/gamefield.h \
-    towerattacktype.h \ \
-    shelleffecttype.h \
+    towerattacktype.h \
+    towershelleffect.h \
+    towershelltype.h \
     vector2.h \
-    gametype.h
-    shellattacktype.h
+    gametype.h \
+    gamesettings.h
 
 FORMS    += \
     src/uis/mainmenu.ui \
     src/uis/optionmenu.ui \
-    src/uis/gamescreengl.ui \
-    src/uis/gamewidget.ui
+    src/uis/gamescreengl.ui
 
 DISTFILES += \
     .gitignore

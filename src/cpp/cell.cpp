@@ -78,18 +78,17 @@ bool Cell::isTerrain() {
     return terrain;
 }
 
-bool Cell::setTerrain(Tile *tile, bool removable) {
+bool Cell::setTerrain(Tile *tile, bool removable, bool withTower) {
     if (tile != NULL) {
         groundTiles.push_back(tile);
     }
-    if (empty && !spawn && !exit) {
+    if ( (empty && !spawn && !exit) || (withTower && tower != NULL) ) {
         removableTerrain = removable;
         terrain = true;
         empty = false;
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 bool Cell::removeTerrain(bool force) {

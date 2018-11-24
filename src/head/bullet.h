@@ -9,11 +9,14 @@
 #include "vector2.h"
 #include "circle.h"
 #include "animation.h"
+#include "cameracontroller.h"
 
+class CameraController;
 class Unit;
 
 class Bullet {
 public:
+//    public UnitsManager* unitsManager;
     Unit* unit;
     float ammoExpSize;
     float ammoSize;
@@ -21,41 +24,25 @@ public:
     TemplateForTower* templateForTower;
 
     QPixmap pixmap;
-    QMap<QString, Tile*> ammunitionPictures;
-//    std::vector<QPixmap> activePixmaps;
 
-    bool flying;
-    int lastCellX, lastCellY;
-    int currCellX, currCellY;
     Vector2* currentPoint;
-    Circle* circle;
-    Circle* endPoint;
+    Circle* currCircle;
+    Vector2* endPoint;
+    Circle* endCircle;
     Vector2* velocity;
 
     Direction::type direction;
-    int animationCurrIter;
-    int animationMaxIter;
     Animation* animation;
+    float flyingTime;
 
 public:
-    Bullet(Vector2 *currentPoint, TemplateForTower *templateForTower, Unit *unit);
-    Bullet(int currCellX, int currCellY, Direction::type direction, TemplateForTower *templateForTower);
+    Bullet(Vector2 *currentPoint, TemplateForTower *templateForTower, Vector2 *destPoint, CameraController *cameraController);
+    Bullet(Vector2 *currentPoint, TemplateForTower *templateForTower, Unit *unit, CameraController *cameraController);
     ~Bullet();
 
     void setAnimation(QString action);
-    int flightOfShell(float delta);
-    bool tryToHitUnits();
-//    void setCurrCellCoordinate(int currCellX, int currCellY);
-//    QPixmap getAnimationInformation(int *lastCellX, int *lastCellY, int *animationCurrIter, int *animationMaxIter);
-
-//    void setUnit(Unit* unit);
-//    void setPixmap(QPixmap pixmap);
-//    int getCurrCellX();
-//    int getCurrCellY();
-//    QPixmap getPixmap();
-
-//public slots:
-
+    int flightOfShell(float delta, CameraController *cameraController);
+    bool tryToHitUnits(CameraController *cameraController);
 };
 
 #endif // BULLET_H

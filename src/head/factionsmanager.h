@@ -28,6 +28,7 @@ public:
     ~FactionsManager();
 
     TemplateForUnit* getRandomTemplateForUnitFromFirstFaction();
+    TemplateForUnit* getRandomTemplateForUnitFromSecondFaction();
     TemplateForTower* getRandomTemplateForTowerFromFirstFaction();
     TemplateForTower* getRandomTemplateForTowerFromAllFaction();
     TemplateForUnit* getTemplateForUnitFromFirstFactionByIndex(int index);

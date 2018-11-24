@@ -44,7 +44,7 @@ void WidgetController::paintEvent(QPaintEvent *) {
 
 void WidgetController::loadMap(QString mapPath) {
     qDebug() << "WidgetController::loadMap(); -- mapPath:" << mapPath;
-    gameWidget = new GameScreenGL(ASSETS_PATH + mapPath, factionsManager, enemyCount, difficultyLevel, towersCount, this);
+    gameWidget = new GameScreenGL(ASSETS_PATH + mapPath, factionsManager, new GameSettings(mapPath), this);
 
 //    gameWidget->cameraController->panMidMouseButton = panMidMouseButtonBool;
 
@@ -187,6 +187,7 @@ void WidgetController::loadNextCampaingMaps() {
     } else {
         campaingMaps.push_back("maps/arena4_1.tmx");
         campaingMaps.push_back("maps/arena4.tmx");
+//        campaingMaps.push_back("maps/old/arena3.tmx");
         campaingMaps.push_back("maps/arena2.tmx");
         campaingMaps.push_back("maps/arena1.tmx");
         campaingMaps.push_back("maps/arena0.tmx");

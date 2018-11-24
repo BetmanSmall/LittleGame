@@ -9,9 +9,9 @@
 class Wave
 {
 public:
-    std::vector<QString*> actions;
-    QPoint spawnPoint;
-    QPoint exitPoint;
+    std::vector<QString> actions;
+    QPoint *spawnPoint;
+    QPoint *exitPoint;
     AStar::CoordinateList route;
 
 private:
@@ -19,9 +19,9 @@ private:
     float elapsedTime;
 
 public:
-    Wave(QPoint spawnPoint, QPoint exitPoint, float startToMove);
-//    QString* getTemplateNameForSpawn(float delta);
-    void addAction(QString* action);
+    Wave(QPoint *spawnPoint, QPoint *exitPoint, float startToMove);
+    QString getTemplateNameForSpawn(float delta);
+    void addAction(QString action);
     QString toString();
 };
 

@@ -1,17 +1,23 @@
 #include "src/head/gamescreengl.h"
 
-GameScreenGL::GameScreenGL(QString mapFile, FactionsManager* factionsManager,
-                       int enemyCount, int difficultyLevel, int towersCount,
+GameScreenGL::GameScreenGL(QString mapPath, FactionsManager* factionsManager,
+                       GameSettings *gameSettings,
                        QWidget *parent):
     QOpenGLWidget(parent),
     ui(new Ui::GameScreenGL)
 {
     ui->setupUi(this);
 
-    gameField = new GameField(mapFile, factionsManager, enemyCount, difficultyLevel, towersCount);
-    cameraController = new CameraController(gameField->map->width, gameField->map->height, gameField->map->tileWidth, gameField->map->tileHeight);
+    gameField = new GameField(mapPath, factionsManager, gameSettings);
+//    gameInterface = new GameInterface(gameField, bitmapFont);
+//    gameInterface.mapNameLabel.setText("MapName:" + mapName);
+    cameraController = new CameraController(gameField);
+//    cameraController = new CameraController(gameField->map->width, gameField->map->height, gameField->map->tileWidth, gameField->map->tileHeight);
+//    borderLeftX  = new Float(0 - (gameField.getSizeCellX()/2 * gameField.getSizeFieldY()));
+//    borderRightX = new Float(0 + (gameField.getSizeCellX()/2 * gameField.getSizeFieldX()));
+//    borderUpY    = new Float(0);
+//    borderDownY  = new Float(0 - (gameField.getSizeCellY() * (gameField.getSizeFieldX()>gameField.getSizeFieldY() ? gameField.getSizeFieldX() : gameField.getSizeFieldY())));
 
-//    timeOfGame = 0;
     gameTimer = new QTimer(this);
     connect(gameTimer, SIGNAL(timeout()), this, SLOT(update()));
     gameTimer->start(0);
@@ -20,11 +26,11 @@ GameScreenGL::GameScreenGL(QString mapFile, FactionsManager* factionsManager,
 //    setFixedSize(200, 200);
 //    setAutoFillBackground(false);
 
-    qDebug() << "GameScreenGL::loadMap(); -- mapFile:" << mapFile;
-    qDebug() << "GameScreenGL::loadMap(); -- enemyCount:" << enemyCount;
-    qDebug() << "GameScreenGL::loadMap(); -- towersCount:" << towersCount;
-    qDebug() << "GameScreenGL::loadMap(); -- field:" << gameField;
-    qDebug() << "GameScreenGL::loadMap(); -- field->map:" << gameField->map;
+    qDebug() << "GameScreenGL::GameScreenGL(); -- mapPath:" << mapPath;
+    qDebug() << "GameScreenGL::GameScreenGL(); -- factionsManager:" << factionsManager;
+    qDebug() << "GameScreenGL::GameScreenGL(); -- gameSettings:" << gameSettings;
+    qDebug() << "GameScreenGL::GameScreenGL(); -- field:" << gameField;
+    qDebug() << "GameScreenGL::GameScreenGL(); -- field->map:" << gameField->map;
     qDebug() << "GameScreenGL::GameScreenGL(); -END- -END-";
 }
 
@@ -35,59 +41,8 @@ GameScreenGL::~GameScreenGL() {
     delete ui;
 }
 
-//QSize GameScreenGL::minimumSizeHint() const
-//{
-//    return QSize(50, 50);
-//}
-
-//QSize GameScreenGL::sizeHint() const
-//{
-//    return QSize(200, 200);
-//}
-
 void GameScreenGL::initializeGL() {
     initializeOpenGLFunctions();
-
-//    makeObject();
-
-//    glEnable(GL_DEPTH_TEST);
-//    glEnable(GL_CULL_FACE);
-
-//#define PROGRAM_VERTEX_ATTRIBUTE 0
-//#define PROGRAM_TEXCOORD_ATTRIBUTE 1
-
-//    QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-//    const char *vsrc =
-//        "attribute highp vec4 vertex;\n"
-//        "attribute mediump vec4 texCoord;\n"
-//        "varying mediump vec4 texc;\n"
-//        "uniform mediump mat4 matrix;\n"
-//        "void main(void)\n"
-//        "{\n"
-//        "    gl_Position = matrix * vertex;\n"
-//        "    texc = texCoord;\n"
-//        "}\n";
-//    vshader->compileSourceCode(vsrc);
-
-//    QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-//    const char *fsrc =
-//        "uniform sampler2D texture;\n"
-//        "varying mediump vec4 texc;\n"
-//        "void main(void)\n"
-//        "{\n"
-//        "    gl_FragColor = texture2D(texture, texc.st);\n"
-//        "}\n";
-//    fshader->compileSourceCode(fsrc);
-
-//    program = new QOpenGLShaderProgram;
-//    program->addShader(vshader);
-//    program->addShader(fshader);
-//    program->bindAttributeLocation("vertex", PROGRAM_VERTEX_ATTRIBUTE);
-//    program->bindAttributeLocation("texCoord", PROGRAM_TEXCOORD_ATTRIBUTE);
-//    program->link();
-
-//    program->bind();
-//    program->setUniformValue("texture", 0);
 }
 
 void GameScreenGL::paintGL() {
@@ -127,7 +82,7 @@ void GameScreenGL::paintGL() {
     cameraController->painter->drawText(10, 60, "cameraController->cameraY:" + QString::number(cameraController->cameraY));
     cameraController->painter->drawText(10, 70, "cameraController->zoom:" + QString::number(cameraController->zoom));
     cameraController->painter->drawText(10, 80, "cameraController->paning:" + QString::number(cameraController->paning));
-    cameraController->painter->drawText(10, 90, "cameraController->flinging:" + QString::number(cameraController->flinging));
+//    cameraController->painter->drawText(10, 90, "cameraController->flinging:" + QString::number(cameraController->flinging));
     cameraController->painter->drawText(10, 130, "cameraController->drawOrder:" + QString::number(cameraController->drawOrder));
     cameraController->painter->drawText(10, 140, "cameraController->isDrawableGrid:" + QString::number(cameraController->isDrawableGrid));
     cameraController->painter->drawText(10, 150, "cameraController->isDrawableUnits:" + QString::number(cameraController->isDrawableUnits));
@@ -143,7 +98,7 @@ void GameScreenGL::paintGL() {
     cameraController->painter->drawText(10, 240, "gameField->towersManager->towers.size():" + QString::number(gameField->towersManager->towers.size()));
     cameraController->painter->drawText(10, 250, "gameField->unitsManager->units.size():" + QString::number(gameField->unitsManager->units.size()));
 
-    cameraController->painter->drawText(10, 260, "gameField->isometric:" + QString::number(gameField->isometric));
+    cameraController->painter->drawText(10, 260, "gameField->isometric:" + QString::number(gameField->gameSettings->isometric));
     cameraController->painter->drawText(10, 270, "gameField->map->mapPath:" + gameField->map->mapPath);
     cameraController->painter->end();
 }
@@ -205,13 +160,13 @@ void GameScreenGL::mouseReleaseEvent(QMouseEvent* event) {
         } else {
             if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits)) {
                 if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
-                    gameField->updateHeroDestinationPoint(mouseX, mouseY);
+                    gameField->rerouteHero(mouseX, mouseY);
                 }
                 qDebug() << "GameScreenGL::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY << " isEmpty:" << gameField->getCell(mouseX, mouseY)->isEmpty();
             }
         }
     } else if (button == Qt::RightButton && !cameraController->panMidMouseButton) {
-        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers) != NULL) {
+        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers)) {
             qDebug() << "GameScreenGL::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
             if ( cameraController->panMidMouseButton || (cameraController->prevMouseCellX == mouseX && cameraController->prevMouseCellY == mouseY && cameraController->prevGlobalMouseX == event->globalX() && cameraController->prevGlobalMouseY == event->globalY()) ) {
                 Cell* cell = gameField->getCell(mouseX, mouseY);
@@ -228,7 +183,7 @@ void GameScreenGL::mouseReleaseEvent(QMouseEvent* event) {
                         qDebug() << "GameScreenGL::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
                     }
                 }
-                gameField->updateHeroDestinationPoint();
+                gameField->rerouteHero();
             }
         }
     }
@@ -238,7 +193,7 @@ void GameScreenGL::mouseMoveEvent(QMouseEvent* event) {
 //    qDebug() << "GameScreenGL::mouseMoveEvent(); -- event:" << event;
     int mouseX = event->x();
     int mouseY = event->y();
-    Qt::MouseButton button = event->button();
+//    Qt::MouseButton button = event->button();
     cameraController->pan(mouseX, mouseY);
 
     if ( cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid) ) {
@@ -293,8 +248,8 @@ void GameScreenGL::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void GameScreenGL::wheelEvent(QWheelEvent* event) {
-    qDebug() << "GameScreenGL::resizeEvent(); -- event->pixelDelta():" << event->pixelDelta();
-    qDebug() << "GameScreenGL::resizeEvent(); -- event->angleDelta():" << event->angleDelta();
+//    qDebug() << "GameScreenGL::wheelEvent(); -- event->pixelDelta():" << event->pixelDelta();
+//    qDebug() << "GameScreenGL::wheelEvent(); -- event->angleDelta():" << event->angleDelta();
 
     cameraController->scrolled(event->angleDelta().y());
 //    gameField->updateCellsGraphicCoordinates(cameraController->halfSizeCellX, cameraController->halfSizeCellY);

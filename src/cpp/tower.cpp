@@ -1,32 +1,50 @@
 #include "src/head/tower.h"
 
-Tower::Tower(QPoint *position, TemplateForTower *templateForTower, int player) {
-    qDebug() << "Tower::Tower(); -- position:" << position << " templateForTower:" << templateForTower << " player:" << player;
-    this->position = position;
+Tower::Tower(Cell *cell, TemplateForTower *templateForTower, int player) {
+    qDebug() << "Tower::Tower(); -- position:" << cell << " templateForTower:" << templateForTower << " player:" << player;
+    this->cell = cell;
     this->elapsedReloadTime = templateForTower->reloadTime;
     this->templateForTower = templateForTower;
 
     this->player = player;
     this->capacity = templateForTower->capacity;
 //    this->bullets = new Array<Bullet>();
-    radiusDetectionCircle = NULL;
-    radiusFlyShellCircle = NULL;
+    this->centerGraphicCoord = new Vector2();
+    this->radiusDetectionCircle = new Circle(0, 0, templateForTower->radiusDetection);
+    this->radiusFlyShellCircle = NULL;
 }
 
 Tower::~Tower() {
     qDebug() << "Tower::~Tower(); -- ";
+    bullets.clear();
+    delete centerGraphicCoord;
+    delete radiusDetectionCircle;
+    if (radiusFlyShellCircle != NULL) {
+        delete radiusFlyShellCircle;
+    }
 }
 
 void Tower::updateGraphicCoordinates(CameraController *cameraController) {
-    if (radiusDetectionCircle != NULL) {
-        delete radiusDetectionCircle;
+    if (cameraController->isDrawableTowers == 1 || cameraController->isDrawableTowers == 5) {
+        centerGraphicCoord->set(cell->graphicCoordinates1);
+    } else if (cameraController->isDrawableTowers == 2) {
+        centerGraphicCoord->set(cell->graphicCoordinates2);
+    } else if (cameraController->isDrawableTowers == 3) {
+        centerGraphicCoord->set(cell->graphicCoordinates3);
+    } else if (cameraController->isDrawableTowers == 4) {
+        centerGraphicCoord->set(cell->graphicCoordinates4);
+    } else {
+        centerGraphicCoord->setZero();
     }
-    this->radiusDetectionCircle = new Circle(cameraController->getCenterTowerGraphicCoord(position->x(), position->y()), templateForTower->radiusDetection);
-    if (templateForTower->shellAttackType == ShellAttackType::FirstTarget && templateForTower->radiusFlyShell != 0.0 && templateForTower->radiusFlyShell >= templateForTower->radiusDetection) {
-        if (radiusFlyShellCircle != NULL) {
-            delete radiusFlyShellCircle;
+    this->radiusDetectionCircle->setPosition(centerGraphicCoord);
+    if (templateForTower->towerShellType == TowerShellType::FirstTarget) {
+        if (templateForTower->radiusFlyShell != 0.0 && templateForTower->radiusFlyShell >= templateForTower->radiusDetection) {
+            if (radiusFlyShellCircle == NULL) {
+                this->radiusFlyShellCircle = new Circle(centerGraphicCoord, templateForTower->radiusFlyShell);
+            } else {
+                this->radiusFlyShellCircle->setPosition(centerGraphicCoord);
+            }
         }
-        this->radiusFlyShellCircle = new Circle(cameraController->getCenterTowerGraphicCoord(position->x(), position->y()), templateForTower->radiusFlyShell);
     }
 }
 
@@ -38,23 +56,54 @@ bool Tower::recharge(float delta) {
     return false;
 }
 
+//bool Tower::shotFireBall(CameraController *cameraController) {
+//    if (elapsedReloadTime >= templateForTower.reloadTime) {
+//        if (templateForTower->towerAttackType == TowerAttackType::FireBall) {
+//            elapsedReloadTime = 0.0;
+//            int radius = Math.round(cameraController->gameField.gameSettings.difficultyLevel);
+//            if ( radius == 0 ) {
+//                radius = Math.round(templateForTower.radiusDetection);
+//            }
+//            Cell towerCell = cell;
+//            Gdx.app.log("Tower::shotFireBall()", "-- radius:" + radius + " towerCell:" + towerCell + " player:" + player);
+//            for (int tmpX = -radius; tmpX <= radius; tmpX++) {
+//                for (int tmpY = -radius; tmpY <= radius; tmpY++) {
+//                    Cell cell = cameraController.gameField.getCell(tmpX + towerCell.cellX, tmpY + towerCell.cellY);
+//                    if (cell != null && cell != towerCell) {
+//                        bullets.add(new Bullet(centerGraphicCoord, templateForTower, cell.graphicCoordinates1, cameraController));
+//                    }
+//                }
+//            }
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP));
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_RIGHT));
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.RIGHT));
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_RIGHT));
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN));
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_LEFT));
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.LEFT));
+////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_LEFT));
+//            Gdx.app.log("Tower::shotFireBall()", "-- bullets:" + bullets + " templateForTower:" + templateForTower + " player:" + player);
+//            return true;
+//        }
+//    }
+//    return false;
+//}
+
 bool Tower::shoot(Unit* unit, CameraController* cameraController) {
     if(elapsedReloadTime >= templateForTower->reloadTime) {
-        if (templateForTower->shellAttackType == ShellAttackType::MassAddEffect) {
+        if (templateForTower->towerShellType == TowerShellType::MassAddEffect) {
             bool effect = false;
-            for (ShellEffectType* shellEffectType : unit->shellEffectTypes) {
-                if (shellEffectType->shellEffectEnum == ShellEffectType::FreezeEffect) {
+            for (TowerShellEffect* towerShellEffect : unit->shellEffectTypes) {
+                if (towerShellEffect->shellEffectEnum == TowerShellEffect::FreezeEffect) {
                     effect = true;
                     break;
                 }
             }
             if (!effect) {
-                unit->shellEffectTypes.push_back(new ShellEffectType(templateForTower->shellEffectType));
+                unit->shellEffectTypes.push_back(new TowerShellEffect(templateForTower->towerShellEffect));
             }
-        } else if (templateForTower->shellAttackType == ShellAttackType::FireBall) {
-
         } else {
-            bullets.push_back(new Bullet(cameraController->getCenterTowerGraphicCoord(position->x(), position->y()), templateForTower, unit));
+            bullets.push_back(new Bullet(centerGraphicCoord, templateForTower, unit, cameraController));
         }
         elapsedReloadTime = 0.0;
         return true;
@@ -62,52 +111,30 @@ bool Tower::shoot(Unit* unit, CameraController* cameraController) {
     return false;
 }
 
-void Tower::createBullets(int difficultyLevel) {
-    elapsedReloadTime = 0;
-    if (difficultyLevel == 2) {
-        for (int dir = 1; dir < 9; dir++) { // dir = 1 because in Direction::type first IDLE for Unit
-            Bullet* bullet0 = new Bullet(position->x(), position->y(), (Direction::type)dir, templateForTower);
-            bullets.push_back(bullet0);
-        }
-    } else  /*if (difficultyLevel == 1)*/ {
-        Bullet* bullet1 = new Bullet(position->x(), position->y(), Direction::type::UP_LEFT, templateForTower);
-        bullets.push_back(bullet1);
-        Bullet* bullet2 = new Bullet(position->x(), position->y(), Direction::type::DOWN_LEFT, templateForTower);
-        bullets.push_back(bullet2);
-        Bullet* bullet3 = new Bullet(position->x(), position->y(), Direction::type::UP_RIGHT, templateForTower);
-        bullets.push_back(bullet3);
-        Bullet* bullet4 = new Bullet(position->x(), position->y(), Direction::type::DOWN_RIGHT, templateForTower);
-        bullets.push_back(bullet4);
-    }
-}
-
-void Tower::moveAllShells(float delta) {
+void Tower::moveAllShells(float delta, CameraController *cameraController) {
     foreach (Bullet* bullet, bullets) {
         if(radiusFlyShellCircle == NULL) {
-            moveShell(delta, bullet);
-//        } else if(Intersector.overlaps(bullet.circle, radiusFlyShellCircle)) {
-        } else if(radiusFlyShellCircle->overlaps(bullet->circle)) {
-            moveShell(delta, bullet);
+            moveShell(delta, bullet, cameraController);
+        } else if(radiusFlyShellCircle->overlaps(bullet->currCircle)) {
+            moveShell(delta, bullet, cameraController);
         } else {
-//            bullet.dispose();
             bullets.erase(std::find(bullets.begin(), bullets.end(), bullet));
-            delete bullet;
+//            bullet.dispose();
+//            delete bullet;
         }
     }
 }
 
-void Tower::moveShell(float delta, Bullet* bullet) {
-    switch (bullet->flightOfShell(delta)) {
+void Tower::moveShell(float delta, Bullet *bullet, CameraController *cameraController) {
+    switch (bullet->flightOfShell(delta, cameraController)) {
+        case 1:
+            break;
         case 0:
-//                if(bullet.unit.die(damage)) {
-//                    GameField.gamerGold += bullet.unit.getTemplateForUnit().bounty;
-//                }
-//                break;
+//            break;
         case -1:
-//            bullet.dispose();
-//            bullets.removeValue(bullet, false);
-        bullets.erase(std::find(bullets.begin(), bullets.end(), bullet));
-        delete bullet;
+            bullets.erase(std::find(bullets.begin(), bullets.end(), bullet));
+//            delete bullet;
+            break;
     }
 }
 
@@ -117,8 +144,8 @@ QString Tower::toString() {
 
 QString Tower::toString(bool full) {
     QString sb("Tower[");
-    sb.append("position->x():" + QString::number(position->x()));
-    sb.append(",position->y():" + QString::number(position->y()));
+    sb.append("cell->cellX:" + QString::number(cell->cellX));
+    sb.append(",cell->cellY:" + QString::number(cell->cellY));
     if (full) {
         sb.append(QString(",elapsedReloadTime:%1").arg(elapsedReloadTime));
         sb.append(QString(",templateForTower:%1").arg(templateForTower->toString()));

@@ -55,7 +55,7 @@ public:
 
     bool isEmpty();
     bool isTerrain();
-    bool setTerrain(Tile* tile, bool removable = true);
+    bool setTerrain(Tile* tile, bool removable = true, bool withTower = true);
     bool removeTerrain(bool force = false);
     bool isPassable();
 

@@ -11,8 +11,9 @@
 #include "cameracontroller.h"
 #include "animation.h"
 #include "circle.h"
-#include "shelleffecttype.h"
+#include "towershelleffect.h"
 
+class CameraController;
 class Cell;
 
 class Unit
@@ -41,7 +42,7 @@ public:
 
     Direction::type direction;
     Animation* animation;
-    std::vector<ShellEffectType*> shellEffectTypes;
+    std::vector<TowerShellEffect*> shellEffectTypes;
 
 public:
     Unit(AStar::CoordinateList route, TemplateForUnit* templateForUnit, int player, Cell *exitCell);
@@ -49,11 +50,10 @@ public:
     void setAnimation(QString action);
     void correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX);
     AStar::Vec2i* move(float deltaTime, CameraController* cameraController);
-    bool die(float damage, ShellEffectType shellEffectType);
-//    bool addEffect(ShellEffectType *shellEffectType);
+    bool die(float damage, TowerShellEffect *towerShellEffect);
+    bool addEffect(TowerShellEffect *towerShellEffect);
 
     bool changeDeathFrame(float delta);
-//    QPixmap getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter);
     bool isAlive();
 
     QPixmap getCurrentFrame();

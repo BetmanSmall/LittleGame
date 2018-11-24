@@ -4,7 +4,7 @@
 class TowerAttackType
 {
 public:
-    enum type { Pit, FireBall, Melee, Range, RangeFly };
+    enum type { FireBall, Pit, Melee, Range, RangeFly };
     static const QString toString(type enumVal) {
         return QString(to_string(enumVal).c_str());
     }
@@ -36,8 +36,8 @@ private:
     {
         std::vector<type> valueVector;
         valueVector.reserve(5);
-        valueVector.push_back(Pit);
         valueVector.push_back(FireBall);
+        valueVector.push_back(Pit);
         valueVector.push_back(Melee);
         valueVector.push_back(Range);
         valueVector.push_back(RangeFly);
@@ -46,8 +46,8 @@ private:
     static std::map<type,std::string> _make_enum_strings_map()
     {
         std::map<type,std::string> enumStringsMap;
-        enumStringsMap.insert(std::make_pair(Pit, "Pit"));
         enumStringsMap.insert(std::make_pair(FireBall, "FireBall"));
+        enumStringsMap.insert(std::make_pair(Pit, "Pit"));
         enumStringsMap.insert(std::make_pair(Melee, "Melee"));
         enumStringsMap.insert(std::make_pair(Range, "Range"));
         enumStringsMap.insert(std::make_pair(RangeFly, "RangeFly"));
@@ -56,8 +56,8 @@ private:
     static std::map<std::string,type> _make_strings_enum_map()
     {
         std::map<std::string,type> stringsEnumMap;
-        stringsEnumMap.insert(std::make_pair("Pit", Pit));
         stringsEnumMap.insert(std::make_pair("FireBall", FireBall));
+        stringsEnumMap.insert(std::make_pair("Pit", Pit));
         stringsEnumMap.insert(std::make_pair("Melee", Melee));
         stringsEnumMap.insert(std::make_pair("Range", Range));
         stringsEnumMap.insert(std::make_pair("RangeFly", RangeFly));

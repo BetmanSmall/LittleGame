@@ -1,10 +1,10 @@
-#ifndef SHELLATTACKTYPE_H
-#define SHELLATTACKTYPE_H
+#ifndef TOWERSHELLTYPE_H
+#define TOWERSHELLTYPE_H
 
-class ShellAttackType
+class TowerShellType
 {
 public:
-    enum type { FireBall, AutoTarget, FirstTarget, SingleTarget, MultipleTarget, MassAddEffect };
+    enum type { AutoTarget, FirstTarget, SingleTarget, MultipleTarget, MassAddEffect };
     static const QString toString(type enumVal) {
         return QString(to_string(enumVal).c_str());
     }
@@ -35,8 +35,7 @@ private:
     static const std::vector<type> _make_values()
     {
         std::vector<type> valueVector;
-        valueVector.reserve(6);
-        valueVector.push_back(FireBall);
+        valueVector.reserve(5);
         valueVector.push_back(AutoTarget);
         valueVector.push_back(FirstTarget);
         valueVector.push_back(SingleTarget);
@@ -47,7 +46,6 @@ private:
     static std::map<type,std::string> _make_enum_strings_map()
     {
         std::map<type,std::string> enumStringsMap;
-        enumStringsMap.insert(std::make_pair(FireBall, "FireBall"));
         enumStringsMap.insert(std::make_pair(AutoTarget, "AutoTarget"));
         enumStringsMap.insert(std::make_pair(FirstTarget, "FirstTarget"));
         enumStringsMap.insert(std::make_pair(SingleTarget, "SingleTarget"));
@@ -58,7 +56,6 @@ private:
     static std::map<std::string,type> _make_strings_enum_map()
     {
         std::map<std::string,type> stringsEnumMap;
-        stringsEnumMap.insert(std::make_pair("FireBall", FireBall));
         stringsEnumMap.insert(std::make_pair("AutoTarget", AutoTarget));
         stringsEnumMap.insert(std::make_pair("FirstTarget", FirstTarget));
         stringsEnumMap.insert(std::make_pair("SingleTarget", SingleTarget));
@@ -68,4 +65,4 @@ private:
     }
 };
 
-#endif // SHELLATTACKTYPE_H
+#endif // TOWERSHELLTYPE_H

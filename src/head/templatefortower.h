@@ -9,8 +9,8 @@
 #include "src/head/direction.h"
 //#include "src/head/faction.h"
 #include "towerattacktype.h"
-#include "shellattacktype.h"
-#include "shelleffecttype.h"
+#include "towershelltype.h"
+#include "towershelleffect.h"
 #include "simpletemplate.h"
 
 class TemplateForTower : public Template
@@ -20,8 +20,8 @@ public:
     QString factionName;
     QString name;
 
-    float   radiusDetection;
-    float   radiusFlyShell;
+    float   radiusDetection = 0.0;
+    float   radiusFlyShell = 0.0;
     int     damage;
     int     size;
     int     cost;
@@ -30,8 +30,8 @@ public:
     float   reloadTime;
 //    QString type;
     TowerAttackType::type towerAttackType;
-    ShellAttackType::type shellAttackType;
-    ShellEffectType* shellEffectType;
+    TowerShellType::type towerShellType;
+    TowerShellEffect* towerShellEffect;
     int capacity;
 
 //    AnimatedTile idleTile;

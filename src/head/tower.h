@@ -17,27 +17,27 @@ class Bullet;
 class Tower
 {
 public:
-    QPoint* position;
-//    int currX, currY;
+    Cell* cell;
     float elapsedReloadTime;
     TemplateForTower* templateForTower;
 
     int player;
     int capacity;
     std::vector<Bullet*> bullets;
+    Vector2* centerGraphicCoord;
     Circle* radiusDetectionCircle;
     Circle* radiusFlyShellCircle;
 
 public:
-    Tower(QPoint* position, TemplateForTower* templateForTower, int player);
+    Tower(Cell *cell, TemplateForTower *templateForTower, int player);
     ~Tower();
 
     void updateGraphicCoordinates(CameraController *cameraController);
     bool recharge(float delta);
-    bool shoot(Unit* unit, CameraController* cameraController);
-    void createBullets(int difficultyLevel);
-    void moveAllShells(float delta);
-    void moveShell(float delta, Bullet* bullet);
+//    bool shotFireBall(CameraController *cameraController);
+    bool shoot(Unit *unit, CameraController *cameraController);
+    void moveAllShells(float delta, CameraController *cameraController);
+    void moveShell(float delta, Bullet *bullet, CameraController *cameraController);
 
     QString toString();
     QString toString(bool full);

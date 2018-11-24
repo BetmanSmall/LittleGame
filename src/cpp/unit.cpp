@@ -53,22 +53,60 @@ Unit::~Unit() {
 }
 
 void Unit::setAnimation(QString action) {
-//    qDebug() << "Unit::setAnimation(); -- action_+:" << action + Direction::toString(direction);
-//    try {
-        AnimatedTile* animatedTiledMapTile = templateForUnit->animations.value( action + Direction::toString(direction) );
+//    qDebug() << "Unit::setAnimation(); -- action+direction:" << (action + Direction::toString(direction) );
+    AnimatedTile* animatedTiledMapTile = templateForUnit->animations.value( action + Direction::toString(direction) );
+    if (animatedTiledMapTile != NULL) {
         QVector<StaticTile*> staticTiledMapTiles = animatedTiledMapTile->getFrameTiles();
         std::vector<QPixmap> textureRegions;
         for (int k = 0; k < staticTiledMapTiles.size(); k++) {
             textureRegions.push_back(staticTiledMapTiles.at(k)->getPixmap());
         }
-//        qDebug() << "Unit::setAnimation(); -- textureRegions:" << textureRegions[0];
         this->animation = new Animation(speed / staticTiledMapTiles.size(), textureRegions);
-//        qDebug() << "Unit::setAnimation(); -- animation:" << animation;
-//    } catch (Exception exp) {
-//        Gdx.app.log("Unit::setAnimation(" + action + direction + ")", "-- UnitName: " + templateForUnit.name + " Exp: " + exp);
-//    }
-//    qDebug() << "Unit::setAnimation(); -end- ";
+//        qDebug() << "Unit::setAnimation(); -- animation:" << animation << " textureRegions:" << textureRegions[0];
+    } else {
+        qDebug() << "Unit::setAnimation(" << (action + Direction::toString(direction)) << "); -- UnitName: " << templateForUnit->name << " animatedTiledMapTile: " << animatedTiledMapTile;
+    }
 }
+
+//void shellEffectsMove(float delta) {
+//    for (TowerShellEffect towerShellEffect : shellEffectTypes) {
+////            Gdx.app.log("Unit::shellEffectsMove()", "-- towerShellEffect:" + towerShellEffect);
+//        if (!towerShellEffect.used) {
+//            towerShellEffect.used = true;
+//            if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FreezeEffect) {
+//                float smallSpeed = speed/100f;
+//                float percentSteps = stepsInTime/smallSpeed;
+//                speed += towerShellEffect.speed;
+//                smallSpeed = speed/100f;
+//                stepsInTime = smallSpeed*percentSteps;
+//            } else if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FireEffect) {
+//                hp -= towerShellEffect.damage;
+////                    if(die(towerShellEffect.damage, null)) {
+////                        GameField.gamerGold += templateForUnit.bounty;
+////                    }
+//            }
+//        } else {
+//            if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FireEffect) {
+//                hp -= towerShellEffect.damage;
+////                    if(die(towerShellEffect.damage, null)) {
+////                        GameField.gamerGold += templateForUnit.bounty;
+////                    }
+//            }
+//        }
+//        towerShellEffect.elapsedTime += delta;
+//        if (towerShellEffect.elapsedTime >= towerShellEffect.time) {
+////                Gdx.app.log("Unit::shellEffectsMove()", "-- Remove towerShellEffect:" + towerShellEffect);
+//            if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FreezeEffect) {
+//                float smallSpeed = speed/100f;
+//                float percentSteps = stepsInTime/smallSpeed;
+//                speed = speed- towerShellEffect.speed;
+//                smallSpeed = speed/100f;
+//                stepsInTime = smallSpeed*percentSteps;
+//            }
+//            shellEffectTypes.removeValue(towerShellEffect, true);
+//        }
+//    }
+//}
 
 void Unit::correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX) {
     this->direction = direction;
@@ -100,144 +138,147 @@ void Unit::correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX)
 
 AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
 //    qDebug() << "Unit::move(); -- Unit status:" << this->toString();
-//    qDebug() << "Unit::move(); -- stepsInTime:" << stepsInTime;
-//    qDebug() << "Unit::move(); -- deltaTime:" << deltaTime;
-//    qDebug() << "Unit::move(); -- speed:" << speed;
-    if(/*route != null &&*/ !route.empty()) {
-        stepsInTime += deltaTime;
-        if (stepsInTime >= speed) {
+//    shellEffectsMove(deltaTime);
+//    stepsInTime += (speed*deltaTime);
+    stepsInTime += deltaTime; // wtf? check Bullet::flightOfShell()
+    if (stepsInTime >= speed) {
+        if (/*route != null &&*/ !route.empty()) {
             stepsInTime = 0.0;
             oldPosition = newPosition;
             newPosition = route.back();
             route.pop_back();
+//            qDebug() << "Unit::move(); -- newPosition:" << newPosition.toString().c_str();
+//            if (newPosition == route.end()) {
+//                newPosition = oldPosition;
+//            }
+        } else {
+            direction = Direction::type::UP;
+            setAnimation("idle_");
+            return NULL;
         }
-
-        int oldX = oldPosition.x, oldY = oldPosition.y;
-        int newX = newPosition.x, newY = newPosition.y;
-        int sizeCellX = cameraController->sizeCellX;
-        int sizeCellY = cameraController->sizeCellY;
-        float halfSizeCellX = sizeCellX/2;
-        float halfSizeCellY = sizeCellY/2;
-        Vector2 *fVc = new Vector2(); // fVc = floatVectorCoordinates
-//        float fVx = 0, fVy = 0;
-        Direction::type oldDirection = direction;
-        int isDrawableUnits = cameraController->isDrawableUnits;
-        if(isDrawableUnits == 4 || isDrawableUnits == 5) {
+    }
+    int oldX = oldPosition.x, oldY = oldPosition.y;
+    int newX = newPosition.x, newY = newPosition.y;
+    float sizeCellX = cameraController->sizeCellX;
+    float sizeCellY = cameraController->sizeCellY;
+    float halfSizeCellX = sizeCellX/2;
+    float halfSizeCellY = sizeCellY/2;
+    Vector2 *fVc = new Vector2(); // fVc = floatVectorCoordinates
+    Direction::type oldDirection = direction;
+    int isDrawableUnits = cameraController->isDrawableUnits;
+    if (isDrawableUnits == 4 || isDrawableUnits == 5) {
 //            fVc = new Vector2(getCell(newX, newY).graphicsCoord4);
-            float fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
-            float fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY)) + halfSizeCellY;
-            fVc->set(fVx, fVy);
-            if (newX < oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-            } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-            } else if (newX < oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-            } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::UP, sizeCellX);
-            } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
-            } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-            } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
-            }
-            circle4->set(fVx, fVy, 16.0);
+        float fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
+        float fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY));
+        fVc->set(fVx, fVy);
+        if (newX < oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
+        } else if (newX < oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
+        } else if (newX < oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
+        } else if (newX == oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
+        } else if (newX > oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::UP, sizeCellX);
+        } else if (newX > oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
+        } else if (newX > oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
+        } else if (newX == oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
         }
-        if(isDrawableUnits == 3 || isDrawableUnits == 5) {
+        circle4->setPosition(fVc);
+    }
+    if(isDrawableUnits == 3 || isDrawableUnits == 5) {
 //            fVc = new Vector2(getCell(newX, newY).graphicsCoord3);
-            float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
-            float fVy = ( (halfSizeCellY * newY) + (newX * halfSizeCellY)) + halfSizeCellY*2;
-            fVc->set(fVx, fVy);
-            if (newX < oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::UP, sizeCellX);
-            } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-            } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-            } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
-            } else if (newX < oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-            } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
-            }
-            circle3->set(fVx, fVy, 16.0);
+        float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
+        float fVy = ( (halfSizeCellY * newY) + (newX * halfSizeCellY)) + halfSizeCellY;
+        fVc->set(fVx, fVy);
+        if (newX < oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::UP, sizeCellX);
+        } else if (newX == oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
+        } else if (newX > oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
+        } else if (newX > oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
+        } else if (newX > oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
+        } else if (newX == oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
+        } else if (newX < oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
+        } else if (newX < oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
         }
-        if(isDrawableUnits == 2 || isDrawableUnits == 5) {
+        circle3->setPosition(fVc);
+    }
+    if(isDrawableUnits == 2 || isDrawableUnits == 5) {
 //            fVc = new Vector2(getCell(newX, newY).graphicsCoord2);
-            float fVx = (halfSizeCellX * newY) + (newX * halfSizeCellX) + halfSizeCellX;
-            float fVy = (halfSizeCellY * newY) - (newX * halfSizeCellY) + halfSizeCellY;
-            fVc->set(fVx, fVy);
-            if (newX < oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-            } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-            } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::UP, sizeCellX);
-            } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
-            } else if (newX < oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-            } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
-            }
-            circle2->set(fVx, fVy, 16.0);
+        float fVx = ( (halfSizeCellX * newY) + (newX * halfSizeCellX)) + halfSizeCellX;
+        float fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY));
+        fVc->set(fVx, fVy);
+        if (newX < oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
+        } else if (newX == oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
+        } else if (newX > oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
+        } else if (newX > oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
+        } else if (newX > oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::UP, sizeCellX);
+        } else if (newX == oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
+        } else if (newX < oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
+        } else if (newX < oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
         }
-        if(isDrawableUnits == 1 || isDrawableUnits == 5) {
-            float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
-            float fVy = (-(halfSizeCellY * newY) - (newX * halfSizeCellY));
-            fVc->set(fVx, fVy);
-            if (newX < oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-            } else if (newX == oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY < oldY) {
-                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-            } else if (newX > oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-            } else if (newX > oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::UP, sizeCellX);
-            } else if (newX == oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
-            } else if (newX < oldX && newY > oldY) {
-                correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-            } else if (newX < oldX && newY == oldY) {
-                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
-            }
-            circle1->set(fVx, fVy, 16.0);
+        circle2->setPosition(fVc);
+    }
+    if(isDrawableUnits == 1 || isDrawableUnits == 5) {
+//            fVc = new Vector2(getCell(newX, newY).graphicsCoord1);
+        float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
+        float fVy = (-(halfSizeCellY * newY) - (newX * halfSizeCellY)) - halfSizeCellY;
+        fVc->set(fVx, fVy);
+        if (newX < oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
+        } else if (newX == oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
+        } else if (newX > oldX && newY < oldY) {
+            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
+        } else if (newX > oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
+        } else if (newX > oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::UP, sizeCellX);
+        } else if (newX == oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
+        } else if (newX < oldX && newY > oldY) {
+            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
+        } else if (newX < oldX && newY == oldY) {
+            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
         }
+        circle1->setPosition(fVc);
+    }
 
-        backStepPoint->set(currentPoint);
-        currentPoint->set(fVc);
-        delete fVc; // fVc = NULL;
+    backStepPoint->set(currentPoint);
+    currentPoint->set(fVc);
+    delete fVc; // fVc = NULL;
 
-        velocity = new Vector2(backStepPoint->x - currentPoint->x, backStepPoint->y - currentPoint->y);
-        velocity = velocity->nor()->scl(qMin(currentPoint->dst(backStepPoint->x, backStepPoint->y), speed));
-        displacement = new Vector2(velocity->x * deltaTime, velocity->y * deltaTime);
+    velocity = new Vector2(backStepPoint->x - currentPoint->x, backStepPoint->y - currentPoint->y);
+    velocity->nor()->scl(qMin(currentPoint->dst(backStepPoint->x, backStepPoint->y), speed));
+    displacement = new Vector2(velocity->x * deltaTime, velocity->y * deltaTime);
 
 //        qDebug() << "Unit::move(); -- direction:" << direction << " oldDirection:" << oldDirection;
-        if(direction != oldDirection) {
-            setAnimation("walk_");
-        }
-        return &newPosition;
-    } else {
-//        dispose();
-        return NULL;
+    if(direction != oldDirection) {
+        setAnimation("walk_");
     }
+    return &newPosition;
 }
 
-bool Unit::die(float damage, ShellEffectType shellEffectType) {
+bool Unit::die(float damage, TowerShellEffect *towerShellEffect) {
     if(hp > 0) {
         hp -= damage;
 //        addEffect(shellEffectType);
@@ -252,7 +293,7 @@ bool Unit::die(float damage, ShellEffectType shellEffectType) {
 }
 
 //bool Unit::addEffect(ShellEffectType *shellEffectType) {
-//    if(shellEffectType != NULL){
+//    if (shellEffectType != NULL) {
 //        if(!shellEffectTypes.contains(shellEffectType, false)) {
 //            shellEffectTypes.add(new ShellEffectType(shellEffectType));
 //        }
@@ -272,14 +313,6 @@ bool Unit::changeDeathFrame(float delta) {
     }
     return false;
 }
-
-//QPixmap Unit::getAnimationInformation(int *lastX, int *lastY, int *animationCurrIter, int *animationMaxIter) {
-//    *lastX = this->lastX;
-//    *lastY = this->lastY;
-//    *animationCurrIter = this->animationCurrIter;
-//    *animationMaxIter = this->animationMaxIter;
-//    return this->pixmap;
-//}
 
 bool Unit::isAlive() {
     if(animation == NULL) {

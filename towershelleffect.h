@@ -1,9 +1,9 @@
-#ifndef SHELLEFFECTTYPE_H
-#define SHELLEFFECTTYPE_H
+#ifndef TOWERSHELLEFFECT_H
+#define TOWERSHELLEFFECT_H
 
 #include <QDebug>
 
-class ShellEffectType
+class TowerShellEffect
 {
 public:
     enum ShellEffectEnum { FreezeEffect, FireEffect };
@@ -20,17 +20,17 @@ public:
     bool used = false;
 
 public:
-    ShellEffectType(ShellEffectEnum shellEffectEnum) {
+    TowerShellEffect(ShellEffectEnum shellEffectEnum) {
         this->shellEffectEnum = shellEffectEnum;
         this->elapsedTime = 0;
     }
 
-    ShellEffectType(ShellEffectType* shellEffectType) {
-        this->shellEffectEnum = shellEffectType->shellEffectEnum;
-        this->time = shellEffectType->time;
-        this->elapsedTime = shellEffectType->elapsedTime;
-        this->damage = shellEffectType->damage;
-        this->speed = shellEffectType->speed;
+    TowerShellEffect(TowerShellEffect* towerShellEffect) {
+        this->shellEffectEnum = towerShellEffect->shellEffectEnum;
+        this->time = towerShellEffect->time;
+        this->elapsedTime = towerShellEffect->elapsedTime;
+        this->damage = towerShellEffect->damage;
+        this->speed = towerShellEffect->speed;
     }
 
 //    @Override
@@ -47,8 +47,8 @@ public:
 //    }
 
     QString toString() {
-        QString sb("ShellEffectType[");
-        sb.append(",shellEffectEnum:" + ShellEffectType::toString(shellEffectEnum));
+        QString sb("TowerShellEffect[");
+        sb.append(",shellEffectEnum:" + TowerShellEffect::toString(shellEffectEnum));
         sb.append(",time:" + QString::number(time));
         sb.append(",elapsedTime:" + QString::number(elapsedTime));
         sb.append(",damage:" + QString::number(damage));
@@ -105,4 +105,4 @@ private:
     }
 };
 
-#endif // SHELLEFFECTTYPE_H
+#endif // TOWERSHELLEFFECT_H

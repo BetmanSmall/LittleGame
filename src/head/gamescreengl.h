@@ -6,15 +6,6 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include <QMouseEvent>
-//#include <QDesktopWidget>
-//#include <QWidget>
-//#include <QPaintEvent>
-//#include <QPainter>
-//#include <QFileDialog>
-//#include <QTextStream>
-//#include <QMessageBox>
-//#include <QXmlStreamReader>
-//#include <QBitmap>
 #include <QString>
 #include <QDebug>
 
@@ -54,21 +45,17 @@ public:
     std::string global_text2;
 
 public:
-    explicit GameScreenGL(QString mapPath, FactionsManager* factionsManager,
-                        int enemyCount, int difficultyLevel, int towersCount,
+    explicit GameScreenGL(QString mapPath, FactionsManager *factionsManager,
+                        GameSettings *gameSettings,
                         QWidget *parent = 0);
     ~GameScreenGL();
-
-//    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-//    QSize sizeHint() const Q_DECL_OVERRIDE;
-//    void rotateBy(int xAngle, int yAngle, int zAngle);
-//    void setClearColor(const QColor &color);
 
 protected:
     void initializeGL() Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
-//    void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
+//    void paintEvent(QPaintEvent* event);
     void resizeGL(int width, int height) Q_DECL_OVERRIDE;
+//    void resizeEvent(QResizeEvent* event);
 
     void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;

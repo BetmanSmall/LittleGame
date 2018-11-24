@@ -9,29 +9,29 @@ void WaveManager::addWave(Wave* wave) {
     this->waves.push_back(wave);
 }
 
-//std::vector<WaveManager::TemplateNameAndPoints*> WaveManager::getAllUnitsForSpawn(float delta) {
-//    waitForNextSpawnUnit -= delta;
-//    std::vector<TemplateNameAndPoints*> allUnitsForSpawn;
-//    foreach (Wave* wave, waves) {
-//        if(!wave->actions.empty()) {
-//            QString* templateName = wave->getTemplateNameForSpawn(delta);
-//            if (templateName != NULL) {
-//                if (templateName->contains("wait")) {
-//                    waitForNextSpawnUnit = templateName->right(templateName->indexOf("=") + 1).toFloat();
-//                    // bitch naxyui =( || but work mb =)
-//                } else {
-//                    allUnitsForSpawn.push_back(new TemplateNameAndPoints(*templateName, wave->spawnPoint, wave->exitPoint));
-//                }
-//            }
-//        } else {
-//            waves.erase(std::find(waves.begin(), waves.end(), wave));
-//        }
-//    }
-//    return allUnitsForSpawn;
-//}
+std::vector<WaveManager::TemplateNameAndPoints*> WaveManager::getAllUnitsForSpawn(float delta) {
+    waitForNextSpawnUnit -= delta;
+    std::vector<TemplateNameAndPoints*> allUnitsForSpawn;
+    foreach (Wave* wave, waves) {
+        if(!wave->actions.empty()) {
+            QString templateName = wave->getTemplateNameForSpawn(delta);
+            if (!templateName.isNull() && templateName != "") {
+                if (templateName.contains("wait")) {
+                    waitForNextSpawnUnit = templateName.right(templateName.indexOf("=") + 1).toFloat();
+                    // bitch naxyui =( || but work mb =)
+                } else {
+                    allUnitsForSpawn.push_back(new TemplateNameAndPoints(templateName, wave->spawnPoint, wave->exitPoint));
+                }
+            }
+        } else {
+            waves.erase(std::find(waves.begin(), waves.end(), wave));
+        }
+    }
+    return allUnitsForSpawn;
+}
 
-std::vector<QPoint> WaveManager::getAllSpawnPoint() {
-    std::vector<QPoint> points;
+std::vector<QPoint*> WaveManager::getAllSpawnPoint() {
+    std::vector<QPoint*> points;
     foreach (Wave* wave, waves) {
         points.push_back(wave->spawnPoint);
     }
@@ -41,28 +41,28 @@ std::vector<QPoint> WaveManager::getAllSpawnPoint() {
     return points;
 }
 
-std::vector<QPoint> WaveManager::getAllExitPoint() {
-    std::vector<QPoint> points;
+std::vector<QPoint*> WaveManager::getAllExitPoint() {
+    std::vector<QPoint*> points;
     foreach (Wave* wave, waves) {
         points.push_back(wave->exitPoint);
     }
     foreach (Wave* wave, wavesForUser) {
         points.push_back(wave->exitPoint);
     }
-    if (!lastExitPoint.isNull()) {
+    if (lastExitPoint != NULL) {
         points.push_back(lastExitPoint);
     }
     return points;
 }
 
-bool WaveManager::setExitPoint(QPoint exitPoint) {
-    this->lastExitPoint = exitPoint;
-    if (waves.size() != 0) {
-        waves.front()->exitPoint = exitPoint;
-        return true;
-    }
-    return false;
-}
+//bool WaveManager::setExitPoint(QPoint* exitPoint) {
+//    this->lastExitPoint = exitPoint;
+//    if (waves.size() != 0) {
+//        waves.front()->exitPoint = exitPoint;
+//        return true;
+//    }
+//    return false;
+//}
 
 int WaveManager::getNumberOfActions() {
     int actions = 0;

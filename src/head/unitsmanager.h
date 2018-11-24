@@ -8,11 +8,12 @@
 #include "src/head/cell.h"
 #include "src/head/unit.h"
 
+class Unit;
+
 class UnitsManager {
 public: // we are friendly to all!
     std::vector<Unit*> hero;
     std::vector<Unit*> units;
-//    int difficultyLevel;
 
 public:
     UnitsManager();
@@ -20,10 +21,7 @@ public:
     Unit* createUnit(AStar::CoordinateList path, TemplateForUnit *templateForUnit, int player, Cell *exitCell);
     Unit* getUnit(int number);
 //    Unit* getUnit(int x, int y);
-
     bool removeUnit(Unit* unit);
-//    int getHP(int x, int y);
-//    bool attackUnit(int x, int y, int damage); //, Unit* unit);
 };
 
 #endif // CREEPS_H
