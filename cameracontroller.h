@@ -21,8 +21,8 @@ public:
     float cameraY = 0;
 //    OrthographicCamera camera;
     int mapWidth, mapHeight;
-//    float viewportWidth = 0;
-//    float viewportHeight = 0;
+    float viewportWidth = 0;
+    float viewportHeight = 0;
 
     int isDrawableGrid = 3;
     int isDrawableUnits = 3;
@@ -48,11 +48,14 @@ public:
 //    float borderLeftX, borderRightX;
 //    float borderUpY, borderDownY;
 
+    bool panLeftMouseButton = false;
     bool panMidMouseButton = false;
+    bool panRightMouseButton = true;
     bool paning = false;
+    int touchDownX, touchDownY;
     int prevMouseX, prevMouseY;
-    int prevMouseCellX, prevMouseCellY;
-    int prevGlobalMouseX, prevGlobalMouseY;
+//    int prevCellX, prevCellY;
+//    int prevGlobalMouseX, prevGlobalMouseY;
 
 public:
 //    CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY);
@@ -60,11 +63,23 @@ public:
     ~CameraController();
 
 //    void setBorders(float borderLeftX, float borderRightX, float borderUpY, float borderDownY);
+//    bool tap(float x, float y, int count, int button);
     bool touchDown(int screenX, int screenY, int pointer, int button);
     bool touchUp(int screenX, int screenY, int pointer, int button);
     bool fling(float velocityX, float velocityY, int button);
-    bool pan(float cameraX, float cameraY);
+    bool mouseMoved(int screenX, int screenY);
+//    bool touchDragged(int screenX, int screenY, int pointer);
+    bool pan(float x, float y, float deltaX, float deltaY);
+    bool panStop(float x, float y, int pointer, int button);
     bool scrolled(int amount);
+//    bool zoom(float initialDistance, float distance);
+//    bool touchDown(float x, float y, int pointer, int button);
+//    bool tap(float x, float y, int count, int button);
+//    bool longPress(float x, float y);
+//    bool pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2);
+//    bool keyDown(int keycode);
+//    bool keyUp(int keycode);
+//    bool keyTyped(char character);
     void update(float deltaTime);
     void unproject(int &screenX, int &screenY);
 //    QPoint unproject(QPoint screenCoords);

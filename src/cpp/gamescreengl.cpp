@@ -108,6 +108,8 @@ void GameScreenGL::resizeGL(int width, int height) {
     qDebug() << "GameScreenGL::resizeGL(); -- width:" << width << " height:" << height;
     int side = qMin(width, height);
     glViewport((width - side) / 2, (height - side) / 2, side, side);
+    cameraController->viewportWidth = width;
+    cameraController->viewportHeight = height;
 }
 
 void GameScreenGL::mousePressEvent(QMouseEvent* event) {
@@ -115,23 +117,7 @@ void GameScreenGL::mousePressEvent(QMouseEvent* event) {
     int mouseX = event->x();
     int mouseY = event->y();
     Qt::MouseButton button = event->button();
-    if (gameField->getUnderConstruction() != NULL) {
-        if (button == Qt::RightButton) {
-            gameField->cancelUnderConstruction();
-        }
-    }
-    if ( (!cameraController->panMidMouseButton && button == Qt::RightButton) ||
-          (cameraController->panMidMouseButton && button == Qt::MidButton) ) {
-        cameraController->touchDown(mouseX, mouseY, 0, button);
-        setCursor(Qt::ClosedHandCursor);
-    }
-    if (button == Qt::LeftButton) {
-        if (gameField->getUnderConstruction() != NULL) {
-            if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers)) {
-                gameField->getUnderConstruction()->setStartCoors(mouseX, mouseY);
-            }
-        }
-    }
+    cameraController->touchDown(mouseX, mouseY, 0, button);
 //    if(whichCell(mouseX,mouseY)) {
 //        prevMouseX = event->x();
 //        prevMouseY = event->y();
@@ -147,46 +133,7 @@ void GameScreenGL::mouseReleaseEvent(QMouseEvent* event) {
     int mouseX = event->x();
     int mouseY = event->y();
     Qt::MouseButton button = event->button();
-    if ( (!cameraController->panMidMouseButton && button == Qt::RightButton) ||
-          (cameraController->panMidMouseButton && button == Qt::MidButton) ) {
-        cameraController->touchUp(mouseX, mouseY, 0, button);
-        setCursor(Qt::ArrowCursor);
-    }
-    if (button == Qt::LeftButton) {
-        if (gameField->getUnderConstruction() != NULL) {
-            if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers)) {
-                gameField->buildTowersWithUnderConstruction(mouseX, mouseY);
-            }
-        } else {
-            if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableUnits)) {
-                if (gameField->getCell(mouseX, mouseY)->isEmpty()) {
-                    gameField->rerouteHero(mouseX, mouseY);
-                }
-                qDebug() << "GameScreenGL::mouseReleaseEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY << " isEmpty:" << gameField->getCell(mouseX, mouseY)->isEmpty();
-            }
-        }
-    } else if (button == Qt::RightButton && !cameraController->panMidMouseButton) {
-        if (cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableTowers)) {
-            qDebug() << "GameScreenGL::mouseReleaseEvent(); -whichCell- mouseX:" << mouseX << " mouseY:" << mouseY;
-            if ( cameraController->panMidMouseButton || (cameraController->prevMouseCellX == mouseX && cameraController->prevMouseCellY == mouseY && cameraController->prevGlobalMouseX == event->globalX() && cameraController->prevGlobalMouseY == event->globalY()) ) {
-                Cell* cell = gameField->getCell(mouseX, mouseY);
-                if (cell != NULL) {
-                    if(cell->isEmpty()) {
-                        gameField->createTower(mouseX, mouseY, gameField->factionsManager->getRandomTemplateForTowerFromAllFaction(), 0);
-                        int randNumber = ( 124+(rand()%2) );
-                        cell->setTerrain(gameField->map->tileSets.getTileSet(0)->tiles[randNumber]);
-                    } else if (cell->isTerrain()) {
-                        cell->removeTerrain();
-                    } else if (cell->getTower() != NULL) {
-                        cell->removeTower();
-                    } else {
-                        qDebug() << "GameScreenGL::mouseReleaseEvent(); -- RightButton! cell bad:" << cell;
-                    }
-                }
-                gameField->rerouteHero();
-            }
-        }
-    }
+    cameraController->touchUp(mouseX, mouseY, 0, button);
 }
 
 void GameScreenGL::mouseMoveEvent(QMouseEvent* event) {
@@ -194,57 +141,7 @@ void GameScreenGL::mouseMoveEvent(QMouseEvent* event) {
     int mouseX = event->x();
     int mouseY = event->y();
 //    Qt::MouseButton button = event->button();
-    cameraController->pan(mouseX, mouseY);
-
-    if ( cameraController->whichCell(mouseX, mouseY, cameraController->isDrawableGrid) ) {
-        if (gameField->getUnderConstruction() != NULL) {
-            gameField->getUnderConstruction()->setEndCoors(mouseX, mouseY);
-        }
-//        qDebug() << "GameScreenGL::mouseMoveEvent(); -cell- mouseX:" << mouseX << " mouseY:" << mouseY;
-    }
-//    if (gameInterface.pan(x, y, deltaX, deltaY)) {
-//        lastCircleTouched = true;
-//        return true;
-//    }
-//    lastCircleTouched = false;
-//    if (gameField.getUnderConstruction() == null || Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-//        float newCameraX = camera.position.x + (-deltaX * camera.zoom);
-//        float newCameraY = camera.position.y + (deltaY * camera.zoom);
-//                camera.position.set(newCameraX, newCameraY, 0.0f);
-//            }
-//        } else {
-//            camera.position.set(newCameraX, newCameraY, 0.0f);
-//        }
-//    } else {
-//        float space = 50f;
-//        float shiftCamera = 5f;
-//        if (x < space) {
-//            camera.position.add(-shiftCamera, 0.0f, 0.0f);
-//        }
-//        if (x > Gdx.graphics.getWidth() - space) {
-//            camera.position.add(shiftCamera, 0.0f, 0.0f);
-//        }
-//        if (y < space) {
-//            camera.position.add(0.0f, shiftCamera, 0.0f);
-//        }
-//        if (y > Gdx.graphics.getHeight() - space) {
-//            camera.position.add(0.0f, -shiftCamera, 0.0f);
-//        }
-//    }
-//    return false;
-//    if (pan) {
-////        int mainCoorMapX = field->getMainCoorMapX();
-////        int mainCoorMapY = field->getMainCoorMapY();
-//        int x = event->x();
-//        int y = event->y();
-
-//        mainCoorMapX = mainCoorMapX + ((x-prevMouseX)/1);
-//        mainCoorMapY = mainCoorMapY + ((y-prevMouseY)/1);
-//        field->setMainCoorMap(mainCoorMapX, mainCoorMapY);
-//        prevMouseX = event->x();
-//        prevMouseY = event->y();
-//        update();
-//    }
+    cameraController->mouseMoved(mouseX, mouseY);
 }
 
 void GameScreenGL::wheelEvent(QWheelEvent* event) {

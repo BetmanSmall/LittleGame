@@ -1555,7 +1555,7 @@ Tower *GameField::createTower(int buildX, int buildY, TemplateForTower* template
         for (int tmpX = startX; tmpX <= finishX; tmpX++) {
             for (int tmpY = startY; tmpY <= finishY; tmpY++) {
                 Cell* cell = getCell(buildX + tmpX, buildY + tmpY);
-                if (cell != NULL || !cell->isEmpty()) {
+                if (cell == NULL || !cell->isEmpty()) {
                     return NULL;
                 }
             }
@@ -1623,7 +1623,7 @@ int GameField::removeTower(int cellX, int cellY) {
             for (int tmpY = startY; tmpY <= finishY; tmpY++) {
                 getCell(x + tmpX, y + tmpY)->removeTower();
 //                if (pathFinder != NULL) {
-//                pathFinder.getNodeMatrix()[y + tmpY][x + tmpX].setKey('.');
+//                  pathFinder.getNodeMatrix()[y + tmpY][x + tmpX].setKey('.');
 //                }
             }
         }
