@@ -34,28 +34,27 @@ public:
     int isDrawableRoutes = 3;
     int drawOrder = 8;
 
-//    bool flinging = false;
-//    float initialScale = 2f;
+    bool flinging = false;
+    float initialScale = 2.0;
+    float velX;
+    float velY;
 //    boolean lastCircleTouched = false;
-//    float velX;
-//    float velY;
 
     float sizeCellX, sizeCellY;
     float halfSizeCellX, halfSizeCellY;
     float zoomMax = 5.0;
     float zoomMin = 0.1;
     float zoom = 1;
-//    float borderLeftX, borderRightX;
-//    float borderUpY, borderDownY;
+    float borderLeftX = 0.0, borderRightX = 0.0;
+    float borderUpY = 0.0, borderDownY = 0.0;
 
-    bool panLeftMouseButton = false;
-    bool panMidMouseButton = false;
+    bool panLeftMouseButton = true;
+    bool panMidMouseButton = true;
     bool panRightMouseButton = true;
     bool paning = false;
     int touchDownX, touchDownY;
     int prevMouseX, prevMouseY;
 //    int prevCellX, prevCellY;
-//    int prevGlobalMouseX, prevGlobalMouseY;
 
 public:
 //    CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY);

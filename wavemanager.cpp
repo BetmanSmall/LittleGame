@@ -78,85 +78,85 @@ void WaveManager::validationPoints(Cell* field, int sizeFieldX, int sizeFieldY) 
         int wavesSize = waves.size();
         qDebug() << "WaveManager::validationPoints(); -- sizeField:(" << sizeFieldX << ", " << sizeFieldY << ") waves:(" << wavesSize << ":" << wavesSize << ")";
 //        for (int w = 0; w < waves.size; w++) {
-//            Wave wave = waves.get(w);
-//        foreach (Wave* wave, waves) {
-//            QPoint spawnPoint = wave->spawnPoint;
-//            QPoint exitPoint = wave->exitPoint;
-//            int spawnPointX = spawnPoint.x();
-//            int spawnPointY = spawnPoint.y();
-//            int exitPointX = exitPoint.x();
-//            int exitPointY = exitPoint.y();
-//            qDebug() << "WaveManager::validationPoints(); -- spawnPoint:" + spawnPoint. + " exitPoint:" + exitPoint + " wave:" + wave;
-//            if (spawnPoint.isNull() || spawnPointX < 0 || spawnPointX >= sizeFieldX || spawnPointY < 0 || spawnPointY >= sizeFieldY || !field[spawnPointX][spawnPointY].isPassable()) {
-//                qDebug() << "WaveManager::validationPoints(); -- SpawnPoint bad:" + spawnPoint + " wave:" + wave;
+//            Wave* wave = waves.get(w);
+////        foreach (Wave* wave, waves) {
+//            QPoint* spawnPoint = wave->spawnPoint;
+//            QPoint* exitPoint = wave->exitPoint;
+//            int spawnPointX = spawnPoint->x();
+//            int spawnPointY = spawnPoint->y();
+//            int exitPointX = exitPoint->x();
+//            int exitPointY = exitPoint->y();
+//            qDebug() << "WaveManager::validationPoints(); -- spawnPoint:" << spawnPoint. << " exitPoint:" << exitPoint << " wave:" << wave;
+//            if (spawnPoint == NULL || spawnPointX < 0 || spawnPointX >= sizeFieldX || spawnPointY < 0 || spawnPointY >= sizeFieldY || !field[spawnPointX][spawnPointY].isPassable()) {
+//                qDebug() << "WaveManager::validationPoints(); -- SpawnPoint bad:" << spawnPoint << " wave:" << wave;
 //                waves.removeValue(wave, true);
 //                w--;
 //            } else if (exitPoint.isNull() || exitPointX < 0 || exitPointX >= sizeFieldX || exitPointY < 0 || exitPointY >= sizeFieldY || !field[exitPointX][exitPointY].isPassable()) {
-//                qDebug() << "WaveManager::validationPoints(); -- ExitPoint bad:" + exitPoint + " wave:" + wave;
+//                qDebug() << "WaveManager::validationPoints(); -- ExitPoint bad:" << exitPoint << " wave:" << wave;
 //                waves.removeValue(wave, true);
 //                w--;
 //            }
 //        }
-//        qDebug() << "WaveManager::validationPoints(); -- sizeField:(" + sizeFieldX + ", " + sizeFieldY + ") waves:(" + wavesSize + ":" + waves.size + ")";
-//        int wavesForUserSize = waves.size;
-//        qDebug() << "WaveManager::validationPoints(); -- sizeField:(" + sizeFieldX + ", " + sizeFieldY + ") wavesForUser:(" + wavesForUserSize + ":" + wavesForUser.size + ")";
+        qDebug() << "WaveManager::validationPoints(); -- sizeField:(" << sizeFieldX << ", " << sizeFieldY << ") waves:(" << wavesSize << ":" << waves.size() << ")";
+        int wavesForUserSize = waves.size();
+        qDebug() << "WaveManager::validationPoints(); -- sizeField:(" << sizeFieldX << ", " << sizeFieldY << ") wavesForUser:(" << wavesForUserSize << ":" << wavesForUser.size() << ")";
 //        for (int w = 0; w < wavesForUser.size; w++) {
 //            Wave wave = wavesForUser.get(w);
 //            QPoint spawnPoint = wave->spawnPoint;
 //            QPoint exitPoint = wave->exitPoint;
-//            qDebug() << "WaveManager::validationPoints(); -- spawnPoint:" + spawnPoint + " exitPoint:" + exitPoint + " wave:" + wave;
+//            qDebug() << "WaveManager::validationPoints(); -- spawnPoint:" << spawnPoint << " exitPoint:" << exitPoint << " wave:" << wave;
 //            if (spawnPoint.isNull() || spawnPointX < 0 || spawnPointX >= sizeFieldX || spawnPointY < 0 || spawnPointY >= sizeFieldY || !field[spawnPointX][spawnPointY].isPassable()) {
-//                qDebug() << "WaveManager::validationPoints(); -- SpawnPoint bad:" + spawnPoint + " wave:" + wave;
+//                qDebug() << "WaveManager::validationPoints(); -- SpawnPoint bad:" << spawnPoint << " wave:" << wave;
 //                wavesForUser.removeValue(wave, true);
 //                w--;
 //            } else if (exitPoint.isNull() || exitPointX < 0 || exitPointX >= sizeFieldX || exitPointY < 0 || exitPointY >= sizeFieldY || !field[exitPointX][exitPointY].isPassable()) {
-//                qDebug() << "WaveManager::validationPoints(); -- ExitPoint bad:" + exitPoint + " wave:" + wave;
+//                qDebug() << "WaveManager::validationPoints(); -- ExitPoint bad:" << exitPoint << " wave:" << wave;
 //                wavesForUser.removeValue(wave, true);
 //                w--;
 //            }
 //        }
-//        qDebug() << "WaveManager::validationPoints(); -- sizeField:(" + sizeFieldX + ", " + sizeFieldY + ") wavesForUser:(" + wavesForUserSize + ":" + wavesForUser.size + ")";
+        qDebug() << "WaveManager::validationPoints(); -- sizeField:(" << sizeFieldX << ", " << sizeFieldY << ") wavesForUser:(" << wavesForUserSize << ":" << wavesForUser.size() << ")";
     }
 }
 
 void WaveManager::checkRoutes(AStar::PathFinder* pathFinder) {
     qDebug() << "WaveManager::checkRoutes(); -- pathFinder:" << pathFinder;
-//    if(pathFinder != NULL) {
-//        int wavesSize = waves.size();
-//        qDebug() << "WaveManager::checkRoutes(); -- waves:(" + wavesSize + ":" + waves.size() + ")";
+    if(pathFinder != NULL) {
+        int wavesSize = waves.size();
+        qDebug() << "WaveManager::checkRoutes(); -- waves:(" << wavesSize << ":" << waves.size() << ")";
 //        for (int w = 0; w < waves.size; w++) {
 //            Wave wave = waves.get(w);
 //            QPoint spawnPoint = wave->spawnPoint;
 //            QPoint exitPoint = wave->exitPoint;
-//            qDebug() << "WaveManager::checkRoutes(); -- spawnPoint:" + spawnPoint + " exitPoint:" + exitPoint;
+//            qDebug() << "WaveManager::checkRoutes(); -- spawnPoint:" << spawnPoint << " exitPoint:" << exitPoint;
 //            std::vectorDeque<Node> route = pathFinder.route(spawnPointX, spawnPointY, exitPointX, exitPointY);
 //            if (route == null) {
-//                qDebug() << "WaveManager::checkRoutes(); -- Not found route for this points | Remove wave:" + wave;
+//                qDebug() << "WaveManager::checkRoutes(); -- Not found route for this points | Remove wave:" << wave;
 //                waves.removeValue(wave, true);
 //                w--;
 //            } else {
 //                wave->route = route;
 //            }
 //        }
-//        qDebug() << "WaveManager::checkRoutes(); -- waves:(" + wavesSize + ":" + waves.size() + ")";
-//        int wavesForUserSize = wavesForUser.size;
-//        qDebug() << "WaveManager::checkRoutes(); -- wavesForUser:(" + wavesForUserSize + ":" + waves.size() + ")";
+        qDebug() << "WaveManager::checkRoutes(); -- waves:(" << wavesSize << ":" << waves.size() << ")";
+        int wavesForUserSize = wavesForUser.size();
+        qDebug() << "WaveManager::checkRoutes(); -- wavesForUser:(" << wavesForUserSize << ":" << waves.size() << ")";
 //        for (int w = 0; w < wavesForUser.size; w++) {
 //            Wave wave = wavesForUser.get(w);
 //            QPoint spawnPoint = wave->spawnPoint;
 //            QPoint exitPoint = wave->exitPoint;
-//            qDebug() << "WaveManager::checkRoutes(); -- spawnPoint:" + spawnPoint + " exitPoint:" + exitPoint;
+//            qDebug() << "WaveManager::checkRoutes(); -- spawnPoint:" << spawnPoint << " exitPoint:" << exitPoint;
 //            std::vectorDeque<Node> route = pathFinder.route(spawnPointX, spawnPointY, exitPointX, exitPointY);
 //            if (route == null) {
-//                qDebug() << "WaveManager::checkRoutes(); -- Not found route for this points | Remove wave:" + wave;
+//                qDebug() << "WaveManager::checkRoutes(); -- Not found route for this points | Remove wave:" << wave;
 //                wavesForUser.removeValue(wave, true);
 //                w--;
 //            } else {
 //                wave->route = route;
 //            }
 //        }
-//        qDebug() << "WaveManager::checkRoutes(); -- wavesForUser:(" + wavesForUserSize + ":" + waves.size() + ")";
-//    } else {
-//        qDebug() << "WaveManager::checkRoutes(); -- pathFinder == null";
-//    }
+        qDebug() << "WaveManager::checkRoutes(); -- wavesForUser:(" << wavesForUserSize << ":" << waves.size() << ")";
+    } else {
+        qDebug() << "WaveManager::checkRoutes(); -- pathFinder == null";
+    }
 }

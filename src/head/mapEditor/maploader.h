@@ -10,6 +10,9 @@
 #include "animatedtile.h"
 #include "tile.h"
 #include "layer.h"
+//#include "wavemanager.h"
+
+//class WaveManager;
 
 class MapLoader {
     int mapTileWidth;
@@ -23,7 +26,10 @@ class MapLoader {
     int FLAG_FLIP_DIAGONALLY = 0x20000000;
     int MASK_CLEAR = 0xE0000000;
 
+//    WaveManager* waveManager;
+
 public:
+//    MapLoader(WaveManager *waveManager);
     MapLoader();
 
     Map *load(QString mapPath);
@@ -36,6 +42,7 @@ public:
     void loadTileSet(Map *map, QDomElement tileSetElement, QString mapPath, QMap<QString, QPixmap> textures);
     static QString findFile(QString parentPath, QString filePath);
     void loadTileLayer(Map *map, QDomElement element);
+//    void wavesParser(QDomElement waves);
     void loadBasicLayerInfo(Layer *layer, QDomElement element);
     int *getTileIds(QDomElement element, int width, int height);
     TileLayerCell createTileLayerCell(bool flipHorizontally, bool flipVertically, bool flipDiagonally);

@@ -9,6 +9,7 @@ TemplateForTower::TemplateForTower(QString templateFile) {
     loadBasicTemplate(templateFile);
     specificLoad();
     validate();
+    this->size = 1;
     qDebug() << "TemplateForTower::TemplateForTower(); -end- templateFile:" << templateFile;
 }
 

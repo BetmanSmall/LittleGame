@@ -1,7 +1,7 @@
 #include "src/head/mapEditor/maploader.h"
 
 MapLoader::MapLoader() {
-
+//    this->waveManager = waveManager;
 }
 
 Map* MapLoader::load(QString mapPath) {
@@ -176,6 +176,28 @@ Map *MapLoader::loadMap(QDomElement mapElement, QString mapPath, QMap<QString, Q
         }
         node = node.nextSibling();
     }
+//    QDomElement waves = mapElement.firstChildElement("waves");
+//    if(!waves.isNull()) {
+////        QString type = waves.attribute("type", NULL);
+//        QString source = waves.attribute("source", NULL);
+//        if (source != NULL) {
+//            QString tsx = findFile(mapPath, source);
+//            QDomDocument *domDocument = loadDomDocument(tsx);
+//            if (domDocument != NULL) {
+//                QDomElement rootwaves = domDocument->documentElement();
+////                wavesParser(rootwaves);
+////            } catch (IOException e) {
+////                e.printStackTrace();
+//            }
+////        } else if(type != NULL/* && type == "empty"*/) { // LOL not WORK
+////                System.out.println("type=" + type); // Хотел сделать пустую волну, не получилася=( мб как нить сделаем.
+////                waveManager.addWave(new Wave(new GridPoint2(0, 0), new GridPoint2(0, 0), 10f));
+//        } else {
+//            wavesParser(waves);
+//        }
+//    } else {
+//        qDebug() << "MapLoader::loadTilemap(); -- Not found waves block in map:" << tmxFile;
+//    }
     map->width = mapWidth;
     map->height = mapHeight;
     map->tileWidth = tileWidth;
@@ -419,6 +441,63 @@ void MapLoader::loadTileLayer(Map *map, QDomElement element) {
         map->getMapLayers()->add(layer);
     }
 }
+
+//void MapLoader::wavesParser(QDomElement waves) {
+//    QDomNodeList waveElements = waves.elementsByTagName("wave");
+//    for (int w = 0; w < waveElements.length(); w++) {
+//        QDomElement waveElement = waveElements.item(w).toElement();
+//        int spawnPointX = waveElement.attribute("spawnPointX").toInt();
+//        int spawnPointY = waveElement.attribute("spawnPointY").toInt();
+//        int exitPointX = waveElement.attribute("exitPointX").toInt();
+//        int exitPointY = waveElement.attribute("exitPointY").toInt();
+//        float spawnInterval = waveElement.attribute("spawnInterval", 0.0).toFloat();
+//        float startToMove = waveElement.attribute("startToMove", 0.0).toFloat();
+//        Wave* wave = new Wave(new QPoint(spawnPointX, spawnPointY), new QPoint(exitPointX, exitPointY), startToMove);
+//        QDomNodeList actions = waveElement.childNodes();
+//        int actionsCount = actions.size();
+//        for (int a = 0; a < actionsCount; a++) {
+//            QDomElement action = actions.item(a).toElement();
+//            QString sAction = action.nodeName();
+//            if (sAction == "unit") {
+//                float delay = action.attribute("delay", 0.0).toFloat();
+//                if (delay > 0.0) {
+//                    wave->addAction("delay=" + QString::number(delay) );
+//                }
+//                QString unitTemplateName = action.attribute("templateName");
+
+//                float interval = action.attribute("interval", 0.0f).toFloat() + spawnInterval;
+//                int amount = action.attribute("amount", 0).toInt();
+//                for (int u = 0; u < amount; u++) {
+//                    if (interval > 0.0) {
+//                        wave->addAction("interval=" + QString::number(interval) );
+//                    }
+//                    wave->addAction(unitTemplateName);
+//                }
+//            }
+//        }
+////            Array<Element> units = waveElement.getChildrenByName("unit");
+////            for (Element unit : units) {
+////                String unitTemplateName = unit.getAttribute("templateName");
+////                int unitsAmount = unit.getIntAttribute("amount");
+////                int delay = unit.getIntAttribute("delay", 0);
+////                for (int k = 0; k < unitsAmount; k++) {
+////                    wave.addTemplateForUnit(unitTemplateName);
+////                    wave.addDelayForUnit(delay);
+////                }
+////            }
+//        waveManager->addWave(wave);
+//    }
+//    QDomNodeList waveForUserElements = waves.elementsByTagName("waveForUser");
+//    for (int f = 0; f < waveForUserElements.length(); f++) {
+//        QDomElement waveElement = waveForUserElements.item(f).toElement();
+//        int spawnPointX = waveElement.attribute("spawnPointX").toInt();
+//        int spawnPointY = waveElement.attribute("spawnPointY").toInt();
+//        int exitPointX = waveElement.attribute("exitPointX").toInt();
+//        int exitPointY = waveElement.attribute("exitPointY").toInt();
+//        Wave* wave = new Wave(new QPoint(spawnPointX, spawnPointY), new QPoint(exitPointX, exitPointY), 0.0);
+//        waveManager->wavesForUser.add(wave);
+//    }
+//}
 
 void MapLoader::loadBasicLayerInfo(Layer *layer, QDomElement element) {
     QString name = element.attribute("name", NULL);

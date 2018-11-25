@@ -14,6 +14,11 @@ CameraController::CameraController(GameField *gameField) {
     this->sizeCellY = gameField->map->tileHeight;
     this->halfSizeCellX = sizeCellX/2;
     this->halfSizeCellY = sizeCellY/2;
+
+//    this->borderLeftX  = (0 - (halfSizeCellX * mapHeight));
+//    this->borderRightX = (0 + (halfSizeCellX * mapWidth));
+//    this->borderUpY    = (0);
+//    this->borderDownY  = (0 - (sizeCellY * (mapWidth>mapHeight ? mapWidth : mapHeight)));
 }
 
 CameraController::~CameraController() {
@@ -46,8 +51,8 @@ bool CameraController::touchDown(int screenX, int screenY, int pointer, int butt
 //            setCursor(Qt::ClosedHandCursor);
             this->paning = true;
     }
-//    this->flinging = false;
-//    initialScale = camera.zoom;
+    this->flinging = false;
+    initialScale = zoom;
 //    if (!gameInterface.interfaceTouched) {
         UnderConstruction* underConstruction = gameField->getUnderConstruction();
         if (underConstruction != NULL) {
@@ -70,7 +75,7 @@ bool CameraController::touchUp(int screenX, int screenY, int pointer, int button
 //                setCursor(Qt::ArrowCursor);
                 this->paning = false;
         }
-//        fling((float)(screenX)-(prevMouseX), (float)(screenY)-(prevMouseY), button);
+        fling((float)(prevMouseX)-(screenX), (float)(prevMouseY)-(screenY), button);
     }
 //    if (!gameInterface.interfaceTouched) {
         if (gameField->getUnderConstruction() != NULL) {
@@ -143,12 +148,12 @@ bool CameraController::touchUp(int screenX, int screenY, int pointer, int button
 
 bool CameraController::fling(float velocityX, float velocityY, int button) {
     qDebug() << "CameraController::fling(); -- velocityX:" << velocityX << " velocityY:" << velocityY << " button:" << button;
-//    if (!lastCircleTouched) {
-//        flinging = true;
-//        velX = zoom * velocityX * 0.5f;
-//        velY = zoom * velocityY * 0.5f;
+//    if (!gameInterface.interfaceTouched ) {
+        flinging = true;
+        velX = ( (1/zoom) * velocityX) * 0.05f;
+        velY = ( (1/zoom) * velocityY) * 0.05f;
 //    }
-//    qDebug() << "CameraController::fling(); -- velX:" << velX << " velY:" << velY;
+    qDebug() << "CameraController::fling(); -- velX:" << velX << " velY:" << velY;
     return false;
 }
 
@@ -170,8 +175,8 @@ bool CameraController::mouseMoved(int screenX, int screenY) {
 //public boolean touchDragged(int screenX, int screenY, int pointer) {
 
 bool CameraController::pan(float x, float y, float deltaX, float deltaY) {
-    qDebug() << "CameraController::pan(); -- x:" << x << " x:" << x;
-    qDebug() << "CameraController::pan(); -- deltaX:" << deltaX << " deltaY:" << deltaY;
+//    qDebug() << "CameraController::pan(); -- x:" << x << " x:" << x;
+//    qDebug() << "CameraController::pan(); -- deltaX:" << deltaX << " deltaY:" << deltaY;
 //    if (paning && gameInterface.pan(x, y, deltaX, deltaY)) {
 //        return true;
 //    }
@@ -179,16 +184,16 @@ bool CameraController::pan(float x, float y, float deltaX, float deltaY) {
         if (paning) {
             float newCameraX = cameraX - (deltaX * (1/zoom) );
             float newCameraY = cameraY - (deltaY * (1/zoom) );
-//            if (borderLeftX != null && borderRightX != null && borderUpY != null && borderDownY != null) {
-//                if (borderLeftX < newCameraX && newCameraX < borderRightX &&
-//                        borderUpY > newCameraY && newCameraY > borderDownY) {
-//                    this->cameraX = newCameraX;
-//                    this->cameraY = newCameraY;
-//                }
-//            } else {
+            if (borderLeftX != 0.0 || borderRightX != 0.0 || borderUpY != 0.0 || borderDownY != 0.0) {
+                if (borderLeftX < newCameraX && newCameraX < borderRightX &&
+                        borderUpY > newCameraY && newCameraY > borderDownY) {
                     this->cameraX = newCameraX;
                     this->cameraY = newCameraY;
-//            }
+                }
+            } else {
+                this->cameraX = newCameraX;
+                this->cameraY = newCameraY;
+            }
         }
     }
 //    qDebug() << "CameraController::pan(); -- viewportWidth:" << viewportWidth << " viewportHeight:" << viewportHeight;
@@ -239,9 +244,9 @@ bool CameraController::scrolled(int amount) {
 // Android-libgGDX
 //@Override
 //public boolean zoom(float initialDistance, float distance) {
+//public boolean longPress(float x, float y) {
 //public boolean touchDown(float x, float y, int pointer, int button)
 //public boolean tap(float x, float y, int count, int button) {
-//public boolean longPress(float x, float y) {
 //public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
 //public boolean keyDown(int keycode) {
 //public boolean keyUp(int keycode) {
@@ -250,32 +255,35 @@ bool CameraController::scrolled(int amount) {
 
 void CameraController::update(float deltaTime) {
 //    qDebug() << "CameraController::update(); -- deltaTime:" << deltaTime;
-//    qDebug() << "CameraController::update(); -- flinging:" << flinging;
-//    qDebug() << "CameraController::update(); -- velX:" << velX;
-//    qDebug() << "CameraController::update(); -- velY:" << velY;
-//    if (flinging) {
-//        velX *= 0.98f;
-//        velY *= 0.98f;
-//        float newCameraX = cameraX + (velX * deltaTime);
-//        float newCameraY = cameraY + (velY * deltaTime);
-////        if (borderLeftX != null && borderRightX != null && borderUpY != null && borderDownY != null) {
-////            if (borderLeftX < newCameraX && newCameraX < borderRightX &&
-////                    borderUpY > newCameraY && newCameraY > borderDownY) {
-////                this->cameraX = newCameraX;
-////                this->cameraY = newCameraY;
-////            }
-////        } else {
-//            this->cameraX = newCameraX;
-//            this->cameraY = newCameraY;
-////        }
-//        if (qAbs(velX) < 0.01) velX = 0.0;
-//        if (qAbs(velY) < 0.01) velY = 0.0;
-////        if (velX == 0.0 && velY == 0.0) {
-////            flinging = false;
-////        }
-//        qDebug() << "CameraController::update(); -- newCameraX:" << newCameraX << " newCameraY:" << newCameraY;
-//    }
-//    camera.update();
+//    try {
+        if (gameField->getUnderConstruction() == NULL) {
+            if (flinging) {
+                velX *= 0.98f;
+                velY *= 0.98f;
+                float newCameraX = cameraX - velX;
+                float newCameraY = cameraY - velY;
+//                float newCameraX = cameraX - (velX * deltaTime);
+//                float newCameraY = cameraY - (velY * deltaTime);
+                if (borderLeftX != 0.0 || borderRightX != 0.0 || borderUpY != 0.0 || borderDownY != 0.0) {
+                    if (borderLeftX < newCameraX && newCameraX < borderRightX &&
+                            borderUpY > newCameraY && newCameraY > borderDownY) {
+                        this->cameraX = newCameraX;
+                        this->cameraY = newCameraY;
+                    }
+                } else {
+                    this->cameraX = newCameraX;
+                    this->cameraY = newCameraY;
+                }
+                if (qAbs(velX) < 0.01) velX = 0.0;
+                if (qAbs(velY) < 0.01) velY = 0.0;
+                if (velX == 0.0 && velY == 0.0) {
+                    flinging = false;
+                }
+//                qDebug() << "CameraController::update(); -- velX:" << velX << " velY:" << velY;
+//                qDebug() << "CameraController::update(); -- newCameraX:" << newCameraX << " newCameraY:" << newCameraY;
+            }
+        }
+//        camera.update();
 //    } catch (Exception exp) {
 //        Gdx.app.error("CameraController::update()", "-- Exception:" + exp);
 //    }

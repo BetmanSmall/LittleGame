@@ -12,11 +12,6 @@ GameScreenGL::GameScreenGL(QString mapPath, FactionsManager* factionsManager,
 //    gameInterface = new GameInterface(gameField, bitmapFont);
 //    gameInterface.mapNameLabel.setText("MapName:" + mapName);
     cameraController = new CameraController(gameField);
-//    cameraController = new CameraController(gameField->map->width, gameField->map->height, gameField->map->tileWidth, gameField->map->tileHeight);
-//    borderLeftX  = new Float(0 - (gameField.getSizeCellX()/2 * gameField.getSizeFieldY()));
-//    borderRightX = new Float(0 + (gameField.getSizeCellX()/2 * gameField.getSizeFieldX()));
-//    borderUpY    = new Float(0);
-//    borderDownY  = new Float(0 - (gameField.getSizeCellY() * (gameField.getSizeFieldX()>gameField.getSizeFieldY() ? gameField.getSizeFieldX() : gameField.getSizeFieldY())));
 
     gameTimer = new QTimer(this);
     connect(gameTimer, SIGNAL(timeout()), this, SLOT(update()));
@@ -56,6 +51,7 @@ void GameScreenGL::paintGL() {
     elapsedTime = (currentTime.msecsSinceStartOfDay()) - (lastTime.msecsSinceStartOfDay());
     this->fps = 1000 / elapsedTime;
 
+    cameraController->update(elapsedTime);
     cameraController->painter->begin(this);
     cameraController->painter->scale(cameraController->zoom, cameraController->zoom);
 //    cameraController->painter->setRenderHint(QPainter::Antialiasing);
@@ -69,7 +65,6 @@ void GameScreenGL::paintGL() {
     cameraController->painter->end();
 
     cameraController->painter->begin(this);
-//    cameraController->update(elapsedTime);
 //    cameraController->painter->scale(cameraController->zoom, -cameraController->zoom);
 //    cameraController->painter->translate(-cameraController->cameraX, -cameraController->cameraY);
     cameraController->painter->setPen(QColor(0, 255, 0));
@@ -82,7 +77,7 @@ void GameScreenGL::paintGL() {
     cameraController->painter->drawText(10, 60, "cameraController->cameraY:" + QString::number(cameraController->cameraY));
     cameraController->painter->drawText(10, 70, "cameraController->zoom:" + QString::number(cameraController->zoom));
     cameraController->painter->drawText(10, 80, "cameraController->paning:" + QString::number(cameraController->paning));
-//    cameraController->painter->drawText(10, 90, "cameraController->flinging:" + QString::number(cameraController->flinging));
+    cameraController->painter->drawText(10, 90, "cameraController->flinging:" + QString::number(cameraController->flinging));
     cameraController->painter->drawText(10, 130, "cameraController->drawOrder:" + QString::number(cameraController->drawOrder));
     cameraController->painter->drawText(10, 140, "cameraController->isDrawableGrid:" + QString::number(cameraController->isDrawableGrid));
     cameraController->painter->drawText(10, 150, "cameraController->isDrawableUnits:" + QString::number(cameraController->isDrawableUnits));
@@ -243,7 +238,7 @@ void GameScreenGL::keyPressEvent(QKeyEvent * event) {
         cameraController->isDrawableBackground = cameraController->isDrawableGrid;
         cameraController->isDrawableGround = cameraController->isDrawableGrid;
         cameraController->isDrawableForeground = cameraController->isDrawableGrid;
-//        cameraController->isDrawableGridNav = cameraController->isDrawableGrid;
+        cameraController->isDrawableGridNav = cameraController->isDrawableGrid;
         cameraController->isDrawableRoutes = cameraController->isDrawableGrid;
         qDebug() << "GameScreenGL::keyPressEvent(); -and other- cameraController->isDrawableGrid: " << cameraController->isDrawableGrid;
     } else if(key == Qt::Key_1) {
