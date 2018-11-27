@@ -1,29 +1,28 @@
 #include "src/head/bullet.h"
 
 Bullet::Bullet(Vector2 *currentPoint, TemplateForTower* templateForTower, Vector2 *destPoint, CameraController *cameraController) {
-    qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint;
-    qDebug() << "Bullet::Bullet(); -- templateForTower:" << templateForTower->toString(true).toStdString().c_str();
-    qDebug() << "Bullet::Bullet(); -- destPoint:" << destPoint;
-    qDebug() << "Bullet::Bullet(); -- cameraController:" << cameraController;
+//    qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint;
+//    qDebug() << "Bullet::Bullet(); -- templateForTower:" << templateForTower->toString(true).toStdString().c_str();
+//    qDebug() << "Bullet::Bullet(); -- destPoint:" << destPoint;
+//    qDebug() << "Bullet::Bullet(); -- cameraController:" << cameraController;
     this->ammoExpSize = templateForTower->ammoSize;
     this->ammoSize = templateForTower->ammoSize;
     this->ammoSpeed = templateForTower->ammoSpeed;
     this->templateForTower = templateForTower;
-    qDebug() << "Bullet::Bullet(); -- ammoExpSize:" << ammoExpSize;
-    qDebug() << "Bullet::Bullet(); -- ammoSize:" << ammoSize;
-    qDebug() << "Bullet::Bullet(); -- ammoSpeed:" << ammoSpeed;
+//    qDebug() << "Bullet::Bullet(); -- ammoExpSize:" << ammoExpSize;
+//    qDebug() << "Bullet::Bullet(); -- ammoSize:" << ammoSize;
+//    qDebug() << "Bullet::Bullet(); -- ammoSpeed:" << ammoSpeed;
 
     this->currentPoint = new Vector2(currentPoint);
     this->currCircle = new Circle(currentPoint, ammoSize);
     this->endPoint = new Vector2(destPoint);
     this->endCircle = new Circle(destPoint, 3.0);
-
-    qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint << " currCircle:" << currCircle;
-    qDebug() << "Bullet::Bullet(); -- endPoint:" << endPoint << " endCircle:" << endCircle;
+//    qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint << " currCircle:" << currCircle;
+//    qDebug() << "Bullet::Bullet(); -- endPoint:" << endPoint << " endCircle:" << endCircle;
 
     velocity = new Vector2(endPoint->x - currentPoint->x, endPoint->y - currentPoint->y);
     velocity->nor()->scl(qMin(currentPoint->dst(endPoint->x, endPoint->y), ammoSpeed));
-    qDebug() << "Bullet::Bullet(); -- velocity:" << velocity;
+//    qDebug() << "Bullet::Bullet(); -- velocity:" << velocity;
 
     if (velocity->x > 0) {
         if (velocity->y > 0) {
@@ -101,7 +100,7 @@ Bullet::~Bullet() {
 }
 
 void Bullet::setAnimation(QString action) {
-    qDebug() << "Bullet::setAnimation(); -- action+direction:" << (action + Direction::toString(direction) );
+//    qDebug() << "Bullet::setAnimation(); -- action+direction:" << (action + Direction::toString(direction) );
     AnimatedTile* animatedTiledMapTile = templateForTower->animations.value( action + Direction::toString(direction) );
     if (animatedTiledMapTile != NULL) {
         QVector<StaticTile*> staticTiledMapTiles = animatedTiledMapTile->getFrameTiles();
@@ -110,7 +109,7 @@ void Bullet::setAnimation(QString action) {
             textureRegions.push_back(staticTiledMapTiles.at(k)->getPixmap());
         }
         this->animation = new Animation(ammoSpeed / staticTiledMapTiles.size(), textureRegions);
-        qDebug() << "Bullet::setAnimation(); -- animation:" << animation << " textureRegions:" << textureRegions[0];
+//        qDebug() << "Bullet::setAnimation(); -- animation:" << animation << " textureRegions:" << textureRegions[0];
     } else {
         qDebug() << "Bullet::setAnimation(" << (action + Direction::toString(direction)) << "); -- TowerName: " << templateForTower->name << " animatedTiledMapTile: " << animatedTiledMapTile;
     }
@@ -166,9 +165,9 @@ int Bullet::flightOfShell(float delta, CameraController *cameraController) {
                 currentPoint->add(velocity->x * delta * ammoSpeed, velocity->y * delta * ammoSpeed);
                 currCircle->setPosition(currentPoint);
                 // endPoint2 == endCircle == unit.currentPoint ~= unit.circle1
-                if (currCircle->overlaps(unit->circle1)) {
+                if (currCircle->overlaps(unit->circle3)) {
                     if (unit->die(templateForTower->damage, templateForTower->towerShellEffect)) {
-//                        cameraController->gameField.gamerGold += unit.templateForUnit.bounty;
+                        cameraController->gameField->gamerGold += unit->templateForUnit->bounty;
                     }
                     return 0;
                 }
@@ -180,13 +179,13 @@ int Bullet::flightOfShell(float delta, CameraController *cameraController) {
 
 bool Bullet::tryToHitUnits(CameraController *cameraController) {
     bool hit = false;
-//    foreach (Unit* unit, cameraController->gameField.unitsManager.units) {
-//        if (Intersector.overlaps(circle, unit.circle1)) {
-//            hit = true;
-//            if (unit.die(templateForTower.damage, templateForTower.shellEffectType)) {
-//                GameField.gamerGold += unit.templateForUnit.bounty;
-//            }
-//        }
-//    }
+    foreach (Unit* unit, cameraController->gameField->unitsManager->units) {
+        if (currCircle->overlaps(unit->circle3)) {
+            hit = true;
+            if (unit->die(templateForTower->damage, templateForTower->towerShellEffect)) {
+                cameraController->gameField->gamerGold += unit->templateForUnit->bounty;
+            }
+        }
+    }
     return hit;
 }

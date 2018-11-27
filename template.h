@@ -17,7 +17,7 @@ public:
     QMap<int, AnimatedTile*> animatedTiles;
 
     Template();
-//    ~Template();
+    ~Template();
     void loadBasicTemplate(QString templateFile);
     void basicValidate();
     QMap<QString, QString>* getProperties();

@@ -17,8 +17,8 @@ class FactionsManager
 #endif
 
 public:
-    Template* fireball_0;
-    Template* explosion;
+    SimpleTemplate* fireball_0;
+    SimpleTemplate* explosion;
 
 private:
     std::vector<Faction*> factions;

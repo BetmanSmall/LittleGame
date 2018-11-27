@@ -8,12 +8,12 @@ Template::Template() {
 //    animatedTiles = new ObjectMap<Integer, AnimatedTiledMapTile>();
 }
 
-//Template::~Template() {
-//    qDebug() << "Template::~Template(); -- ";
-//}
+Template::~Template() {
+    qDebug() << "Template::~Template(); -- ";
+}
 
 void Template::loadBasicTemplate(QString templateFile) {
-//    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
+    qDebug() << "Template::loadBasicTemplate(); -- templateFile:" << templateFile;
     QDomDocument* domDocument = MapLoader::loadDomDocument(templateFile);
     QDomElement templateORtileset = domDocument->documentElement();
     this->templateName = templateORtileset.attribute("name", NULL);
@@ -75,10 +75,10 @@ void Template::loadBasicTemplate(QString templateFile) {
 }
 
 void Template::basicValidate() {
-    if (properties.contains("templateName") || !templateName.size()) {
+    if (properties.contains("templateName") || templateName.size()) {
         qDebug() << "Template::basicValidate(); -- templateName:" << templateName;
-        qDebug() << "Template::basicValidate(); -- tiles:" << tiles;
-        qDebug() << "Template::basicValidate(); -- animatedTiles:" << animatedTiles;
+        qDebug() << "Template::basicValidate(); -- tiles:" << tiles.size();
+        qDebug() << "Template::basicValidate(); -- animatedTiles:" << animatedTiles.size();
     }
 }
 

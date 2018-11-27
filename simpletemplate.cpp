@@ -6,7 +6,7 @@ SimpleTemplate::SimpleTemplate(QString templateFile) {
 }
 
 QString SimpleTemplate::toString() {
-    return toString(false);
+    return toString(true);
 }
 
 QString SimpleTemplate::toString(bool full) {

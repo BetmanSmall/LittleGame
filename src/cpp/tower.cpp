@@ -1,7 +1,7 @@
 #include "src/head/tower.h"
 
 Tower::Tower(Cell *cell, TemplateForTower *templateForTower, int player) {
-    qDebug() << "Tower::Tower(); -- position:" << cell << " templateForTower:" << templateForTower << " player:" << player;
+    qDebug() << "Tower::Tower(); -- position:" << cell << " templateForTower:" << templateForTower->toString() << " player:" << player;
     this->cell = cell;
     this->elapsedReloadTime = templateForTower->reloadTime;
     this->templateForTower = templateForTower;
@@ -82,7 +82,7 @@ bool Tower::shotFireBall(CameraController *cameraController) {
 //                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_LEFT));
 //                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.LEFT));
 //                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_LEFT));
-//            qDebug() << "Tower::shotFireBall(); -- bullets:" << bullets << " templateForTower:" << templateForTower << " player:" << player;
+            qDebug() << "Tower::shotFireBall(); -- bullets:" << bullets.size() << " templateForTower:" << templateForTower->toString() << " player:" << player;
             return true;
         }
     }

@@ -47,19 +47,19 @@ void TemplateForTower::specificLoad() {
 
 void TemplateForTower::setAmmoTiles(QString tileName, AnimatedTile* tile) {
     if(tile != NULL) {
-        if(tileName == ("ammo_" + Direction::UP)) {
-            animations.insert("ammo_" + Direction::UP, tile);
-        } else if(tileName == ("ammo_" + Direction::UP_RIGHT)) {
-            animations.insert("ammo_" + Direction::UP_RIGHT, tile);
-            animations.insert("ammo_" + Direction::UP_LEFT, flipAnimatedTiledMapTile(tile));
-        } else if(tileName == ("ammo_" + Direction::RIGHT)) {
-            animations.insert("ammo_" + Direction::RIGHT, tile);
-            animations.insert("ammo_" + Direction::LEFT, flipAnimatedTiledMapTile(tile));
-        } else if(tileName == ("ammo_" + Direction::DOWN_RIGHT)) {
-            animations.insert("ammo_" + Direction::DOWN_RIGHT, tile);
-            animations.insert("ammo_" + Direction::DOWN_LEFT, flipAnimatedTiledMapTile(tile));
-        } else if(tileName == ("ammo_" + Direction::DOWN)) {
-            animations.insert("ammo_" + Direction::DOWN, tile);
+        if(tileName == ("ammo_" + Direction::toString(Direction::UP))) {
+            animations.insert("ammo_" + Direction::toString(Direction::UP), tile);
+        } else if(tileName == ("ammo_" + Direction::toString(Direction::UP_RIGHT))) {
+            animations.insert("ammo_" + Direction::toString(Direction::UP_RIGHT), tile);
+            animations.insert("ammo_" + Direction::toString(Direction::UP_LEFT), flipAnimatedTiledMapTile(tile));
+        } else if(tileName == ("ammo_" + Direction::toString(Direction::RIGHT))) {
+            animations.insert("ammo_" + Direction::toString(Direction::RIGHT), tile);
+            animations.insert("ammo_" + Direction::toString(Direction::LEFT), flipAnimatedTiledMapTile(tile));
+        } else if(tileName == ("ammo_" + Direction::toString(Direction::DOWN_RIGHT))) {
+            animations.insert("ammo_" + Direction::toString(Direction::DOWN_RIGHT), tile);
+            animations.insert("ammo_" + Direction::toString(Direction::DOWN_LEFT), flipAnimatedTiledMapTile(tile));
+        } else if(tileName == ("ammo_" + Direction::toString(Direction::DOWN))) {
+            animations.insert("ammo_" + Direction::toString(Direction::DOWN), tile);
         }
     }
 }
@@ -218,8 +218,8 @@ QString TemplateForTower::toString(bool full) {
 //        sb += ",shellAttackType:" + shellAttackType;
 //        sb += ",shellEffectEnum:" + shellEffectType;
         sb.append(",capacity:" + QString::number(capacity));
-        sb.append(QString(",idleTile!= NULL:%1").arg( idleTile!= NULL ));
-        sb.append(QString(",ammunitionPictures.size():%1").arg(animations.size()));
+        sb.append(QString(",idleTile!=NULL:%1").arg( idleTile!=NULL ));
+        sb.append(QString(",animations.size():%1").arg(animations.size()));
     }
     sb.append("]");
     return sb;

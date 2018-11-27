@@ -974,32 +974,33 @@ void GameField::drawGridNav(CameraController *cameraController) {
 
 //    shapeRenderer.setColor(Color.ORANGE);
     cameraController->painter->setBrush(QColor(255, 165, 0));
+    cameraController->painter->setPen(QColor(255, 165, 0));
     foreach (Tower* tower, towersManager->towers) {
         foreach (Bullet* bullet, tower->bullets) {
             cameraController->painter->drawLine(bullet->currentPoint->getPointF(), bullet->endPoint->getPointF());
 //            shapeRenderer.rectLine(bullet.currentPoint.x, bullet.currentPoint.y, bullet.endPoint.x, bullet.endPoint.y, sizeCellX/40f);
             if (NULL != bullet->currCircle) {
-                cameraController->painter->drawEllipse(bullet->currCircle->x, bullet->currCircle->y, bullet->currCircle->radius, bullet->currCircle->radius);
+                cameraController->painter->drawEllipse(bullet->currCircle->getPosition()->getPointF(), bullet->currCircle->radius, bullet->currCircle->radius);
             }
         }
     }
 //    shapeRenderer.end();
 
-//    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//    cameraController->painter->setBrush(QColor(255, 0, 0));
-//    foreach (Unit* unit, unitsManager->units) {
-//        if( cameraController->isDrawableUnits == 1 ||  cameraController->isDrawableUnits == 5)
-//            cameraController->painter->drawEllipse(unit->circle1->x, unit->circle1->y, unit->circle1->radius, unit->circle1->radius);
-//        if( cameraController->isDrawableUnits == 2 ||  cameraController->isDrawableUnits == 5)
-//            cameraController->painter->drawEllipse(unit->circle2->x, unit->circle2->y, unit->circle2->radius, unit->circle1->radius);
-//        if( cameraController->isDrawableUnits == 3 ||  cameraController->isDrawableUnits == 5)
-//            cameraController->painter->drawEllipse(unit->circle3->x, unit->circle3->y, unit->circle3->radius, unit->circle1->radius);
-//        if( cameraController->isDrawableUnits == 4 ||  cameraController->isDrawableUnits == 5)
-//            cameraController->painter->drawEllipse(unit->circle4->x, unit->circle4->y, unit->circle4->radius, unit->circle1->radius);
-//    }
-
     cameraController->painter->restore();
     cameraController->painter->save();
+//    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+    cameraController->painter->setPen(QColor(255, 0, 0));
+    foreach (Unit* unit, unitsManager->units) {
+        if( cameraController->isDrawableUnits == 1 ||  cameraController->isDrawableUnits == 5)
+            cameraController->painter->drawEllipse(unit->circle1->getPosition()->getPointF(), unit->circle1->radius, unit->circle1->radius);
+        if( cameraController->isDrawableUnits == 2 ||  cameraController->isDrawableUnits == 5)
+            cameraController->painter->drawEllipse(unit->circle2->getPosition()->getPointF(), unit->circle2->radius, unit->circle2->radius);
+        if( cameraController->isDrawableUnits == 3 ||  cameraController->isDrawableUnits == 5)
+            cameraController->painter->drawEllipse(unit->circle3->getPosition()->getPointF(), unit->circle3->radius, unit->circle3->radius);
+        if( cameraController->isDrawableUnits == 4 ||  cameraController->isDrawableUnits == 5)
+            cameraController->painter->drawEllipse(unit->circle4->getPosition()->getPointF(), unit->circle4->radius, unit->circle4->radius);
+    }
+
     cameraController->painter->setPen(QColor(255, 255, 255));
     Vector2* towerPos = new Vector2();
     foreach (Tower* tower, towersManager->towers) { // Draw white towers radius! -- radiusDetectionCircle
@@ -1051,19 +1052,34 @@ void GameField::drawGridNav(CameraController *cameraController) {
             if(cameraController->isDrawableGridNav == 5) {
                 if(cameraController->isDrawableTowers == 5) {
                     for (int m = 1; m <= cameraController->isDrawableTowers; m++) {
-//                        towerPos.set(tower.getCenterGraphicCoord(m)); // Need recoding this func!
                         cameraController->painter->drawText(tower->centerGraphicCoord->getPointF(), QString::number(tower->capacity));
-//                        bitmapFont.draw(spriteBatch, String.valueOf(tower.capacity), towerPos.x, towerPos.y);
                     }
                 } else {
-//                    towerPos.set(tower.getCenterGraphicCoord(isDrawableTowers));
                     cameraController->painter->drawText(tower->centerGraphicCoord->getPointF(), QString::number(tower->capacity));
                 }
             } else {
                 if(cameraController->isDrawableGridNav == cameraController->isDrawableTowers) {
-//                    towerPos.set(tower.getCenterGraphicCoord(isDrawableTowers));
                     cameraController->painter->drawText(tower->centerGraphicCoord->getPointF(), QString::number(tower->capacity));
                 }
+            }
+        }
+//        cameraController.bitmapFont.getData().setScale(0.9f);
+        if (tower->player == 0) {
+            cameraController->painter->setPen(QColor(255, 0, 0));
+        } else if (tower->player == 1) {
+            cameraController->painter->setPen(QColor(0, 0, 255));
+        }
+        if(cameraController->isDrawableGridNav == 5) {
+            if(cameraController->isDrawableTowers == 5) {
+                for (int m = 1; m <= cameraController->isDrawableTowers; m++) {
+                    cameraController->painter->drawText(tower->centerGraphicCoord->getPointF(), QString::number(tower->player));
+                }
+            } else {
+                cameraController->painter->drawText(tower->centerGraphicCoord->getPointF(), QString::number(tower->player));
+            }
+        } else {
+            if(cameraController->isDrawableGridNav == cameraController->isDrawableTowers) {
+                cameraController->painter->drawText(tower->centerGraphicCoord->getPointF(), QString::number(tower->player));
             }
         }
     }
@@ -1318,11 +1334,11 @@ void GameField::drawTowerUnderConstruction(CameraController* cameraController, i
 //            cameraController->painter->setOpacity(0.5);
 //            cameraController->painter->setCompositionMode(QPainter::CompositionMode_SourceIn);
             if (enoughGold && canBuild) {
-                cameraController->painter->setBrush(QColor(0, 255, 80));
-                cameraController->painter->setPen(QColor(0, 255, 0, 80));
+//                cameraController->painter->setBrush(QColor(0, 255, 80));
+                cameraController->painter->setPen(QColor(0, 255, 0, 255));
             } else {
-                cameraController->painter->setBrush(QColor(255, 0, 80));
-                cameraController->painter->setPen(QColor(255, 0, 0, 80));
+//                cameraController->painter->setBrush(QColor(255, 0, 80));
+                cameraController->painter->setPen(QColor(255, 0, 0, 255));
             }
             if (cameraController->isDrawableTowers == 5) {
                 for (int map = 1; map < cameraController->isDrawableTowers; map++) {
@@ -1979,6 +1995,7 @@ void GameField::stepAllUnits(float deltaTime, CameraController* cameraController
 void GameField::shotAllTowers(float deltaTime, CameraController *cameraController) {
     updateTowersGraphicCoordinates(cameraController);
     foreach (Tower* tower, towersManager->towers) {
+//        qDebug() << "GameField::shotAllTowers(); -- tower:" << tower->toString(true).toStdString().c_str();
         TowerAttackType::type towerAttackType = tower->templateForTower->towerAttackType;
         if (towerAttackType == TowerAttackType::Pit) {
             chechPitTower(tower);
@@ -2017,7 +2034,7 @@ void GameField::shotAllTowers(float deltaTime, CameraController *cameraControlle
 bool GameField::chechPitTower(Tower *tower) {
     Unit* unit = getCell(tower->cell->cellX, tower->cell->cellY)->getUnit();
     if (unit != NULL && (unit->templateForUnit->type != "fly") && unit->player != tower->player) {
-        qDebug() << "GameField::shotAllTowers(); -- tower.capacity:" << tower->capacity << " unit.getHp:" << unit->hp;
+        qDebug() << "GameField::chechPitTower(); -- tower.capacity:" << tower->capacity << " unit.getHp:" << unit->hp;
 //        unit.die(unit.getHp());
         unitsManager->removeUnit(unit);
         getCell(tower->cell->cellX, tower->cell->cellY)->removeUnit(unit);

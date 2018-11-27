@@ -2,9 +2,11 @@
 
 FactionsManager::FactionsManager() {
     qDebug() << "FactionsManager::FactionsManager(); -- ";
-//    factions = new Array<Faction>();
     fireball_0 = new SimpleTemplate(ASSETS_PATH + "maps/other/fireball_0.tsx");
+    qDebug() << "FactionsManager::FactionsManager(); -- fireball_0:" << fireball_0->toString();
     explosion = new SimpleTemplate(ASSETS_PATH + "maps/other/explosion.tsx");
+    qDebug() << "FactionsManager::FactionsManager(); -- explosion:" << explosion->toString();
+//    factions = new Array<Faction>();
     loadFactions();
 }
 
@@ -174,6 +176,7 @@ void FactionsManager::loadFaction(QString factionFile) {
                 TemplateForUnit* templateForUnit = new TemplateForUnit(templateFile);
 //                templateForUnit->setFaction(faction);
                 faction->units.push_back(templateForUnit);
+                qDebug() << "FactionsManager::loadFaction(); -- " << templateForUnit->toString(true).toStdString().c_str();
             }
         }
         QDomNodeList templateForTowerElements = rootElement.elementsByTagName("templateForTower");
@@ -185,7 +188,11 @@ void FactionsManager::loadFaction(QString factionFile) {
                 QString templateFile = MapLoader::findFile(factionFile, source);
                 TemplateForTower* templateForTower = new TemplateForTower(templateFile);
 //                templateForTower->setFaction(faction);
+                if (templateForTower->templateName.contains("tower_FireBall")) {
+                    templateForTower->loadFireBall(fireball_0);
+                }
                 faction->towers.push_back(templateForTower);
+                qDebug() << "FactionsManager::loadFaction(); -- " << templateForTower->toString(true).toStdString().c_str();
             }
         }
         factions.push_back(faction);
