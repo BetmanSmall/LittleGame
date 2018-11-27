@@ -42,9 +42,7 @@ bool CameraController::touchDown(int screenX, int screenY, int pointer, int butt
     this->touchDownY = screenY;
     this->prevMouseX = screenX;
     this->prevMouseY = screenY;
-//    this->prevCellX = screenX;
-//    this->prevCellY = screenY;
-//    whichCell(prevCellX, prevCellY, 5);
+    whichPrevCell(screenX, screenY, 5);
     if ( ( (panLeftMouseButton && button == Qt::LeftButton) ||
            (panRightMouseButton && button == Qt::RightButton) ||
            (panMidMouseButton && button == Qt::MiddleButton) ) ) {
@@ -159,6 +157,7 @@ bool CameraController::fling(float velocityX, float velocityY, int button) {
 
 bool CameraController::mouseMoved(int screenX, int screenY) {
 //    qDebug() << "CameraController::mouseMoved(); -- screenX:" << screenX << " screenY:" << screenY;
+    whichPrevCell(screenX, screenY, 5);
     float deltaX = prevMouseX - screenX;
     float deltaY = prevMouseY - screenY;
     pan(screenX, screenY, deltaX, deltaY);
@@ -294,6 +293,12 @@ void CameraController::unproject(int &screenX, int &screenY) {
     screenX -= (cameraX*zoom);
     screenY -= (cameraY*zoom);
 //    qDebug() << "CameraController::unproject(); -- screenX:" << screenX << " screenY:" << screenY << " cameraX:" << cameraX << " cameraY:" << cameraY;
+}
+
+bool CameraController::whichPrevCell(const int screenX, const int screenY, int map) {
+    prevCellX = screenX;
+    prevCellY = screenY;
+    return whichCell(prevCellX, prevCellY, map);
 }
 
 bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {

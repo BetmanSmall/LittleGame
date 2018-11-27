@@ -93,7 +93,7 @@ bool Tower::shoot(Unit* unit, CameraController* cameraController) {
     if(elapsedReloadTime >= templateForTower->reloadTime) {
         if (templateForTower->towerShellType == TowerShellType::MassAddEffect) {
             bool effect = false;
-            for (TowerShellEffect* towerShellEffect : unit->shellEffectTypes) {
+            foreach (TowerShellEffect* towerShellEffect, unit->shellEffectTypes) {
                 if (towerShellEffect->shellEffectEnum == TowerShellEffect::FreezeEffect) {
                     effect = true;
                     break;

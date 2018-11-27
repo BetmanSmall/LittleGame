@@ -68,45 +68,45 @@ void Unit::setAnimation(QString action) {
     }
 }
 
-//void shellEffectsMove(float delta) {
-//    for (TowerShellEffect towerShellEffect : shellEffectTypes) {
-////            Gdx.app.log("Unit::shellEffectsMove()", "-- towerShellEffect:" + towerShellEffect);
-//        if (!towerShellEffect.used) {
-//            towerShellEffect.used = true;
-//            if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FreezeEffect) {
-//                float smallSpeed = speed/100f;
-//                float percentSteps = stepsInTime/smallSpeed;
-//                speed += towerShellEffect.speed;
-//                smallSpeed = speed/100f;
-//                stepsInTime = smallSpeed*percentSteps;
-//            } else if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FireEffect) {
-//                hp -= towerShellEffect.damage;
-////                    if(die(towerShellEffect.damage, null)) {
-////                        GameField.gamerGold += templateForUnit.bounty;
-////                    }
-//            }
-//        } else {
-//            if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FireEffect) {
-//                hp -= towerShellEffect.damage;
-////                    if(die(towerShellEffect.damage, null)) {
-////                        GameField.gamerGold += templateForUnit.bounty;
-////                    }
-//            }
-//        }
-//        towerShellEffect.elapsedTime += delta;
-//        if (towerShellEffect.elapsedTime >= towerShellEffect.time) {
-////                Gdx.app.log("Unit::shellEffectsMove()", "-- Remove towerShellEffect:" + towerShellEffect);
-//            if (towerShellEffect.shellEffectEnum == TowerShellEffect.ShellEffectEnum.FreezeEffect) {
-//                float smallSpeed = speed/100f;
-//                float percentSteps = stepsInTime/smallSpeed;
-//                speed = speed- towerShellEffect.speed;
-//                smallSpeed = speed/100f;
-//                stepsInTime = smallSpeed*percentSteps;
-//            }
-//            shellEffectTypes.removeValue(towerShellEffect, true);
-//        }
-//    }
-//}
+void Unit::shellEffectsMove(float delta) {
+    foreach (TowerShellEffect* towerShellEffect, shellEffectTypes) {
+//            Gdx.app.log("Unit::shellEffectsMove()", "-- towerShellEffect:" + towerShellEffect);
+        if (!towerShellEffect->used) {
+            towerShellEffect->used = true;
+            if (towerShellEffect->shellEffectEnum == TowerShellEffect::ShellEffectEnum::FreezeEffect) {
+                float smallSpeed = speed/100;
+                float percentSteps = stepsInTime/smallSpeed;
+                speed += towerShellEffect->speed;
+                smallSpeed = speed/100;
+                stepsInTime = smallSpeed*percentSteps;
+            } else if (towerShellEffect->shellEffectEnum == TowerShellEffect::ShellEffectEnum::FireEffect) {
+                hp -= towerShellEffect->damage;
+//                    if(die(towerShellEffect.damage, null)) {
+//                        GameField.gamerGold += templateForUnit.bounty;
+//                    }
+            }
+        } else {
+            if (towerShellEffect->shellEffectEnum == TowerShellEffect::ShellEffectEnum::FireEffect) {
+                hp -= towerShellEffect->damage;
+//                    if(die(towerShellEffect.damage, null)) {
+//                        GameField.gamerGold += templateForUnit.bounty;
+//                    }
+            }
+        }
+        towerShellEffect->elapsedTime += delta;
+        if (towerShellEffect->elapsedTime >= towerShellEffect->time) {
+//                Gdx.app.log("Unit::shellEffectsMove()", "-- Remove towerShellEffect:" + towerShellEffect);
+            if (towerShellEffect->shellEffectEnum == TowerShellEffect::ShellEffectEnum::FreezeEffect) {
+                float smallSpeed = speed/100;
+                float percentSteps = stepsInTime/smallSpeed;
+                speed = speed- towerShellEffect->speed;
+                smallSpeed = speed/100;
+                stepsInTime = smallSpeed*percentSteps;
+            }
+            shellEffectTypes.erase(std::find(shellEffectTypes.begin(), shellEffectTypes.end(), towerShellEffect));
+        }
+    }
+}
 
 void Unit::correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX) {
     this->direction = direction;
@@ -138,7 +138,7 @@ void Unit::correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX)
 
 AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
 //    qDebug() << "Unit::move(); -- Unit status:" << this->toString();
-//    shellEffectsMove(deltaTime);
+    shellEffectsMove(deltaTime);
 //    stepsInTime += (speed*deltaTime);
     stepsInTime += deltaTime; // wtf? check Bullet::flightOfShell()
     if (stepsInTime >= speed) {
@@ -271,7 +271,7 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
     velocity->nor()->scl(qMin(currentPoint->dst(backStepPoint->x, backStepPoint->y), speed));
     displacement = new Vector2(velocity->x * deltaTime, velocity->y * deltaTime);
 
-//        qDebug() << "Unit::move(); -- direction:" << direction << " oldDirection:" << oldDirection;
+//    qDebug() << "Unit::move(); -- direction:" << direction << " oldDirection:" << oldDirection;
     if(direction != oldDirection) {
         setAnimation("walk_");
     }
@@ -281,7 +281,7 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
 bool Unit::die(float damage, TowerShellEffect *towerShellEffect) {
     if(hp > 0) {
         hp -= damage;
-//        addEffect(shellEffectType);
+        addEffect(towerShellEffect);
         if(hp <= 0) {
             deathElapsedTime = 0;
             setAnimation("death_");
@@ -292,14 +292,15 @@ bool Unit::die(float damage, TowerShellEffect *towerShellEffect) {
     return false;
 }
 
-//bool Unit::addEffect(ShellEffectType *shellEffectType) {
-//    if (shellEffectType != NULL) {
-//        if(!shellEffectTypes.contains(shellEffectType, false)) {
-//            shellEffectTypes.add(new ShellEffectType(shellEffectType));
-//        }
-//    }
-//    return true;
-//}
+bool Unit::addEffect(TowerShellEffect *towerShellEffect) {
+    if (towerShellEffect != NULL) {
+        auto it = std::find(shellEffectTypes.begin(), shellEffectTypes.end(), towerShellEffect);
+        if(it == shellEffectTypes.end()) {
+            shellEffectTypes.push_back(new TowerShellEffect(towerShellEffect));
+        }
+    }
+    return true;
+}
 
 bool Unit::changeDeathFrame(float delta) {
     if (hp <= 0) {

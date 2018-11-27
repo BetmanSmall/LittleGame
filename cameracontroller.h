@@ -54,7 +54,7 @@ public:
     bool paning = false;
     int touchDownX, touchDownY;
     int prevMouseX, prevMouseY;
-//    int prevCellX, prevCellY;
+    int prevCellX, prevCellY;
 
 public:
 //    CameraController(int mapWidth, int mapHeight, float sizeCellX, float sizeCellY);
@@ -83,7 +83,7 @@ public:
     void unproject(int &screenX, int &screenY);
 //    QPoint unproject(QPoint screenCoords);
 //    QPoint unproject(QPoint screenCoords, float viewportX, float viewportY, float viewportWidth, float viewportHeight);
-//    bool whichCell(int &mouseX, int &mouseY);
+    bool whichPrevCell(const int screenX, const int screenY, int map);
     bool whichCell(int &mouseX, int &mouseY, int map);
     bool getCorrectGraphicTowerCoord(Vector2 *towerPos, int towerSize, int map);
     Vector2* getCenterTowerGraphicCoord(int cellX, int cellY);

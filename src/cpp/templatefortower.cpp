@@ -5,6 +5,7 @@ TemplateForTower::TemplateForTower(QString templateFile) {
     this->radiusDetection = 0.0;
     this->radiusFlyShell = 0.0;
     this->capacity = 0;
+    this->towerShellEffect = NULL;
 //    this->reloadTime = 3000;
     loadBasicTemplate(templateFile);
     specificLoad();

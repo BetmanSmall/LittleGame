@@ -48,6 +48,7 @@ public:
     Unit(AStar::CoordinateList route, TemplateForUnit* templateForUnit, int player, Cell *exitCell);
     ~Unit();
     void setAnimation(QString action);
+    void shellEffectsMove(float delta);
     void correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX);
     AStar::Vec2i* move(float deltaTime, CameraController* cameraController);
     bool die(float damage, TowerShellEffect *towerShellEffect);

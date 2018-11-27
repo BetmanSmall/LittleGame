@@ -48,7 +48,9 @@ void WidgetController::loadMap(QString mapPath) {
 
 //    gameWidget->cameraController->panMidMouseButton = panMidMouseButtonBool;
 
-    gameWidget->setMinimumWidth(1024);
+//    gameWidget->setMinimumWidth(1024);
+//    gameWidget->setMinimumHeight(768);
+    gameWidget->setMinimumWidth(1500);
     gameWidget->setMinimumHeight(768);
     qDebug() << "WidgetController::showGameWidget(); -- END";
     showGameWidget(gameWidget);

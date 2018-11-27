@@ -31,8 +31,8 @@ public:
 //    QString type;
     TowerAttackType::type towerAttackType;
     TowerShellType::type towerShellType;
-    TowerShellEffect* towerShellEffect;
-    int capacity;
+    TowerShellEffect* towerShellEffect = NULL;
+    int capacity = 0;
 
 //    AnimatedTile idleTile;
     Tile*   idleTile;

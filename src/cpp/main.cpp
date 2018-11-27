@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     int width = rec.width();
 
     WidgetController w;
-    w.move(width/2, 0);
+    w.move(width/4, 0);
     w.show();
 
     return a.exec();
