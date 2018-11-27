@@ -78,6 +78,12 @@ Bullet::Bullet(Vector2 *currentPoint, TemplateForTower* templateForTower, Unit *
 
     Tile* tiledMapTile = templateForTower->animations.value("ammo_" + Direction::UP);
     this->pixmap = (tiledMapTile != NULL) ? tiledMapTile->getPixmap() : templateForTower->idleTile->getPixmap();
+
+//    qDebug() << "Bullet::Bullet()", "-- currentPoint:" << currentPoint << ", endCircle:" << endCircle;
+//    qDebug() << "Bullet::Bullet()", "-- ammoSpeed:" << ammoSpeed;
+    velocity = new Vector2(endCircle->x - currentPoint->x, endCircle->y - currentPoint->y);
+    velocity->nor()->scl(qMin(currentPoint->dst(endCircle->x, endCircle->y), ammoSpeed));
+//    qDebug() << "Bullet::Bullet()", "-- velocity:" << velocity;
 }
 
 Bullet::~Bullet() {

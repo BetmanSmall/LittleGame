@@ -56,38 +56,38 @@ bool Tower::recharge(float delta) {
     return false;
 }
 
-//bool Tower::shotFireBall(CameraController *cameraController) {
-//    if (elapsedReloadTime >= templateForTower.reloadTime) {
-//        if (templateForTower->towerAttackType == TowerAttackType::FireBall) {
-//            elapsedReloadTime = 0.0;
-//            int radius = Math.round(cameraController->gameField.gameSettings.difficultyLevel);
-//            if ( radius == 0 ) {
-//                radius = Math.round(templateForTower.radiusDetection);
-//            }
-//            Cell towerCell = cell;
-//            Gdx.app.log("Tower::shotFireBall()", "-- radius:" + radius + " towerCell:" + towerCell + " player:" + player);
-//            for (int tmpX = -radius; tmpX <= radius; tmpX++) {
-//                for (int tmpY = -radius; tmpY <= radius; tmpY++) {
-//                    Cell cell = cameraController.gameField.getCell(tmpX + towerCell.cellX, tmpY + towerCell.cellY);
-//                    if (cell != null && cell != towerCell) {
-//                        bullets.add(new Bullet(centerGraphicCoord, templateForTower, cell.graphicCoordinates1, cameraController));
-//                    }
-//                }
-//            }
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP));
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_RIGHT));
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.RIGHT));
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_RIGHT));
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN));
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_LEFT));
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.LEFT));
-////                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_LEFT));
-//            Gdx.app.log("Tower::shotFireBall()", "-- bullets:" + bullets + " templateForTower:" + templateForTower + " player:" + player);
-//            return true;
-//        }
-//    }
-//    return false;
-//}
+bool Tower::shotFireBall(CameraController *cameraController) {
+    if (elapsedReloadTime >= templateForTower->reloadTime) {
+        if (templateForTower->towerAttackType == TowerAttackType::FireBall) {
+            elapsedReloadTime = 0.0;
+            int radius = qRound(cameraController->gameField->gameSettings->difficultyLevel);
+            if ( radius == 0 ) {
+                radius = qRound(templateForTower->radiusDetection);
+            }
+            Cell* towerCell = cell;
+            qDebug() << "Tower::shotFireBall(); -- radius:" << radius << " towerCell:" << towerCell << " player:" << player;
+            for (int tmpX = -radius; tmpX <= radius; tmpX++) {
+                for (int tmpY = -radius; tmpY <= radius; tmpY++) {
+                    Cell* cell = cameraController->gameField->getCell(tmpX + towerCell->cellX, tmpY + towerCell->cellY);
+                    if (cell != NULL && cell != towerCell) {
+                        bullets.push_back(new Bullet(centerGraphicCoord, templateForTower, cell->graphicCoordinates3, cameraController));
+                    }
+                }
+            }
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP));
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_RIGHT));
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.RIGHT));
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_RIGHT));
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN));
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_LEFT));
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.LEFT));
+//                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_LEFT));
+//            qDebug() << "Tower::shotFireBall(); -- bullets:" << bullets << " templateForTower:" << templateForTower << " player:" << player;
+            return true;
+        }
+    }
+    return false;
+}
 
 bool Tower::shoot(Unit* unit, CameraController* cameraController) {
     if(elapsedReloadTime >= templateForTower->reloadTime) {

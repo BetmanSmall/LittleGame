@@ -23,7 +23,6 @@ SOURCES += src/cpp/main.cpp\
     src/cpp/towersmanager.cpp \
     src/cpp/cell.cpp \
     src/cpp/libs/astar.cpp \
-    src/cpp/libs/tinyxml2.cpp \
     src/cpp/mapEditor/animatedtile.cpp \
     src/cpp/mapEditor/layer.cpp \
     src/cpp/mapEditor/map.cpp \
@@ -32,7 +31,6 @@ SOURCES += src/cpp/main.cpp\
     src/cpp/mapEditor/statictile.cpp \
     src/cpp/mapEditor/tile.cpp \
     src/cpp/mapEditor/tileset.cpp \
-    src/cpp/mapEditor/tileset_back.cpp \
     src/cpp/mapEditor/tilesets.cpp \
     src/cpp/mapEditor/tilelayercell.cpp \
     template.cpp \
@@ -62,7 +60,6 @@ HEADERS  += \
     src/head/towersmanager.h \
     src/head/cell.h \
     src/head/libs/astar.h \
-    src/head/libs/tinyxml2.h \
     src/head/direction.h \
     src/head/mapEditor/animatedtile.h \
     src/head/mapEditor/layer.h \
@@ -72,7 +69,6 @@ HEADERS  += \
     src/head/mapEditor/statictile.h \
     src/head/mapEditor/tile.h \
     src/head/mapEditor/tileset.h \
-    src/head/mapEditor/tileset_back.h \
     src/head/mapEditor/tilesets.h \
     src/head/mapEditor/tilelayercell.h \
     template.h \

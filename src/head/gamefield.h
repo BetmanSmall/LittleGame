@@ -125,7 +125,7 @@ public:
     bool chechPitTower(Tower *tower);
     bool shotMeleeTower(Tower *tower);
 //    bool fireBallTowerAttack(int deltaTime, Tower *fireBallTower);
-    void moveAllShells(float delta);
+    void moveAllShells(float delta, CameraController *cameraController);
 
     void turnRight();
     void turnLeft();

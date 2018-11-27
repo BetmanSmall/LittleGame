@@ -32,7 +32,7 @@ public:
     Vector2* velocity;
 
     Direction::type direction;
-    Animation* animation;
+    Animation* animation = NULL;
     float flyingTime;
 
 public:

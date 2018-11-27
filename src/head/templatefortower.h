@@ -13,7 +13,7 @@
 #include "towershelleffect.h"
 #include "simpletemplate.h"
 
-class TemplateForTower : public Template
+class   TemplateForTower : public Template
 {
 public:
 //    Faction* faction;

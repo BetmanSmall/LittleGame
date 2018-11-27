@@ -193,9 +193,9 @@ void WidgetController::loadNextCampaingMaps() {
         campaingMaps.push_back("maps/winter.tmx");
         campaingMaps.push_back("maps/summer.tmx");
         campaingMaps.push_back("maps/desert.tmx");
+        campaingMaps.push_back("maps/arena0.tmx");
         campaingMaps.push_back("maps/island.tmx");
         campaingMaps.push_back("maps/randomMap.tmx");
-        campaingMaps.push_back("maps/arena0.tmx");
     }
     qDebug() << "WidgetController::loadNextCampaingMaps(); -- campaingMaps.size():" << campaingMaps.size();
 }

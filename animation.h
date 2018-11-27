@@ -6,6 +6,7 @@
 #include <QtGlobal>
 
 class Animation {
+public:
     enum PlayMode {
         NORMAL,
         REVERSED2,

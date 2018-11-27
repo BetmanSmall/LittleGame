@@ -34,7 +34,7 @@ public:
 
     void updateGraphicCoordinates(CameraController *cameraController);
     bool recharge(float delta);
-//    bool shotFireBall(CameraController *cameraController);
+    bool shotFireBall(CameraController *cameraController);
     bool shoot(Unit *unit, CameraController *cameraController);
     void moveAllShells(float delta, CameraController *cameraController);
     void moveShell(float delta, Bullet *bullet, CameraController *cameraController);

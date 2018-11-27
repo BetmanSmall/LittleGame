@@ -3,6 +3,7 @@
 WaveManager::WaveManager() {
 //    this->waves = new std::vector<Wave>();
 //    this->wavesForUser = new std::vector<Wave>();
+    lastExitPoint = NULL;
 }
 
 void WaveManager::addWave(Wave* wave) {
