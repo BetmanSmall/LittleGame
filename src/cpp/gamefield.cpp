@@ -316,11 +316,31 @@ void GameField::render(float deltaTime, CameraController* cameraController) {
 void GameField::drawGrid(CameraController* cameraController) {
     cameraController->painter->setPen(QPen(QColor(100, 60, 21), 1));
     if(!gameSettings->isometric) {
-        for(int x = 0; x < map->width+1; x++) {
-            cameraController->painter->drawLine(x*cameraController->sizeCellX, 0, x*cameraController->sizeCellX, cameraController->sizeCellX*map->height);
+        float sizeCellX = cameraController->sizeCellX;
+//            float sizeCellY = cameraController->sizeCellY;
+        if (cameraController->isDrawableGrid == 1 || cameraController->isDrawableGrid == 5) {
+            for (int x = 0; x < map->width+1; x++)
+                cameraController->painter->drawLine(x*sizeCellX, 0, x*sizeCellX, sizeCellX*map->height);
+            for (int y = 0; y < map->height+1; y++)
+                cameraController->painter->drawLine(0, y*sizeCellX, sizeCellX*map->width, y*sizeCellX);
         }
-        for(int y = 0; y < map->height+1; y++) {
-            cameraController->painter->drawLine(0, y*cameraController->sizeCellX, cameraController->sizeCellX*map->width, y*cameraController->sizeCellX);
+        if (cameraController->isDrawableGrid == 2 || cameraController->isDrawableGrid == 5) {
+            for (int x = 0; x < map->width+1; x++)
+                cameraController->painter->drawLine(-(x*sizeCellX), 0, -(x*sizeCellX), sizeCellX*map->height);
+            for (int y = 0; y < map->height+1; y++)
+                cameraController->painter->drawLine(0, y*sizeCellX, -(sizeCellX*map->width), y*sizeCellX);
+        }
+        if (cameraController->isDrawableGrid == 3 || cameraController->isDrawableGrid == 5) {
+            for (int x = 0; x < map->width+1; x++)
+                cameraController->painter->drawLine(-(x*sizeCellX), 0, -(x*sizeCellX), -(sizeCellX*map->height));
+            for (int y = 0; y < map->height+1; y++)
+                cameraController->painter->drawLine(0, -(y*sizeCellX), -(sizeCellX*map->width), -(y*sizeCellX));
+        }
+        if (cameraController->isDrawableGrid == 4 || cameraController->isDrawableGrid == 5) {
+            for (int x = 0; x < map->width+1; x++)
+                cameraController->painter->drawLine(x*sizeCellX, 0, x*sizeCellX, -(sizeCellX*map->height));
+            for (int y = 0; y < map->height+1; y++)
+                cameraController->painter->drawLine(0, -(y*sizeCellX), sizeCellX*map->width, -(y*sizeCellX));
         }
     } else {
         float halfSizeCellX = cameraController->halfSizeCellX;
@@ -1043,7 +1063,7 @@ void GameField::drawGridNav(CameraController *cameraController) {
                 }
             }
         }
-//        cameraController.bitmapFont.getData().setScale(0.9f);
+//        cameraController->bitmapFont.getData().setScale(0.9f);
         if (tower->player == 0) {
             cameraController->painter->setPen(QColor(255, 0, 0));
         } else if (tower->player == 1) {
@@ -1212,23 +1232,23 @@ void GameField::drawRoutes(CameraController *cameraController) {
 }
 
 //void GameField::drawWavesRoutes(CameraController *cameraController) {
-//    cameraController.shapeRenderer.setProjectionMatrix(cameraController.camera.combined);
-//    cameraController.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//    cameraController->shapeRenderer.setProjectionMatrix(cameraController->camera.combined);
+//    cameraController->shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-//    cameraController.shapeRenderer.setColor(Color.BROWN);
+//    cameraController->shapeRenderer.setColor(Color.BROWN);
 //    for (Wave wave : waveManager.waves) {
 //        drawWave(cameraController, wave);
 //    }
-//    cameraController.shapeRenderer.setColor(Color.BLUE);
+//    cameraController->shapeRenderer.setColor(Color.BLUE);
 //    for (Wave wave : waveManager.wavesForUser) {
 //        drawWave(cameraController, wave);
 //    }
-//    cameraController.shapeRenderer.end();
+//    cameraController->shapeRenderer.end();
 //}
 
 //void GameField::drawWave(CameraController *cameraController, Wave *wave) {
 ////        Gdx.app.log("GameField::drawWave(" + wave + ")", "--");
-//    float linesWidth = cameraController.sizeCellX/15f;
+//    float linesWidth = cameraController->sizeCellX/15f;
 //    ArrayDeque<Node> route = wave.route;
 //    if (route != null && !route.isEmpty()) {
 //        Iterator<Node> nodeIterator = route.iterator();
@@ -1238,17 +1258,17 @@ void GameField::drawRoutes(CameraController *cameraController) {
 //            endNode = nodeIterator.next();
 //            Cell startCell = field[startNode.getX()][startNode.getY()];
 //            Cell endCell = field[endNode.getX()][endNode.getY()];
-//            if(cameraController.isDrawableGridNav == 1 || cameraController.isDrawableGridNav == 5) {
-//                cameraController.shapeRenderer.rectLine(startCell.graphicCoordinates1, endCell.graphicCoordinates1, linesWidth);
+//            if(cameraController->isDrawableGridNav == 1 || cameraController->isDrawableGridNav == 5) {
+//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates1, endCell.graphicCoordinates1, linesWidth);
 //            }
-//            if(cameraController.isDrawableGridNav == 2 || cameraController.isDrawableGridNav == 5) {
-//                cameraController.shapeRenderer.rectLine(startCell.graphicCoordinates2, endCell.graphicCoordinates2, linesWidth);
+//            if(cameraController->isDrawableGridNav == 2 || cameraController->isDrawableGridNav == 5) {
+//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates2, endCell.graphicCoordinates2, linesWidth);
 //            }
-//            if(cameraController.isDrawableGridNav == 3 || cameraController.isDrawableGridNav == 5) {
-//                cameraController.shapeRenderer.rectLine(startCell.graphicCoordinates3, endCell.graphicCoordinates3, linesWidth);
+//            if(cameraController->isDrawableGridNav == 3 || cameraController->isDrawableGridNav == 5) {
+//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates3, endCell.graphicCoordinates3, linesWidth);
 //            }
-//            if(cameraController.isDrawableGridNav == 4 || cameraController.isDrawableGridNav == 5) {
-//                cameraController.shapeRenderer.rectLine(startCell.graphicCoordinates4, endCell.graphicCoordinates4, linesWidth);
+//            if(cameraController->isDrawableGridNav == 4 || cameraController->isDrawableGridNav == 5) {
+//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates4, endCell.graphicCoordinates4, linesWidth);
 //            }
 //            startNode = endNode;
 //        }
