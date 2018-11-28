@@ -1,7 +1,7 @@
 #include "src/head/tower.h"
 
 Tower::Tower(Cell *cell, TemplateForTower *templateForTower, int player) {
-    qDebug() << "Tower::Tower(); -- position:" << cell << " templateForTower:" << templateForTower->toString() << " player:" << player;
+//    qDebug() << "Tower::Tower(); -- position:" << cell << " templateForTower:" << templateForTower << " player:" << player;
     this->cell = cell;
     this->elapsedReloadTime = templateForTower->reloadTime;
     this->templateForTower = templateForTower;

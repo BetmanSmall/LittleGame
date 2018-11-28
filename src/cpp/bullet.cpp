@@ -23,41 +23,14 @@ Bullet::Bullet(Vector2 *currentPoint, TemplateForTower* templateForTower, Vector
     velocity = new Vector2(endPoint->x - currentPoint->x, endPoint->y - currentPoint->y);
     velocity->nor()->scl(qMin(currentPoint->dst(endPoint->x, endPoint->y), ammoSpeed));
 //    qDebug() << "Bullet::Bullet(); -- velocity:" << velocity;
-
-    if (velocity->x > 0) {
-        if (velocity->y > 0) {
-            direction = Direction::type::UP_RIGHT;
-        } else if (velocity->y == 0) {
-            direction = Direction::type::RIGHT;
-        } else if (velocity->y < 0) {
-            direction = Direction::type::DOWN_RIGHT;
-        }
-    } else if (velocity->x == 0) {
-        if (velocity->y > 0) {
-            direction = Direction::type::UP;
-        } else if (velocity->y == 0) {
-//            direction = Direction::type::IDLE;
-            qDebug() << "Bullet::Bullet(); -bad- velocity:" << velocity;
-        } else if (velocity->y < 0) {
-            direction = Direction::type::DOWN;
-        }
-    } else if (velocity->x < 0) {
-        if (velocity->y > 0) {
-            direction = Direction::type::UP_LEFT;
-        } else if (velocity->y == 0) {
-            direction = Direction::type::LEFT;
-        } else if (velocity->y < 0) {
-            direction = Direction::type::DOWN_LEFT;
-        }
-    }
     setAnimation("ammo_");
 }
 
 Bullet::Bullet(Vector2 *currentPoint, TemplateForTower* templateForTower, Unit *unit, CameraController *cameraController) {
-    qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint;
-    qDebug() << "Bullet::Bullet(); -- templateForTower:" << templateForTower->toString(true).toStdString().c_str();
-    qDebug() << "Bullet::Bullet(); -- unit:" << unit;
-    qDebug() << "Bullet::Bullet(); -- cameraController:" << cameraController;
+//    qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint;
+//    qDebug() << "Bullet::Bullet(); -- templateForTower:" << templateForTower->toString(true).toStdString().c_str();
+//    qDebug() << "Bullet::Bullet(); -- unit:" << unit;
+//    qDebug() << "Bullet::Bullet(); -- cameraController:" << cameraController;
     this->ammoExpSize = templateForTower->ammoSize;
     this->ammoSize = templateForTower->ammoSize;
     this->ammoSpeed = templateForTower->ammoSpeed;
@@ -100,6 +73,32 @@ Bullet::~Bullet() {
 }
 
 void Bullet::setAnimation(QString action) {
+    if (velocity->x > 0) {
+        if (velocity->y > 0) {
+            direction = Direction::type::UP_RIGHT;
+        } else if (velocity->y == 0) {
+            direction = Direction::type::RIGHT;
+        } else if (velocity->y < 0) {
+            direction = Direction::type::DOWN_RIGHT;
+        }
+    } else if (velocity->x == 0) {
+        if (velocity->y > 0) {
+            direction = Direction::type::UP;
+        } else if (velocity->y == 0) {
+//            direction = Direction::type::IDLE;
+            qDebug() << "Bullet::Bullet(); -bad- velocity:" << velocity;
+        } else if (velocity->y < 0) {
+            direction = Direction::type::DOWN;
+        }
+    } else if (velocity->x < 0) {
+        if (velocity->y > 0) {
+            direction = Direction::type::UP_LEFT;
+        } else if (velocity->y == 0) {
+            direction = Direction::type::LEFT;
+        } else if (velocity->y < 0) {
+            direction = Direction::type::DOWN_LEFT;
+        }
+    }
 //    qDebug() << "Bullet::setAnimation(); -- action+direction:" << (action + Direction::toString(direction) );
     AnimatedTile* animatedTiledMapTile = templateForTower->animations.value( action + Direction::toString(direction) );
     if (animatedTiledMapTile != NULL) {

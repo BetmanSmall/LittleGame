@@ -1571,7 +1571,7 @@ Tower *GameField::createTower(int buildX, int buildY, TemplateForTower* template
                 }
             }
         }
-        qDebug() << "GameField::createTower(); -- tower:" << tower;
+        qDebug() << "GameField::createTower(); -- tower:" << tower->toString(true).toStdString().c_str();
         return tower;
     }
     return NULL;
