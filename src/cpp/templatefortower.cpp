@@ -10,7 +10,7 @@ TemplateForTower::TemplateForTower(QString templateFile) {
     loadBasicTemplate(templateFile);
     specificLoad();
     validate();
-    this->size = 1;
+//    this->size = 1;
     qDebug() << "TemplateForTower::TemplateForTower(); -end- templateFile:" << templateFile;
 }
 
@@ -182,7 +182,7 @@ void TemplateForTower::validate() {
     }
     if(this->radiusFlyShell == 0.0 && this->towerShellType != TowerShellType::FirstTarget) {
         qDebug() << "TemplateForTower::validate(); -- NotFound: radiusFlyShell";
-        this->radiusFlyShell = 0.0;
+//        this->radiusFlyShell = 0.0;
     }
 
     if(idleTile == NULL)
