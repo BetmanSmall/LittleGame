@@ -113,14 +113,6 @@ void GameScreenGL::mousePressEvent(QMouseEvent* event) {
     int mouseY = event->y();
     Qt::MouseButton button = event->button();
     cameraController->touchDown(mouseX, mouseY, 0, button);
-//    if(whichCell(mouseX,mouseY)) {
-//        prevMouseX = event->x();
-//        prevMouseY = event->y();
-//        prevMouseCellX = mouseX;
-//        prevMouseCellY = mouseY;
-//        prevGlobalMouseX = event->globalX();
-//        prevGlobalMouseY = event->globalY();
-//    }
 }
 
 void GameScreenGL::mouseReleaseEvent(QMouseEvent* event) {
@@ -135,8 +127,8 @@ void GameScreenGL::mouseMoveEvent(QMouseEvent* event) {
 //    qDebug() << "GameScreenGL::mouseMoveEvent(); -- event:" << event;
     int mouseX = event->x();
     int mouseY = event->y();
-//    Qt::MouseButton button = event->button();
-    cameraController->mouseMoved(mouseX, mouseY);
+    Qt::MouseButtons buttons = event->buttons();
+    cameraController->mouseMoved(mouseX, mouseY, buttons);
 }
 
 void GameScreenGL::wheelEvent(QWheelEvent* event) {

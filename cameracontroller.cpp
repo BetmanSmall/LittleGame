@@ -58,6 +58,8 @@ bool CameraController::touchDown(int screenX, int screenY, int pointer, int butt
                 if (whichCell(screenX, screenY, isDrawableTowers)) {
                     underConstruction->setStartCoors((int) screenX, (int) screenY);
                 }
+//            } else if (button == Qt::RightButton) {
+//                gameField->cancelUnderConstruction();
             }
         }
 //    }
@@ -83,7 +85,7 @@ bool CameraController::touchUp(int screenX, int screenY, int pointer, int button
                 }
             } else if (button == Qt::RightButton) {
                 gameField->cancelUnderConstruction();
-//                    gameField.removeTower((int) touch.x, (int) touch.y);
+//                gameField.removeTower((int) touch.x, (int) touch.y);
             }
         } else {
 //            int tmpCellX = screenX;
@@ -146,7 +148,7 @@ bool CameraController::touchUp(int screenX, int screenY, int pointer, int button
 
 bool CameraController::fling(float velocityX, float velocityY, int button) {
     qDebug() << "CameraController::fling(); -- velocityX:" << velocityX << " velocityY:" << velocityY << " button:" << button;
-//    if (!gameInterface.interfaceTouched ) {
+//    if (!gameInterface.interfaceTouched) {
         flinging = true;
         velX = ( (1/zoom) * velocityX) * 0.05f;
         velY = ( (1/zoom) * velocityY) * 0.05f;
@@ -155,12 +157,12 @@ bool CameraController::fling(float velocityX, float velocityY, int button) {
     return false;
 }
 
-bool CameraController::mouseMoved(int screenX, int screenY) {
-//    qDebug() << "CameraController::mouseMoved(); -- screenX:" << screenX << " screenY:" << screenY;
+bool CameraController::mouseMoved(int screenX, int screenY, int buttons) {
+//    qDebug() << "CameraController::mouseMoved(); -- screenX:" << screenX << " screenY:" << screenY << " button:" << buttons;
     whichPrevCell(screenX, screenY, 5);
     float deltaX = prevMouseX - screenX;
     float deltaY = prevMouseY - screenY;
-    pan(screenX, screenY, deltaX, deltaY);
+    pan(screenX, screenY, deltaX, deltaY, buttons);
     prevMouseX = screenX;
     prevMouseY = screenY;
     if (gameField != NULL && gameField->getUnderConstruction() != NULL) {
@@ -173,13 +175,14 @@ bool CameraController::mouseMoved(int screenX, int screenY) {
 
 //public boolean touchDragged(int screenX, int screenY, int pointer) {
 
-bool CameraController::pan(float x, float y, float deltaX, float deltaY) {
+bool CameraController::pan(float x, float y, float deltaX, float deltaY, int buttons) {
 //    qDebug() << "CameraController::pan(); -- x:" << x << " x:" << x;
 //    qDebug() << "CameraController::pan(); -- deltaX:" << deltaX << " deltaY:" << deltaY;
+//    qDebug() << "CameraController::pan(); -- button:" << buttons;
 //    if (paning && gameInterface.pan(x, y, deltaX, deltaY)) {
 //        return true;
 //    }
-    if (gameField->getUnderConstruction() == NULL) {
+    if (gameField->getUnderConstruction() == NULL || buttons == Qt::MiddleButton) {
         if (paning) {
             float newCameraX = cameraX - (deltaX * (1/zoom) );
             float newCameraY = cameraY - (deltaY * (1/zoom) );

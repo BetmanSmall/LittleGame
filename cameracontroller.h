@@ -66,9 +66,9 @@ public:
     bool touchDown(int screenX, int screenY, int pointer, int button);
     bool touchUp(int screenX, int screenY, int pointer, int button);
     bool fling(float velocityX, float velocityY, int button);
-    bool mouseMoved(int screenX, int screenY);
+    bool mouseMoved(int screenX, int screenY, int buttons);
 //    bool touchDragged(int screenX, int screenY, int pointer);
-    bool pan(float x, float y, float deltaX, float deltaY);
+    bool pan(float x, float y, float deltaX, float deltaY, int buttons);
     bool panStop(float x, float y, int pointer, int button);
     bool scrolled(int amount);
 //    bool zoom(float initialDistance, float distance);
