@@ -108,34 +108,67 @@ void Unit::shellEffectsMove(float delta) {
     }
 }
 
-void Unit::correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX) {
+void Unit::correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX, float sizeCellY, bool isometric) {
     this->direction = direction;
     float fVx = fVc->x;
     float fVy = fVc->y;
     if (direction == Direction::type::UP) {
-        fVy += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+        fVy += ( (sizeCellY) / speed) * (speed - stepsInTime);
     } else if (direction == Direction::type::UP_RIGHT) {
-        fVx -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
-        fVy += ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
+        if (isometric) {
+            fVx -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+            fVy += ( (sizeCellY / 2) / speed) * (speed - stepsInTime);
+        } else {
+            fVx -= ( (sizeCellX) / speed) * (speed - stepsInTime);
+            fVy += ( (sizeCellY) / speed) * (speed - stepsInTime);
+        }
     } else if (direction == Direction::type::RIGHT) {
         fVx -= (sizeCellX / speed) * (speed - stepsInTime);
     } else if (direction == Direction::type::DOWN_RIGHT) {
-        fVx -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
-        fVy -= ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
+        if (isometric) {
+            fVx -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+            fVy -= ( (sizeCellY / 2) / speed) * (speed - stepsInTime);
+        } else {
+            fVx -= ( (sizeCellX) / speed) * (speed - stepsInTime);
+            fVy -= ( (sizeCellY) / speed) * (speed - stepsInTime);
+        }
     } else if (direction == Direction::type::DOWN) {
-        fVy -= ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+        fVy -= ( (sizeCellY) / speed) * (speed - stepsInTime);
     } else if (direction == Direction::type::DOWN_LEFT) {
-        fVx += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
-        fVy -= ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
+        if (isometric) {
+            fVx += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+            fVy -= ( (sizeCellY / 2) / speed) * (speed - stepsInTime);
+        } else {
+            fVx += ( (sizeCellX) / speed) * (speed - stepsInTime);
+            fVy -= ( (sizeCellY) / speed) * (speed - stepsInTime);
+        }
     } else if (direction == Direction::type::LEFT) {
         fVx += (sizeCellX / speed) * (speed - stepsInTime);
     } else if (direction == Direction::type::UP_LEFT) {
-        fVx += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
-        fVy += ( (sizeCellX / 4) / speed) * (speed - stepsInTime);
+        if (isometric) {
+            fVx += ( (sizeCellX / 2) / speed) * (speed - stepsInTime);
+            fVy += ( (sizeCellY / 2) / speed) * (speed - stepsInTime);
+        } else {
+            fVx += ( (sizeCellX) / speed) * (speed - stepsInTime);
+            fVy += ( (sizeCellY) / speed) * (speed - stepsInTime);
+        }
     }
     fVc->set(fVx, fVy);
 }
 
+// --- MANUAL ---
+//    if (newX < oldX && newY > oldY) {
+//    } else if (newX == oldX && newY > oldY) {
+//    } else if (newX > oldX && newY > oldY) {
+//    } else if (newX > oldX && newY == oldY) {
+//    } else if (newX > oldX && newY < oldY) {
+//    } else if (newX == oldX && newY < oldY) {
+//    } else if (newX < oldX && newY < oldY) {
+//    } else if (newX < oldX && newY == oldY) {
+//    }
+// --- MANUAL ---
+
+// что бы ефекты не стакались на крипах
 AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
 //    qDebug() << "Unit::move(); -- Unit status:" << this->toString();
     shellEffectsMove(deltaTime);
@@ -147,7 +180,6 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
             oldPosition = newPosition;
             newPosition = route.back();
             route.pop_back();
-//            qDebug() << "Unit::move(); -- newPosition:" << newPosition.toString().c_str();
 //            if (newPosition == route.end()) {
 //                newPosition = oldPosition;
 //            }
@@ -170,23 +202,47 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
 //            fVc = new Vector2(getCell(newX, newY).graphicsCoord4);
         float fVx = (-(halfSizeCellX * newY) - (newX * halfSizeCellX)) - halfSizeCellX;
         float fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY));
+        if (!cameraController->gameField->gameSettings->isometric) {
+            fVx = (-(newX * sizeCellX) ) - halfSizeCellX;
+            fVy = ( (newY * sizeCellY) ) + halfSizeCellY;
+        }
         fVc->set(fVx, fVy);
-        if (newX < oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-        } else if (newX < oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-        } else if (newX < oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-        } else if (newX == oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-        } else if (newX > oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::UP, sizeCellX);
-        } else if (newX > oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
-        } else if (newX > oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-        } else if (newX == oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
+        if (cameraController->gameField->gameSettings->isometric) {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
+        } else {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
         }
         circle4->setPosition(fVc);
     }
@@ -194,23 +250,47 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
 //            fVc = new Vector2(getCell(newX, newY).graphicsCoord3);
         float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
         float fVy = ( (halfSizeCellY * newY) + (newX * halfSizeCellY)) + halfSizeCellY;
+        if (!cameraController->gameField->gameSettings->isometric) {
+            fVx = ( (newX * sizeCellX) ) + halfSizeCellX;
+            fVy = ( (newY * sizeCellY) ) + halfSizeCellY;
+        }
         fVc->set(fVx, fVy);
-        if (newX < oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::UP, sizeCellX);
-        } else if (newX == oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-        } else if (newX > oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-        } else if (newX > oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-        } else if (newX > oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-        } else if (newX == oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
-        } else if (newX < oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-        } else if (newX < oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
+        if (cameraController->gameField->gameSettings->isometric) {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
+        } else {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
         }
         circle3->setPosition(fVc);
     }
@@ -218,47 +298,95 @@ AStar::Vec2i* Unit::move(float deltaTime, CameraController* cameraController) {
 //            fVc = new Vector2(getCell(newX, newY).graphicsCoord2);
         float fVx = ( (halfSizeCellX * newY) + (newX * halfSizeCellX)) + halfSizeCellX;
         float fVy = ( (halfSizeCellY * newY) - (newX * halfSizeCellY));
+        if (!cameraController->gameField->gameSettings->isometric) {
+            fVx = ( (newX * sizeCellX) ) + halfSizeCellX;
+            fVy = (-(newY * sizeCellY) ) - halfSizeCellY;
+        }
         fVc->set(fVx, fVy);
-        if (newX < oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-        } else if (newX == oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-        } else if (newX > oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-        } else if (newX > oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-        } else if (newX > oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::UP, sizeCellX);
-        } else if (newX == oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
-        } else if (newX < oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-        } else if (newX < oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
+        if (cameraController->gameField->gameSettings->isometric) {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
+        } else {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
         }
         circle2->setPosition(fVc);
     }
     if(isDrawableUnits == 1 || isDrawableUnits == 5) {
 //            fVc = new Vector2(getCell(newX, newY).graphicsCoord1);
-        float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX));
-        float fVy = (-(halfSizeCellY * newY) - (newX * halfSizeCellY)) - halfSizeCellY;
+        float fVx = (-(halfSizeCellX * newY) + (newX * halfSizeCellX) );
+        float fVy = (-(halfSizeCellY * newY) - (newX * halfSizeCellY) ) - halfSizeCellY;
+        if (!cameraController->gameField->gameSettings->isometric) {
+            fVx = (-(newX * sizeCellX)) - halfSizeCellX;
+            fVy = (-(newY * sizeCellY)) - halfSizeCellY;
+        }
         fVc->set(fVx, fVy);
-        if (newX < oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::DOWN, sizeCellX);
-        } else if (newX == oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX);
-        } else if (newX > oldX && newY < oldY) {
-            correct_fVc(fVc, Direction::type::RIGHT, sizeCellX);
-        } else if (newX > oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX);
-        } else if (newX > oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::UP, sizeCellX);
-        } else if (newX == oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX);
-        } else if (newX < oldX && newY > oldY) {
-            correct_fVc(fVc, Direction::type::LEFT, sizeCellX);
-        } else if (newX < oldX && newY == oldY) {
-            correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX);
+        if (cameraController->gameField->gameSettings->isometric) {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
+        } else {
+            if (newX < oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY > oldY) {
+                correct_fVc(fVc, Direction::type::UP_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX > oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_LEFT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX == oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY < oldY) {
+                correct_fVc(fVc, Direction::type::DOWN_RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            } else if (newX < oldX && newY == oldY) {
+                correct_fVc(fVc, Direction::type::RIGHT, sizeCellX, sizeCellY, cameraController->gameField->gameSettings->isometric);
+            }
         }
         circle1->setPosition(fVc);
     }

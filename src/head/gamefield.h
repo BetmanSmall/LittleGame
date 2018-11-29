@@ -58,7 +58,7 @@ public:
     void createField();
     bool landscapeGenerator(QString mapPath);
     Cell* getCell(int x, int y);
-    void updateCellsGraphicCoordinates(float halfSizeCellX, float halfSizeCellY);
+    void updateCellsGraphicCoordinates(float sizeCellX, float sizeCellY);
     void updateTowersGraphicCoordinates(CameraController *cameraController);
 
     void render(float deltaTime, CameraController* cameraController);

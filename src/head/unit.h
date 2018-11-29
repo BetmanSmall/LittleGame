@@ -49,7 +49,7 @@ public:
     ~Unit();
     void setAnimation(QString action);
     void shellEffectsMove(float delta);
-    void correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX);
+    void correct_fVc(Vector2 *fVc, Direction::type direction, float sizeCellX, float sizeCellY, bool isometric);
     AStar::Vec2i* move(float deltaTime, CameraController* cameraController);
     bool die(float damage, TowerShellEffect *towerShellEffect);
     bool addEffect(TowerShellEffect *towerShellEffect);

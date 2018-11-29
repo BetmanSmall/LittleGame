@@ -86,8 +86,6 @@ public:
     bool whichPrevCell(const int screenX, const int screenY, int map);
     bool whichCell(int &mouseX, int &mouseY, int map);
     bool getCorrectGraphicTowerCoord(Vector2 *towerPos, int towerSize, int map);
-    Vector2* getCenterTowerGraphicCoord(int cellX, int cellY);
-    QPointF* getCenterGraphicCoord(int cellX, int cellY, int map);
     QString toString();
 };
 

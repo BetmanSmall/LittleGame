@@ -142,7 +142,7 @@ void GameField::createField() {
         for (int y = 0; y < map->height; y++) {
             for (int x = 0; x < map->width; x++) {
                 Cell* cell = getCell(x, y);
-                cell->setGraphicCoordinates(x, y, map->tileWidth/2, map->tileHeight/2);
+                cell->setGraphicCoordinates(x, y, map->tileWidth, map->tileHeight, gameSettings->isometric);
                 for (Layer* layer : map->getMapLayers()->layers) {
 //                    if (mapLayer instanceof TiledMapTileLayer) {
 //                    TiledMapTileLayer layer = (TiledMapTileLayer) mapLayer;
@@ -238,10 +238,10 @@ Cell* GameField::getCell(int x, int y) {
     return NULL;
 }
 
-void GameField::updateCellsGraphicCoordinates(float halfSizeCellX, float halfSizeCellY) {
+void GameField::updateCellsGraphicCoordinates(float sizeCellX, float sizeCellY) {
     for (int cellX = 0; cellX < map->width; cellX++) {
         for (int cellY = 0; cellY < map->height; cellY++) {
-            field[map->width*cellY + cellX].setGraphicCoordinates(cellX, cellY, halfSizeCellX, halfSizeCellY);
+            field[map->width*cellY + cellX].setGraphicCoordinates(cellX, cellY, sizeCellX, sizeCellY, gameSettings->isometric);
         }
     }
 }
@@ -305,7 +305,7 @@ void GameField::render(float deltaTime, CameraController* cameraController) {
 //        int isometricSpaceY = -(cameraController->sizeCellY/2);
 //        for (int y = 0; y <= sizeY; y++) {
 //            for (int x = 0; x <= sizeX; x++) {
-//                cameraController->painter->drawPixmap(isometricSpaceX - cameraController->sizeCellX/2 + x*cameraController->sizeCellX, isometricSpaceY - cameraController->sizeCellY, cameraController->sizeCellX, cameraController->sizeCellY*2, pixmap);
+//                cameraController->painter->drawPixmap(isometricSpaceX - cameraController->sizeCellX/2 + x*cameraController->sizeCellX, isometricSpaceY - cameraController->sizeCellY, sizeCellX, sizeCellY, pixmap);
 //            }
 //            isometricSpaceY += cameraController->sizeCellY/2;
 //            isometricSpaceX = isometricSpaceX != 0 ? 0 : cameraController->sizeCellX/2;
@@ -320,27 +320,27 @@ void GameField::drawGrid(CameraController* cameraController) {
 //            float sizeCellY = cameraController->sizeCellY;
         if (cameraController->isDrawableGrid == 1 || cameraController->isDrawableGrid == 5) {
             for (int x = 0; x < map->width+1; x++)
-                cameraController->painter->drawLine(x*sizeCellX, 0, x*sizeCellX, sizeCellX*map->height);
-            for (int y = 0; y < map->height+1; y++)
-                cameraController->painter->drawLine(0, y*sizeCellX, sizeCellX*map->width, y*sizeCellX);
-        }
-        if (cameraController->isDrawableGrid == 2 || cameraController->isDrawableGrid == 5) {
-            for (int x = 0; x < map->width+1; x++)
-                cameraController->painter->drawLine(-(x*sizeCellX), 0, -(x*sizeCellX), sizeCellX*map->height);
-            for (int y = 0; y < map->height+1; y++)
-                cameraController->painter->drawLine(0, y*sizeCellX, -(sizeCellX*map->width), y*sizeCellX);
-        }
-        if (cameraController->isDrawableGrid == 3 || cameraController->isDrawableGrid == 5) {
-            for (int x = 0; x < map->width+1; x++)
                 cameraController->painter->drawLine(-(x*sizeCellX), 0, -(x*sizeCellX), -(sizeCellX*map->height));
             for (int y = 0; y < map->height+1; y++)
                 cameraController->painter->drawLine(0, -(y*sizeCellX), -(sizeCellX*map->width), -(y*sizeCellX));
         }
-        if (cameraController->isDrawableGrid == 4 || cameraController->isDrawableGrid == 5) {
+        if (cameraController->isDrawableGrid == 2 || cameraController->isDrawableGrid == 5) {
             for (int x = 0; x < map->width+1; x++)
                 cameraController->painter->drawLine(x*sizeCellX, 0, x*sizeCellX, -(sizeCellX*map->height));
             for (int y = 0; y < map->height+1; y++)
                 cameraController->painter->drawLine(0, -(y*sizeCellX), sizeCellX*map->width, -(y*sizeCellX));
+        }
+        if (cameraController->isDrawableGrid == 3 || cameraController->isDrawableGrid == 5) {
+            for (int x = 0; x < map->width+1; x++)
+                cameraController->painter->drawLine(x*sizeCellX, 0, x*sizeCellX, sizeCellX*map->height);
+            for (int y = 0; y < map->height+1; y++)
+                cameraController->painter->drawLine(0, y*sizeCellX, sizeCellX*map->width, y*sizeCellX);
+        }
+        if (cameraController->isDrawableGrid == 4 || cameraController->isDrawableGrid == 5) {
+            for (int x = 0; x < map->width+1; x++)
+                cameraController->painter->drawLine(-(x*sizeCellX), 0, -(x*sizeCellX), sizeCellX*map->height);
+            for (int y = 0; y < map->height+1; y++)
+                cameraController->painter->drawLine(0, y*sizeCellX, -(sizeCellX*map->width), y*sizeCellX);
         }
     } else {
         float halfSizeCellX = cameraController->halfSizeCellX;
@@ -378,232 +378,203 @@ void GameField::drawGrid(CameraController* cameraController) {
 }
 
 void GameField::drawBackGrounds(CameraController* cameraController) {
-    if(!gameSettings->isometric) {
-        for(int y = 0; y < map->height; y++) {
-            for(int x = 0; x < map->width; x++) {
-                Cell* cell = getCell(x, y);
-                if(cell != NULL) {
-                    foreach (Tile* tile, cell->backgroundTiles) {
-                        QPixmap pix = tile->getPixmap();
-                        int pxlsX = x*cameraController->sizeCellX;
-                        int pxlsY = y*cameraController->sizeCellX;
-                        int localSizeCell = cameraController->sizeCellX;
-                        cameraController->painter->drawPixmap(pxlsX, pxlsY, localSizeCell, localSizeCell, pix);
-                    }
-                }
+    if(cameraController->drawOrder == 0) {
+        for (int y = 0; y < map->height; y++) {
+            for (int x = 0; x < map->width; x++) {
+                drawBackGroundCell(cameraController, x, y);
             }
         }
-    } else {
-        if(cameraController->drawOrder == 0) {
+    } else if(cameraController->drawOrder == 1) {
+        for (int x = 0; x < map->width; x++) {
             for (int y = 0; y < map->height; y++) {
-                for (int x = 0; x < map->width; x++) {
-                    drawBackGroundCell(cameraController, x, y);
-                }
+                drawBackGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 1) {
-            for (int x = 0; x < map->width; x++) {
-                for (int y = 0; y < map->height; y++) {
-                    drawBackGroundCell(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 2) {
-            for (int y = map->height-1; y >= 0; y--) {
-                for (int x = map->width-1; x >= 0; x--) {
-                    drawBackGroundCell(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 3) {
+        }
+    } else if(cameraController->drawOrder == 2) {
+        for (int y = map->height-1; y >= 0; y--) {
             for (int x = map->width-1; x >= 0; x--) {
-                for (int y = map->height-1; y >= 0; y--) {
-                    drawBackGroundCell(cameraController, x, y);
-                }
+                drawBackGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 4) {
+        }
+    } else if(cameraController->drawOrder == 3) {
+        for (int x = map->width-1; x >= 0; x--) {
             for (int y = map->height-1; y >= 0; y--) {
-                for (int x = 0; x < map->width; x++) {
-                    drawBackGroundCell(cameraController, x, y);
-                }
+                drawBackGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 5) {
+        }
+    } else if(cameraController->drawOrder == 4) {
+        for (int y = map->height-1; y >= 0; y--) {
             for (int x = 0; x < map->width; x++) {
-                for (int y = map->height-1; y >= 0; y--) {
-                    drawBackGroundCell(cameraController, x, y);
-                }
+                drawBackGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 6) {
+        }
+    } else if(cameraController->drawOrder == 5) {
+        for (int x = 0; x < map->width; x++) {
+            for (int y = map->height-1; y >= 0; y--) {
+                drawBackGroundCell(cameraController, x, y);
+            }
+        }
+    } else if(cameraController->drawOrder == 6) {
+        for (int y = 0; y < map->height; y++) {
+            for (int x = map->width-1; x >= 0; x--) {
+                drawBackGroundCell(cameraController, x, y);
+            }
+        }
+    } else if(cameraController->drawOrder == 7) {
+        for (int x = map->width-1; x >= 0; x--) {
             for (int y = 0; y < map->height; y++) {
-                for (int x = map->width-1; x >= 0; x--) {
-                    drawBackGroundCell(cameraController, x, y);
-                }
+                drawBackGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 7) {
-            for (int x = map->width-1; x >= 0; x--) {
-                for (int y = 0; y < map->height; y++) {
+        }
+    } else if(cameraController->drawOrder == 8) {
+        int x = 0, y = 0;
+        int length = (map->width > map->height) ? map->width : map->height;
+        while (x < length) {
+            if(x < map->width && y < map->height) {
+                if (x == length - 1 && y == length - 1) {
                     drawBackGroundCell(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 8) {
-            int x = 0, y = 0;
-            int length = (map->width > map->height) ? map->width : map->height;
-            while (x < length) {
-                if(x < map->width && y < map->height) {
-                    if (x == length - 1 && y == length - 1) {
-                        drawBackGroundCell(cameraController, x, y);
-                    } else {
-                        drawBackGroundCell(cameraController, x, y);
-                    }
-                }
-                if (x == length - 1) {
-                    x = y + 1;
-                    y = length - 1;
-                } else if (y == 0) {
-                    y = x + 1;
-                    x = 0;
                 } else {
-                    x++;
-                    y--;
+                    drawBackGroundCell(cameraController, x, y);
                 }
+            }
+            if (x == length - 1) {
+                x = y + 1;
+                y = length - 1;
+            } else if (y == 0) {
+                y = x + 1;
+                x = 0;
+            } else {
+                x++;
+                y--;
             }
         }
     }
 }
 
 void GameField::drawBackGroundCell(CameraController* cameraController, int cellX, int cellY) {
+    float sizeCellX = cameraController->sizeCellX;
+    float sizeCellY = cameraController->sizeCellY*2;
     float deltaX = cameraController->halfSizeCellX;
     float deltaY = cameraController->sizeCellY + cameraController->halfSizeCellY;
+    if (!gameSettings->isometric) {
+        sizeCellY = cameraController->sizeCellY;
+        deltaY = cameraController->halfSizeCellY;
+    }
     Cell* cell = getCell(cellX, cellY);
     foreach (Tile* tile, cell->backgroundTiles) {
         QPixmap textureRegion = tile->getPixmap();
         if (cameraController->isDrawableBackground == 1 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableBackground == 2 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableBackground == 3 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableBackground == 4 || cameraController->isDrawableBackground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
     }
 }
 
 void GameField::drawGroundsWithUnitsAndTowers(CameraController* cameraController) {
-    if(!gameSettings->isometric) {
-        for(int y = 0; y < map->height; y++) {
-            for(int x = 0; x < map->width; x++) {
-                Cell* cell = getCell(x, y);
-                if(cell != NULL) {
-                    foreach (Tile* tile, cell->groundTiles) {
-                        QPixmap pix = tile->getPixmap();
-                        int pxlsX = x*cameraController->sizeCellX;
-                        int pxlsY = y*cameraController->sizeCellX;
-                        int localSizeCell = cameraController->sizeCellX;
-                        cameraController->painter->drawPixmap(pxlsX, pxlsY, localSizeCell, localSizeCell, pix);
-                    }
-                }
-                foreach (Unit* unit, cell->getUnits()) {
-                    drawUnit(cameraController, unit);
-                }
-                Tower* tower = cell->getTower();
-                if(tower != NULL) {
-                    drawTower(cameraController, tower);
-                }
+    if(cameraController->drawOrder == 0) {
+        for (int y = 0; y < map->height; y++) {
+            for (int x = 0; x < map->width; x++) {
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
             }
         }
-    } else {
-        if(cameraController->drawOrder == 0) {
+    } else if(cameraController->drawOrder == 1) {
+        for (int x = 0; x < map->width; x++) {
             for (int y = 0; y < map->height; y++) {
-                for (int x = 0; x < map->width; x++) {
-                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 1) {
-            for (int x = 0; x < map->width; x++) {
-                for (int y = 0; y < map->height; y++) {
-                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 2) {
-            for (int y = map->height-1; y >= 0; y--) {
-                for (int x = map->width-1; x >= 0; x--) {
-                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 3) {
+        }
+    } else if(cameraController->drawOrder == 2) {
+        for (int y = map->height-1; y >= 0; y--) {
             for (int x = map->width-1; x >= 0; x--) {
-                for (int y = map->height-1; y >= 0; y--) {
-                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 4) {
+        }
+    } else if(cameraController->drawOrder == 3) {
+        for (int x = map->width-1; x >= 0; x--) {
             for (int y = map->height-1; y >= 0; y--) {
-                for (int x = 0; x < map->width; x++) {
-                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 5) {
+        }
+    } else if(cameraController->drawOrder == 4) {
+        for (int y = map->height-1; y >= 0; y--) {
             for (int x = 0; x < map->width; x++) {
-                for (int y = map->height-1; y >= 0; y--) {
-                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 6) {
+        }
+    } else if(cameraController->drawOrder == 5) {
+        for (int x = 0; x < map->width; x++) {
+            for (int y = map->height-1; y >= 0; y--) {
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
+            }
+        }
+    } else if(cameraController->drawOrder == 6) {
+        for (int y = 0; y < map->height; y++) {
+            for (int x = map->width-1; x >= 0; x--) {
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
+            }
+        }
+    } else if(cameraController->drawOrder == 7) {
+        for (int x = map->width-1; x >= 0; x--) {
             for (int y = 0; y < map->height; y++) {
-                for (int x = map->width-1; x >= 0; x--) {
-                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
+                drawGroundCellWithUnitsAndTower(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 7) {
-            for (int x = map->width-1; x >= 0; x--) {
-                for (int y = 0; y < map->height; y++) {
+        }
+    } else if(cameraController->drawOrder == 8) {
+        int x = 0, y = 0;
+        int length = (map->width > map->height) ? map->width : map->height;
+        while (x < length) {
+            if(x < map->width && y < map->height) {
+                if (x == length - 1 && y == length - 1) {
                     drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 8) {
-            int x = 0, y = 0;
-            int length = (map->width > map->height) ? map->width : map->height;
-            while (x < length) {
-                if(x < map->width && y < map->height) {
-                    if (x == length - 1 && y == length - 1) {
-                        drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                    } else {
-                        drawGroundCellWithUnitsAndTower(cameraController, x, y);
-                    }
-                }
-                if (x == length - 1) {
-                    x = y + 1;
-                    y = length - 1;
-                } else if (y == 0) {
-                    y = x + 1;
-                    x = 0;
                 } else {
-                    x++;
-                    y--;
+                    drawGroundCellWithUnitsAndTower(cameraController, x, y);
                 }
+            }
+            if (x == length - 1) {
+                x = y + 1;
+                y = length - 1;
+            } else if (y == 0) {
+                y = x + 1;
+                x = 0;
+            } else {
+                x++;
+                y--;
             }
         }
     }
 }
 
 void GameField::drawGroundCellWithUnitsAndTower(CameraController* cameraController, int cellX, int cellY) {
+    float sizeCellX = cameraController->sizeCellX;
+    float sizeCellY = cameraController->sizeCellY*2;
     float deltaX = cameraController->halfSizeCellX;
     float deltaY = cameraController->sizeCellY + cameraController->halfSizeCellY;
+    if (!gameSettings->isometric) {
+        sizeCellY = cameraController->sizeCellY;
+        deltaY = cameraController->halfSizeCellY;
+    }
     Cell* cell = getCell(cellX, cellY);
     foreach (Tile* tile, cell->groundTiles) {
         QPixmap textureRegion = tile->getPixmap();
         if(cameraController->isDrawableGround == 1 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if(cameraController->isDrawableGround == 2 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if(cameraController->isDrawableGround == 3 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if(cameraController->isDrawableGround == 4 || cameraController->isDrawableGround == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
     }
     foreach (Unit* unit, cell->getUnits()) {
@@ -616,113 +587,102 @@ void GameField::drawGroundCellWithUnitsAndTower(CameraController* cameraControll
 }
 
 void GameField::drawForeGrounds(CameraController* cameraController) {
-    if(!gameSettings->isometric) {
-        for(int y = 0; y < map->height; y++) {
-            for(int x = 0; x < map->width; x++) {
-                Cell* cell = getCell(x, y);
-                if(cell != NULL) {
-                    foreach (Tile* tile, cell->foregroundTiles) {
-                        QPixmap pix = tile->getPixmap();
-                        int pxlsX = x*cameraController->sizeCellX;
-                        int pxlsY = y*cameraController->sizeCellX;
-                        int localSizeCell = cameraController->sizeCellX;
-                        cameraController->painter->drawPixmap(pxlsX, pxlsY, localSizeCell, localSizeCell, pix);
-                    }
-                }
+    if(cameraController->drawOrder == 0) {
+        for (int y = 0; y < map->height; y++) {
+            for (int x = 0; x < map->width; x++) {
+                drawForeGroundCell(cameraController, x, y);
             }
         }
-    } else {
-        if(cameraController->drawOrder == 0) {
+    } else if(cameraController->drawOrder == 1) {
+        for (int x = 0; x < map->width; x++) {
             for (int y = 0; y < map->height; y++) {
-                for (int x = 0; x < map->width; x++) {
-                    drawForeGroundCell(cameraController, x, y);
-                }
+                drawForeGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 1) {
-            for (int x = 0; x < map->width; x++) {
-                for (int y = 0; y < map->height; y++) {
-                    drawForeGroundCell(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 2) {
-            for (int y = map->height-1; y >= 0; y--) {
-                for (int x = map->width-1; x >= 0; x--) {
-                    drawForeGroundCell(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 3) {
+        }
+    } else if(cameraController->drawOrder == 2) {
+        for (int y = map->height-1; y >= 0; y--) {
             for (int x = map->width-1; x >= 0; x--) {
-                for (int y = map->height-1; y >= 0; y--) {
-                    drawForeGroundCell(cameraController, x, y);
-                }
+                drawForeGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 4) {
+        }
+    } else if(cameraController->drawOrder == 3) {
+        for (int x = map->width-1; x >= 0; x--) {
             for (int y = map->height-1; y >= 0; y--) {
-                for (int x = 0; x < map->width; x++) {
-                    drawForeGroundCell(cameraController, x, y);
-                }
+                drawForeGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 5) {
+        }
+    } else if(cameraController->drawOrder == 4) {
+        for (int y = map->height-1; y >= 0; y--) {
             for (int x = 0; x < map->width; x++) {
-                for (int y = map->height-1; y >= 0; y--) {
-                    drawForeGroundCell(cameraController, x, y);
-                }
+                drawForeGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 6) {
+        }
+    } else if(cameraController->drawOrder == 5) {
+        for (int x = 0; x < map->width; x++) {
+            for (int y = map->height-1; y >= 0; y--) {
+                drawForeGroundCell(cameraController, x, y);
+            }
+        }
+    } else if(cameraController->drawOrder == 6) {
+        for (int y = 0; y < map->height; y++) {
+            for (int x = map->width-1; x >= 0; x--) {
+                drawForeGroundCell(cameraController, x, y);
+            }
+        }
+    } else if(cameraController->drawOrder == 7) {
+        for (int x = map->width-1; x >= 0; x--) {
             for (int y = 0; y < map->height; y++) {
-                for (int x = map->width-1; x >= 0; x--) {
-                    drawForeGroundCell(cameraController, x, y);
-                }
+                drawForeGroundCell(cameraController, x, y);
             }
-        } else if(cameraController->drawOrder == 7) {
-            for (int x = map->width-1; x >= 0; x--) {
-                for (int y = 0; y < map->height; y++) {
+        }
+    } else if(cameraController->drawOrder == 8) {
+        int x = 0, y = 0;
+        int length = (map->width > map->height) ? map->width : map->height;
+        while (x < length) {
+            if(x < map->width && y < map->height) {
+                if (x == length - 1 && y == length - 1) {
                     drawForeGroundCell(cameraController, x, y);
-                }
-            }
-        } else if(cameraController->drawOrder == 8) {
-            int x = 0, y = 0;
-            int length = (map->width > map->height) ? map->width : map->height;
-            while (x < length) {
-                if(x < map->width && y < map->height) {
-                    if (x == length - 1 && y == length - 1) {
-                        drawForeGroundCell(cameraController, x, y);
-                    } else {
-                        drawForeGroundCell(cameraController, x, y);
-                    }
-                }
-                if (x == length - 1) {
-                    x = y + 1;
-                    y = length - 1;
-                } else if (y == 0) {
-                    y = x + 1;
-                    x = 0;
                 } else {
-                    x++;
-                    y--;
+                    drawForeGroundCell(cameraController, x, y);
                 }
+            }
+            if (x == length - 1) {
+                x = y + 1;
+                y = length - 1;
+            } else if (y == 0) {
+                y = x + 1;
+                x = 0;
+            } else {
+                x++;
+                y--;
             }
         }
     }
 }
 
 void GameField::drawForeGroundCell(CameraController* cameraController, int cellX, int cellY) {
+    float sizeCellX = cameraController->sizeCellX;
+    float sizeCellY = cameraController->sizeCellY*2;
     float deltaX = cameraController->halfSizeCellX;
     float deltaY = cameraController->sizeCellY + cameraController->halfSizeCellY;
+    if (!gameSettings->isometric) {
+        sizeCellY = cameraController->sizeCellY;
+        deltaY = cameraController->halfSizeCellY;
+    }
     Cell* cell = getCell(cellX, cellY);
     foreach (Tile* tile, cell->foregroundTiles) {
         QPixmap textureRegion = tile->getPixmap();
         if (cameraController->isDrawableForeground == 1 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableForeground == 2 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableForeground == 3 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableForeground == 4 || cameraController->isDrawableForeground == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
     }
 }
@@ -747,41 +707,35 @@ void GameField::drawUnit(CameraController *cameraController, Unit *unit) {
     }
 
     float sizeCellX = cameraController->sizeCellX;
-    float sizeCellY = cameraController->sizeCellY;
-    float fVx = 0, fVy = 0;
-    if(!gameSettings->isometric) {
-//        fVx = unit->newPosition.x*sizeCellX;//+1;
-//        fVy = unit->newPosition.y*sizeCellX;// - sizeCellX/2;//+1;
-        int localSizeCell = sizeCellX;//-1;
-        int localSpaceCell = sizeCellX/3;
-        fVx = unit->newPosition.x*sizeCellX - localSpaceCell;
-        fVy = unit->newPosition.y*sizeCellX - localSpaceCell;
-        cameraController->painter->drawPixmap(fVx, fVy, localSizeCell + localSpaceCell*2, localSizeCell + localSpaceCell*2, currentFrame);
-    } else {
-        int deltaX = cameraController->halfSizeCellX;
-        int deltaY = cameraController->sizeCellY;
-        if(cameraController->isDrawableUnits == 1 || cameraController->isDrawableUnits == 5) {
-            fVx += unit->circle1->x - deltaX;
-            fVy += unit->circle1->y - deltaY;
-            cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY*2, currentFrame);
-        }
-        if(cameraController->isDrawableUnits == 2 || cameraController->isDrawableUnits == 5) {
-            fVx += unit->circle2->x - deltaX;
-            fVy += unit->circle2->y - deltaY;
-            cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY*2, currentFrame);
-        }
-        if(cameraController->isDrawableUnits == 3 || cameraController->isDrawableUnits == 5) {
-            fVx += unit->circle3->x - deltaX;
-            fVy += unit->circle3->y - deltaY;
-            cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY*2, currentFrame);
-        }
-        if(cameraController->isDrawableUnits == 4 || cameraController->isDrawableUnits == 5) {
-            fVx += unit->circle4->x - deltaX;
-            fVy += unit->circle4->y - deltaY;
-            cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY*2, currentFrame);
-        }
-//        drawUnitBar(shapeRenderer, unit, currentFrame, fVx, fVy);
+    float sizeCellY = cameraController->sizeCellY*2;
+    float deltaX = cameraController->halfSizeCellX;
+    float deltaY = cameraController->sizeCellY;
+    if (!gameSettings->isometric) {
+        sizeCellY = cameraController->sizeCellY;
+        deltaY = cameraController->halfSizeCellY;
     }
+    float fVx = 0, fVy = 0;
+    if(cameraController->isDrawableUnits == 1 || cameraController->isDrawableUnits == 5) {
+        fVx = unit->circle1->x - deltaX;
+        fVy = unit->circle1->y - deltaY;
+        cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY, currentFrame);
+    }
+    if(cameraController->isDrawableUnits == 2 || cameraController->isDrawableUnits == 5) {
+        fVx = unit->circle2->x - deltaX;
+        fVy = unit->circle2->y - deltaY;
+        cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY, currentFrame);
+    }
+    if(cameraController->isDrawableUnits == 3 || cameraController->isDrawableUnits == 5) {
+        fVx = unit->circle3->x - deltaX;
+        fVy = unit->circle3->y - deltaY;
+        cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY, currentFrame);
+    }
+    if(cameraController->isDrawableUnits == 4 || cameraController->isDrawableUnits == 5) {
+        fVx = unit->circle4->x - deltaX;
+        fVy = unit->circle4->y - deltaY;
+        cameraController->painter->drawPixmap(fVx, fVy, sizeCellX, sizeCellY, currentFrame);
+    }
+//    drawUnitBar(shapeRenderer, unit, currentFrame, fVx, fVy);
 }
 
 void GameField::drawUnitsBars(CameraController *cameraController) {
@@ -860,19 +814,22 @@ void GameField::drawTower(CameraController* cameraController, Tower* tower) {
     Vector2 *towerPos = new Vector2();
     QPixmap currentFrame = tower->templateForTower->idleTile->getPixmap();
     float sizeCellX = cameraController->sizeCellX;
-    float sizeCellY = cameraController->sizeCellY;
+    float sizeCellY = cameraController->sizeCellY*2;
+    if (!gameSettings->isometric) {
+        sizeCellY = cameraController->sizeCellY;
+    }
     if (cameraController->isDrawableTowers == 5) {
         for (int m = 1; m < cameraController->isDrawableTowers; m++) {
             towerPos->set(cell->getGraphicCoordinates(m));
             cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, m);
-            cameraController->painter->drawPixmap(towerPos->x, towerPos->y, sizeCellX * towerSize, (sizeCellY * 2) * towerSize, currentFrame);
+            cameraController->painter->drawPixmap(towerPos->x, towerPos->y, sizeCellX * towerSize, sizeCellY * towerSize, currentFrame);
 //            cameraController->painter->drawEllipse(towerPos->getPointF(), tower->radiusDetectionCircle->radius, tower->radiusDetectionCircle->radius/2);
 //            cameraController->painter->drawEllipse(tower->radiusDetectionCircle->getPosition()->getPointF(), tower->radiusDetectionCircle->radius, tower->radiusDetectionCircle->radius);
         }
     } else if (cameraController->isDrawableTowers != 0) {
         towerPos->set(cell->getGraphicCoordinates(cameraController->isDrawableTowers));
         cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, cameraController->isDrawableTowers);
-        cameraController->painter->drawPixmap(towerPos->x, towerPos->y, sizeCellX * towerSize, (sizeCellY * 2) * towerSize, currentFrame);
+        cameraController->painter->drawPixmap(towerPos->x, towerPos->y, sizeCellX * towerSize, sizeCellY * towerSize, currentFrame);
 //        cameraController->painter->drawEllipse(towerPos->getPointF(), tower->radiusDetectionCircle->radius, tower->radiusDetectionCircle->radius/2);
 //        cameraController->painter->drawEllipse(tower->radiusDetectionCircle->getPosition()->getPointF(), tower->radiusDetectionCircle->radius, tower->radiusDetectionCircle->radius);
     }
@@ -1162,23 +1119,29 @@ void GameField::drawGridNavs(CameraController* cameraController) {
 }
 
 void GameField::drawGridNavCell(CameraController* cameraController, int cellX, int cellY) {
+    float sizeCellX = cameraController->sizeCellX;
+    float sizeCellY = cameraController->sizeCellY*2;
     float deltaX = cameraController->halfSizeCellX;
     float deltaY = cameraController->sizeCellY + cameraController->halfSizeCellY;
+    if (!gameSettings->isometric) {
+        sizeCellY = cameraController->sizeCellY;
+        deltaY = cameraController->halfSizeCellY;
+    }
     Cell* cell = getCell(cellX, cellY);
     if (pathFinder->detectCollision({cellX, cellY})) {
 //    foreach (QPixmap textureRegion, cell->backgroundTiles) {
         QPixmap textureRegion = map->tileSets.getTile(8)->getPixmap();
         if (cameraController->isDrawableGridNav == 1 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates1->x-deltaX, cell->graphicCoordinates1->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableGridNav == 2 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates2->x-deltaX, cell->graphicCoordinates2->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableGridNav == 3 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates3->x-deltaX, cell->graphicCoordinates3->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
         if (cameraController->isDrawableGridNav == 4 || cameraController->isDrawableGridNav == 5) {
-            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, cameraController->sizeCellX, cameraController->sizeCellY*2, textureRegion);
+            cameraController->painter->drawPixmap(cell->graphicCoordinates4->x-deltaX, cell->graphicCoordinates4->y-deltaY, sizeCellX, sizeCellY, textureRegion);
         }
 //    }
     }
@@ -1232,18 +1195,18 @@ void GameField::drawRoutes(CameraController *cameraController) {
 }
 
 //void GameField::drawWavesRoutes(CameraController *cameraController) {
-//    cameraController->shapeRenderer.setProjectionMatrix(cameraController->camera.combined);
-//    cameraController->shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//    cameraController->shapeRenderer->setProjectionMatrix(cameraController->camera.combined);
+//    cameraController->shapeRenderer->begin(ShapeRenderer.ShapeType.Filled);
 
-//    cameraController->shapeRenderer.setColor(Color.BROWN);
+//    cameraController->shapeRenderer->setColor(Color.BROWN);
 //    for (Wave wave : waveManager.waves) {
 //        drawWave(cameraController, wave);
 //    }
-//    cameraController->shapeRenderer.setColor(Color.BLUE);
+//    cameraController->shapeRenderer->setColor(Color.BLUE);
 //    for (Wave wave : waveManager.wavesForUser) {
 //        drawWave(cameraController, wave);
 //    }
-//    cameraController->shapeRenderer.end();
+//    cameraController->shapeRenderer->end();
 //}
 
 //void GameField::drawWave(CameraController *cameraController, Wave *wave) {
@@ -1259,16 +1222,16 @@ void GameField::drawRoutes(CameraController *cameraController) {
 //            Cell startCell = field[startNode.getX()][startNode.getY()];
 //            Cell endCell = field[endNode.getX()][endNode.getY()];
 //            if(cameraController->isDrawableGridNav == 1 || cameraController->isDrawableGridNav == 5) {
-//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates1, endCell.graphicCoordinates1, linesWidth);
+//                cameraController->shapeRenderer->rectLine(startCell.graphicCoordinates1, endCell.graphicCoordinates1, linesWidth);
 //            }
 //            if(cameraController->isDrawableGridNav == 2 || cameraController->isDrawableGridNav == 5) {
-//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates2, endCell.graphicCoordinates2, linesWidth);
+//                cameraController->shapeRenderer->rectLine(startCell.graphicCoordinates2, endCell.graphicCoordinates2, linesWidth);
 //            }
 //            if(cameraController->isDrawableGridNav == 3 || cameraController->isDrawableGridNav == 5) {
-//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates3, endCell.graphicCoordinates3, linesWidth);
+//                cameraController->shapeRenderer->rectLine(startCell.graphicCoordinates3, endCell.graphicCoordinates3, linesWidth);
 //            }
 //            if(cameraController->isDrawableGridNav == 4 || cameraController->isDrawableGridNav == 5) {
-//                cameraController->shapeRenderer.rectLine(startCell.graphicCoordinates4, endCell.graphicCoordinates4, linesWidth);
+//                cameraController->shapeRenderer->rectLine(startCell.graphicCoordinates4, endCell.graphicCoordinates4, linesWidth);
 //            }
 //            startNode = endNode;
 //        }
@@ -1354,6 +1317,11 @@ void GameField::drawTowerUnderConstruction(CameraController* cameraController, i
 
 void GameField::drawTowerUnderConstructionAndMarks(CameraController* cameraController, int map, TemplateForTower* templateForTower, Cell* mainCell, QPoint startDrawCell, QPoint finishDrawCell) {
 //    qDebug() << "GameField::drawTowerUnderConstructionAndMarks(); -- map:" << map << " templateForTower:" << templateForTower->toString().toStdString().c_str() << " mainCell:" << mainCell << " startDrawCell:" << startDrawCell << " finishDrawCell:" << finishDrawCell;
+    float sizeCellX = cameraController->sizeCellX;
+    float sizeCellY = cameraController->sizeCellY*2;
+    if (!gameSettings->isometric) {
+        sizeCellY = cameraController->sizeCellY;
+    }
     QPixmap textureRegion = templateForTower->idleTile->getPixmap();
     int towerSize = templateForTower->size;
     Vector2 *towerPos = new Vector2(mainCell->getGraphicCoordinates(map));
@@ -1361,9 +1329,9 @@ void GameField::drawTowerUnderConstructionAndMarks(CameraController* cameraContr
         cameraController->painter->drawEllipse(towerPos->getPointF(), templateForTower->radiusDetection, templateForTower->radiusDetection);
     }
     cameraController->getCorrectGraphicTowerCoord(towerPos, towerSize, map);
-    cameraController->painter->drawPixmap(towerPos->x, towerPos->y, cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, textureRegion);
+    cameraController->painter->drawPixmap(towerPos->x, towerPos->y, sizeCellX * towerSize, sizeCellY * towerSize, textureRegion);
 //    cameraController->painter->drawEllipse(towerPos->getPointF(), 3, 3);//templateForTower->radiusDetection, templateForTower->radiusDetection);
-//    cameraController->painter->fillRect(towerPos->x(), towerPos->y(), cameraController->sizeCellX * towerSize, (cameraController->sizeCellY * 2) * towerSize, cameraController->painter->pen().color());
+//    cameraController->painter->fillRect(towerPos->x(), towerPos->y(), sizeCellX * towerSize, cameraController->sizeCellY * towerSize, cameraController->painter->pen().color());
     if (greenCheckmark != NULL && redCross != NULL) {
         Vector2 *markPos = new Vector2();
         for (int x = startDrawCell.x(); x <= finishDrawCell.x(); x++) {
@@ -1371,11 +1339,15 @@ void GameField::drawTowerUnderConstructionAndMarks(CameraController* cameraContr
                 Cell* markCell = getCell(mainCell->cellX + x, mainCell->cellY + y);
                 if (markCell != NULL) {
                     markPos->set(markCell->getGraphicCoordinates(map));
-                    markPos->add(-cameraController->halfSizeCellX, -cameraController->sizeCellY-cameraController->halfSizeCellY);
-                    if(markCell->isEmpty()) {
-                        cameraController->painter->drawPixmap(markPos->x, markPos->y, cameraController->sizeCellX, cameraController->sizeCellY*2, *greenCheckmark);
+                    if (gameSettings->isometric) {
+                        markPos->add(-cameraController->halfSizeCellX, -cameraController->sizeCellY-cameraController->halfSizeCellY);
                     } else {
-                        cameraController->painter->drawPixmap(markPos->x, markPos->y, cameraController->sizeCellX, cameraController->sizeCellY*2, *redCross);
+                        markPos->add(-cameraController->halfSizeCellX, -cameraController->halfSizeCellY);
+                    }
+                    if(markCell->isEmpty()) {
+                        cameraController->painter->drawPixmap(markPos->x, markPos->y, sizeCellX, sizeCellY, *greenCheckmark);
+                    } else {
+                        cameraController->painter->drawPixmap(markPos->x, markPos->y, sizeCellX, sizeCellY, *redCross);
                     }
                 }
             }
@@ -1440,6 +1412,14 @@ Unit *GameField::spawnHero(int cellX, int cellY) {
             cell->removeTerrain(true);
             removeTower(cell->cellX, cell->cellY);
             return createUnit(cell, cell, factionsManager->getTemplateForUnitByName("unit3_footman"), 1, gameSettings->cellExitHero); // player1 = hero
+        }
+    } else {
+        int randomX = (int)(rand()%map->width);
+        int randomY = (int)(rand()%map->height);
+        gameSettings->cellExitHero = getCell(randomX, randomY);
+        Unit* hero = spawnHero(cellX, cellY);
+        if (hero == NULL) {
+            gameSettings->cellExitHero = NULL;
         }
     }
     return NULL;
@@ -2083,7 +2063,7 @@ void GameField::turnRight() {
         for(int y = 0; y < map->height; y++) {
             for(int x = 0; x < map->width; x++) {
                 newCells[map->width*(x)+(map->width-y-1)] = field[map->width*y+x];
-                newCells[map->width*(x)+(map->width-y-1)].setGraphicCoordinates(map->width-y-1, x, map->tileWidth/2, map->tileHeight/2);
+                newCells[map->width*(x)+(map->width-y-1)].setGraphicCoordinates(map->width-y-1, x, map->tileWidth, map->tileHeight, gameSettings->isometric);
             }
         }
         delete field;
@@ -2097,7 +2077,7 @@ void GameField::turnRight() {
         for(int y = 0; y < oldHeight; y++) {
             for(int x = 0; x < oldWidth; x++) {
                 newCells[map->width*(x)+(map->width-y-1)] = field[oldWidth*y+x];
-                newCells[map->width*(x)+(map->width-y-1)].setGraphicCoordinates(map->width-y-1, x, map->tileWidth/2, map->tileHeight/2);
+                newCells[map->width*(x)+(map->width-y-1)].setGraphicCoordinates(map->width-y-1, x, map->tileWidth, map->tileHeight, gameSettings->isometric);
             }
         }
         delete field;
@@ -2111,7 +2091,7 @@ void GameField::turnLeft() {
         for(int y = 0; y < map->height; y++) {
             for(int x = 0; x < map->width; x++) {
                 newCells[map->width*(map->height-x-1)+(y)] = field[map->width*y+x];
-                newCells[map->width*(map->height-x-1)+(y)].setGraphicCoordinates(y, map->height-x-1, map->tileWidth/2, map->tileHeight/2);
+                newCells[map->width*(map->height-x-1)+(y)].setGraphicCoordinates(y, map->height-x-1, map->tileWidth, map->tileHeight, gameSettings->isometric);
             }
         }
         delete field;
@@ -2125,7 +2105,7 @@ void GameField::turnLeft() {
         for(int y = 0; y < oldHeight; y++) {
             for(int x = 0; x < oldWidth; x++) {
                 newCells[map->width*(map->height-x-1)+(y)] = field[oldWidth*y+x];
-                newCells[map->width*(map->height-x-1)+(y)].setGraphicCoordinates(y, map->height-x-1, map->tileWidth/2, map->tileHeight/2);
+                newCells[map->width*(map->height-x-1)+(y)].setGraphicCoordinates(y, map->height-x-1, map->tileWidth, map->tileHeight, gameSettings->isometric);
             }
         }
         delete field;
@@ -2138,7 +2118,7 @@ void GameField::flipX() {
     for (int y = 0; y < map->height; y++) {
         for (int x = 0; x < map->width; x++) {
             newCells[map->width*(y)+(map->width-x-1)] = field[map->width*y+x];
-            newCells[map->width*(y)+(map->width-x-1)].setGraphicCoordinates(map->width-x-1, y, map->tileWidth/2, map->tileHeight/2);
+            newCells[map->width*(y)+(map->width-x-1)].setGraphicCoordinates(map->width-x-1, y, map->tileWidth, map->tileHeight, gameSettings->isometric);
         }
     }
 //    delete field;
@@ -2150,7 +2130,7 @@ void GameField::flipY() {
     for(int y = 0; y < map->height; y++) {
         for(int x = 0; x < map->width; x++) {
             newCells[map->width*(map->height-y-1)+(x)] = field[map->width*y+x];
-            newCells[map->width*(map->height-y-1)+(x)].setGraphicCoordinates(x, map->height-y-1, map->tileWidth/2, map->tileHeight/2);
+            newCells[map->width*(map->height-y-1)+(x)].setGraphicCoordinates(x, map->height-y-1, map->tileWidth, map->tileHeight, gameSettings->isometric);
         }
     }
 //    delete field;

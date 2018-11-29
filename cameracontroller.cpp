@@ -310,10 +310,14 @@ bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {
 //    qDebug() << "CameraController::whichCell(); -grph- mouseX:" << mouseX << " mouseY:" << mouseY;
     float gameX = ( (mouseX / (halfSizeCellX*zoom)) + (mouseY / (halfSizeCellY*zoom)) ) / 2;
     float gameY = ( (mouseY / (halfSizeCellY*zoom)) - (mouseX / (halfSizeCellX*zoom)) ) / 2;
+    if (!gameField->gameSettings->isometric) {
+        gameX = (mouseX / (sizeCellX*zoom));
+        gameY = (mouseY / (sizeCellY*zoom));
+    }
 //    qDebug() << "CameraController::whichCell(); -graphics- mouseX:" << mouseX << " mouseY:" << mouseY << " map:" << map << " -new- gameX:" << gameX << " gameY:" << gameY;
     int cellX = qAbs((int) gameX);
     int cellY = qAbs((int) gameY);
-    if(gameY < 0) {
+    if(gameField->gameSettings->isometric && gameY < 0) {
         int tmpX = cellX;
         cellX = cellY;
         cellY = tmpX;
@@ -340,54 +344,41 @@ bool CameraController::whichCell(int &mouseX, int &mouseY, int map) {
 
 bool CameraController::getCorrectGraphicTowerCoord(Vector2 *towerPos, int towerSize, int map) {
     if(map == 1) {
-        towerPos->x -= ( (halfSizeCellX * towerSize) );
-        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 0))) );
+        if (!gameField->gameSettings->isometric) {
+            towerPos->x += (-(halfSizeCellX * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) );
+            towerPos->y += (-(halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) );
+        } else {
+            towerPos->x += (-(halfSizeCellX * towerSize) );
+            towerPos->y += (-(halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) - (sizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 0))) );
+        }
     } else if(map == 2) {
-        towerPos->x -= ( (halfSizeCellX * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) );
-        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize /*- ((towerSize % 2 != 0) ? 0 : 1)*/)) );
+        towerPos->x += (-(halfSizeCellX * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) );
+        if (!gameField->gameSettings->isometric) {
+            towerPos->y += (-(halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))));
+        } else {
+            towerPos->y += (-(halfSizeCellY * towerSize) - (sizeCellY * (towerSize /*- ((towerSize % 2 != 0) ? 0 : 1)*/)) );
+        }
     } else if(map == 3) {
-        towerPos->x -= ( (halfSizeCellX * towerSize) );
-        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize /*- ((towerSize % 2 != 0) ? 0 : 1)*/)) );
+        if (!gameField->gameSettings->isometric) {
+            towerPos->x += (-(halfSizeCellX * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) );
+            towerPos->y += (-(halfSizeCellY * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) );
+        } else {
+            towerPos->x += (-(halfSizeCellX * towerSize) );
+            towerPos->y += (-(halfSizeCellY * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) - (sizeCellY * (towerSize /*- ((towerSize % 2 != 0) ? 0 : 1)*/)) );
+        }
     } else if(map == 4) {
-        towerPos->x -= ( (halfSizeCellX * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) );
-        towerPos->y -= ( (halfSizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) + (sizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 0))) );
+        towerPos->x += (-(halfSizeCellX * (towerSize - ((towerSize % 2 != 0) ? 0 : 1))) );
+        if (!gameField->gameSettings->isometric) {
+            towerPos->y += (-(halfSizeCellY * ((towerSize % 2 != 0) ? towerSize : towerSize+1)) );
+        } else {
+            towerPos->y += (-(halfSizeCellY * towerSize)  - (sizeCellY * (towerSize - ((towerSize % 2 != 0) ? 0 : 0))));
+        }
     } else {
         qDebug() << "CameraController::getCorrectGraphicTowerCoord(" << towerPos << ", " << towerSize << ", " << map << "); -- Bad map[1-4] value:" << map;
         return false;
     }
     return true;
 }
-
-Vector2* CameraController::getCenterTowerGraphicCoord(int cellX, int cellY) {
-    QPointF* p = getCenterGraphicCoord(cellX, cellY, isDrawableTowers);
-    return new Vector2(p->x(), p->y());
-}
-
-QPointF* CameraController::getCenterGraphicCoord(int cellX, int cellY, int map) {
-    float pxlsX = 0.0, pxlsY = 0.0;
-//        float offsetX = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellX) : ( (templateForTower.size == 1) ? 0 : (templateForTower.size-1)*halfSizeCellX));
-//        float offsetY = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellY) : ( (templateForTower.size == 1) ? 0 : (templateForTower.size-1)*halfSizeCellY));
-////        float offsetX = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellX) : (templateForTower.size-1)*halfSizeCellX);
-////        float offsetY = ((templateForTower.size%2 == 0) ? (templateForTower.size*halfSizeCellY) : (templateForTower.size-1)*halfSizeCellY);
-    if(map == 1) {
-        pxlsX = (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX));
-        pxlsY = (-(halfSizeCellY * cellY) - (cellX * halfSizeCellY));
-    } else if(map == 2) {
-        pxlsX = ( (halfSizeCellX * cellY) + (cellX * halfSizeCellX)) + halfSizeCellX;
-        pxlsY = ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY;
-    } else if(map == 3) {
-        pxlsX = (-(halfSizeCellX * cellY) + (cellX * halfSizeCellX));
-        pxlsY = ( (halfSizeCellY * cellY) + (cellX * halfSizeCellY)) + halfSizeCellY*2;
-    } else if(map == 4) {
-        pxlsX = (-(halfSizeCellX * cellY) - (cellX * halfSizeCellX)) - halfSizeCellX;
-        pxlsY = ( (halfSizeCellY * cellY) - (cellX * halfSizeCellY)) + halfSizeCellY;
-    }
-//        return new Vector2(pxlsX - halfSizeCellX, pxlsY + halfSizeCellY*templateForTower.size);
-//    if (radiusDetectionCircle == NULL) {
-//        radiusDetectionCircle = new Circle(pxlsX, pxlsY, templateForTower->radiusDetection);
-//    }
-    return new QPointF(pxlsX, pxlsY);
-} // -------------------------------------------------------------- TODD It is analog GameField::getGraphicCoordinates() func!
 
 QString CameraController::toString() {
     QString str = "Camera:[";

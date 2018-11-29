@@ -50,7 +50,7 @@ public:
     Cell();
     ~Cell();
 
-    void setGraphicCoordinates(int cellX, int cellY, float halfSizeCellX, float halfSizeCellY);
+    void setGraphicCoordinates(int cellX, int cellY, float sizeCellX, float sizeCellY, bool isometric);
     Vector2 *getGraphicCoordinates(int map);
 
     bool isEmpty();
