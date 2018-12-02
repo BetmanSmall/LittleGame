@@ -1,4 +1,4 @@
-#include "src/head/gamefield.h"
+#include "gamefield.h"
 
 GameField::GameField(QString mapPath, FactionsManager *factionsManager, GameSettings *gameSettings) {
     qDebug() << "GameField::GameField(); -- mapPath:" << mapPath;
@@ -1371,13 +1371,13 @@ Unit *GameField::spawnUnitFromUser(TemplateForUnit *templateForUnit) {
 }
 
 void GameField::spawnUnits(float delta) {
-    std::vector<WaveManager::TemplateNameAndPoints*> allUnitsForSpawn = waveManager->getAllUnitsForSpawn(delta);
-    foreach (WaveManager::TemplateNameAndPoints* templateNameAndPoints, allUnitsForSpawn) {
+    std::vector<TemplateNameAndPoints*> allUnitsForSpawn = waveManager->getAllUnitsForSpawn(delta);
+    foreach (TemplateNameAndPoints* templateNameAndPoints, allUnitsForSpawn) {
 //        spawnUnit(templateNameAndPoints);
     }
 }
 
-//Unit *GameField::spawnUnit(WaveManager::TemplateNameAndPoints *templateNameAndPoints) {
+//Unit *GameField::spawnUnit(TemplateNameAndPoints *templateNameAndPoints) {
 //    if (templateNameAndPoints != NULL) {
 //        TemplateForUnit* templateForUnit = factionsManager->getTemplateForUnitByName(templateNameAndPoints->templateName);
 //        if (templateForUnit != NULL) {

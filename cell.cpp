@@ -1,4 +1,4 @@
-#include "src/head/cell.h"
+#include "cell.h"
 
 Cell::Cell() {
 //    qDebug() << "Cell::Cell(); -- ";

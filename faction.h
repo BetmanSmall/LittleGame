@@ -3,9 +3,9 @@
 
 #include <QDebug>
 
-//#include "src/head/tower.h"
-#include "src/head/templatefortower.h"
-#include "src/head/templateforunit.h"
+//#include "tower.h"
+#include "templatefortower.h"
+#include "templateforunit.h"
 
 class Faction {
 public:

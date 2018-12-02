@@ -1,4 +1,4 @@
-#include "src/head/templatefortower.h"
+#include "templatefortower.h"
 
 TemplateForTower::TemplateForTower(QString templateFile) {
     qDebug() << "TemplateForTower::TemplateForTower(); -- templateFile:" << templateFile;
@@ -24,7 +24,7 @@ void TemplateForTower::loadFireBall(SimpleTemplate* fireBall) {
             QString tileName = animatedTile->getProperties()->value("tileName", NULL);
             if (tileName != NULL) {
                 if(tileName.contains("fireball_")) {
-                    qDebug() << "TemplateForTower::loadFireBall(); -setAmmoTiles- tileName:" << tileName;
+//                    qDebug() << "TemplateForTower::loadFireBall(); -setAmmoTiles- tileName:" << tileName;
                     setAmmoTiles(tileName.replace("fireball_", "ammo_"), animatedTile);
                 }
             }

@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/tilesets.h"
+#include "tilesets.h"
 
 TileSets::TileSets() {
 

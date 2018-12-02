@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <QPixmap>
 
-#include "src/head/tower.h"
+#include "tower.h"
 
 class Tower;
 

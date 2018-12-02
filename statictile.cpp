@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/statictile.h"
+#include "statictile.h"
 
 //StaticTile::StaticTile() {
 //}

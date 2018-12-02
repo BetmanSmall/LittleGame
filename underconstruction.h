@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-#include "src/head/templatefortower.h"
+#include "templatefortower.h"
 
 class UnderConstruction
 {

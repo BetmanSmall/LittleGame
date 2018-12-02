@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QPainter>
 
-#include "src/head/gamefield.h"
+#include "gamefield.h"
 #include "vector2.h"
 
 class GameField;

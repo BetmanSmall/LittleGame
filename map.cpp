@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/map.h"
+#include "map.h"
 
 Map::Map(QString mapPath) {
     this->mapPath = mapPath;

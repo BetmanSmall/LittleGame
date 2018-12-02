@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <QtXml>
 
-#include "src/head/faction.h"
-#include "src/head/mapEditor/maploader.h"
+#include "faction.h"
+#include "maploader.h"
 #include "simpletemplate.h"
 
 class FactionsManager

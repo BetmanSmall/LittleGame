@@ -3,26 +3,27 @@
 
 #include <QDebug>
 
-#include "src/head/cell.h"
+#include "cell.h"
 #include "wave.h"
 
 class Cell;
 
+class TemplateNameAndPoints {
+public:
+    QString templateName;
+    QPoint* spawnPoint;
+    QPoint* exitPoint;
+
+    TemplateNameAndPoints(QString templateName, QPoint *spawnPoint, QPoint *exitPoint) {
+        this->templateName = templateName;
+        this->spawnPoint = spawnPoint;
+        this->exitPoint = exitPoint;
+    }
+};
+
 class WaveManager
 {
 public:
-    class TemplateNameAndPoints {
-    public:
-        QString templateName;
-        QPoint* spawnPoint;
-        QPoint* exitPoint;
-
-        TemplateNameAndPoints(QString templateName, QPoint *spawnPoint, QPoint *exitPoint) {
-            this->templateName = templateName;
-            this->spawnPoint = spawnPoint;
-            this->exitPoint = exitPoint;
-        }
-    };
 
 public:
     std::vector<Wave*> waves;

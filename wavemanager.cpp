@@ -10,7 +10,7 @@ void WaveManager::addWave(Wave* wave) {
     this->waves.push_back(wave);
 }
 
-std::vector<WaveManager::TemplateNameAndPoints*> WaveManager::getAllUnitsForSpawn(float delta) {
+std::vector<TemplateNameAndPoints*> WaveManager::getAllUnitsForSpawn(float delta) {
     waitForNextSpawnUnit -= delta;
     std::vector<TemplateNameAndPoints*> allUnitsForSpawn;
     foreach (Wave* wave, waves) {

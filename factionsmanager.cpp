@@ -1,4 +1,4 @@
-#include "src/head/factionsmanager.h"
+#include "factionsmanager.h"
 
 FactionsManager::FactionsManager() {
     qDebug() << "FactionsManager::FactionsManager(); -- ";
@@ -188,9 +188,9 @@ void FactionsManager::loadFaction(QString factionFile) {
                 QString templateFile = MapLoader::findFile(factionFile, source);
                 TemplateForTower* templateForTower = new TemplateForTower(templateFile);
 //                templateForTower->setFaction(faction);
-//                if (templateForTower->templateName.contains("tower_FireBall")) {
+                if (templateForTower->towerAttackType == TowerAttackType::FireBall) {
                     templateForTower->loadFireBall(fireball_0);
-//                }
+                }
                 faction->towers.push_back(templateForTower);
                 qDebug() << "FactionsManager::loadFaction(); -- " << templateForTower->toString(true).toStdString().c_str();
             }

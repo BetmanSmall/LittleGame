@@ -1,7 +1,10 @@
-#include "src/head/mapEditor/maploader.h"
+#include "maploader.h"
+
+//MapLoader::MapLoader(WaveManager *waveManager) {
+//    this->waveManager = waveManager;
+//}
 
 MapLoader::MapLoader() {
-//    this->waveManager = waveManager;
 }
 
 Map* MapLoader::load(QString mapPath) {
@@ -196,7 +199,7 @@ Map *MapLoader::loadMap(QDomElement mapElement, QString mapPath, QMap<QString, Q
 //            wavesParser(waves);
 //        }
 //    } else {
-//        qDebug() << "MapLoader::loadTilemap(); -- Not found waves block in map:" << tmxFile;
+//        qDebug() << "MapLoader::loadTilemap(); -- Not found waves block in map:" << mapPath;
 //    }
     map->width = mapWidth;
     map->height = mapHeight;
@@ -450,8 +453,8 @@ void MapLoader::loadTileLayer(Map *map, QDomElement element) {
 //        int spawnPointY = waveElement.attribute("spawnPointY").toInt();
 //        int exitPointX = waveElement.attribute("exitPointX").toInt();
 //        int exitPointY = waveElement.attribute("exitPointY").toInt();
-//        float spawnInterval = waveElement.attribute("spawnInterval", 0.0).toFloat();
-//        float startToMove = waveElement.attribute("startToMove", 0.0).toFloat();
+//        float spawnInterval = waveElement.attribute("spawnInterval", "0.0").toFloat();
+//        float startToMove = waveElement.attribute("startToMove", "0.0").toFloat();
 //        Wave* wave = new Wave(new QPoint(spawnPointX, spawnPointY), new QPoint(exitPointX, exitPointY), startToMove);
 //        QDomNodeList actions = waveElement.childNodes();
 //        int actionsCount = actions.size();
@@ -459,13 +462,13 @@ void MapLoader::loadTileLayer(Map *map, QDomElement element) {
 //            QDomElement action = actions.item(a).toElement();
 //            QString sAction = action.nodeName();
 //            if (sAction == "unit") {
-//                float delay = action.attribute("delay", 0.0).toFloat();
+//                float delay = action.attribute("delay", "0.0").toFloat();
 //                if (delay > 0.0) {
 //                    wave->addAction("delay=" + QString::number(delay) );
 //                }
 //                QString unitTemplateName = action.attribute("templateName");
 
-//                float interval = action.attribute("interval", 0.0f).toFloat() + spawnInterval;
+//                float interval = action.attribute("interval", "0.0").toFloat() + spawnInterval;
 //                int amount = action.attribute("amount", 0).toInt();
 //                for (int u = 0; u < amount; u++) {
 //                    if (interval > 0.0) {
@@ -495,7 +498,7 @@ void MapLoader::loadTileLayer(Map *map, QDomElement element) {
 //        int exitPointX = waveElement.attribute("exitPointX").toInt();
 //        int exitPointY = waveElement.attribute("exitPointY").toInt();
 //        Wave* wave = new Wave(new QPoint(spawnPointX, spawnPointY), new QPoint(exitPointX, exitPointY), 0.0);
-//        waveManager->wavesForUser.add(wave);
+//        waveManager->wavesForUser.push_back(wave);
 //    }
 //}
 

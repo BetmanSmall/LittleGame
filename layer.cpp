@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/layer.h"
+#include "layer.h"
 
 Layer::Layer(int width, int height, int tileWidth, int tileHeight) {
     opacity = 1.0f;

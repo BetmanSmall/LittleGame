@@ -4,10 +4,10 @@
 #include <QDebug>
 #include <QPixmap>
 
-#include "src/head/libs/astar.h"
-#include "src/head/cell.h"
-#include "src/head/direction.h"
-#include "src/head/templateforunit.h"
+#include "astar.h"
+#include "cell.h"
+#include "direction.h"
+#include "templateforunit.h"
 #include "cameracontroller.h"
 #include "animation.h"
 #include "circle.h"

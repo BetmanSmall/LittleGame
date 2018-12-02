@@ -1,4 +1,4 @@
-#include "src/head/underconstruction.h"
+#include "underconstruction.h"
 
 UnderConstruction::UnderConstruction(TemplateForTower *templateForTower) {
     this->state = -1;

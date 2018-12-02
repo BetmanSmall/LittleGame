@@ -1,4 +1,4 @@
-#include "src/head/optionmenu.h"
+#include "optionmenu.h"
 #include "ui_optionmenu.h"
 
 OptionMenu::OptionMenu(QWidget *parent) :

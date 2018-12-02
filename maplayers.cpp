@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/maplayers.h"
+#include "maplayers.h"
 
 MapLayers::MapLayers() {
 }

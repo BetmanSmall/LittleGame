@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/tilelayercell.h"
+#include "tilelayercell.h"
 
 TileLayerCell::TileLayerCell() {
     this->tile = NULL;

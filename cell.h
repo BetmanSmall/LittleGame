@@ -5,9 +5,9 @@
 #include <qstring.h>
 #include <QPixmap>
 
-#include "src/head/unit.h"
-#include "src/head/tower.h"
-#include "src/head/mapEditor/tile.h"
+#include "unit.h"
+#include "tower.h"
+#include "tile.h"
 #include "vector2.h"
 
 class Unit;

@@ -1,4 +1,4 @@
-#include "src/head/faction.h"
+#include "faction.h"
 
 Faction::Faction(QString name) {
     qDebug() << "Faction::Faction(); -- name:" << name;

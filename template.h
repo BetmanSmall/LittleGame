@@ -4,9 +4,9 @@
 #include <QDebug>
 #include <QtXml>
 
-#include "src/head/mapEditor/maploader.h"
-#include "src/head/mapEditor/animatedtile.h"
-#include "src/head/mapEditor/tile.h"
+#include "maploader.h"
+#include "animatedtile.h"
+#include "tile.h"
 
 class Template
 {

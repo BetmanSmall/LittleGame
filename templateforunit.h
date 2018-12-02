@@ -5,12 +5,14 @@
 #include <QPixmap>
 #include <QtXml>
 
-//#include "src/head/mapEditor/maploader.h"
-#include "src/head/mapEditor/animatedtile.h"
-#include "src/head/mapEditor/tile.h"
-#include "src/head/direction.h"
-//#include "src/head/faction.h"
+//class Template;
+
 #include "template.h"
+//#include "maploader.h"
+#include "animatedtile.h"
+#include "tile.h"
+#include "direction.h"
+//#include "faction.h"
 
 class TemplateForUnit : public Template
 {

@@ -5,15 +5,15 @@
 #include <QPixmap>
 #include <QPainter>
 
-//#include "src/head/libs/astar.h"
-#include "src/head/factionsmanager.h"
+//#include "astar.h"
+#include "factionsmanager.h"
 #include "wavemanager.h"
-#include "src/head/towersmanager.h"
-#include "src/head/unitsmanager.h"
+#include "towersmanager.h"
+#include "unitsmanager.h"
 #include "gamesettings.h"
-#include "src/head/bullet.h"
-#include "src/head/cell.h"
-#include "src/head/underconstruction.h"
+#include "bullet.h"
+#include "cell.h"
+#include "underconstruction.h"
 #include "cameracontroller.h"
 
 class CameraController;

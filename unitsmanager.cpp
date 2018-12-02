@@ -1,4 +1,4 @@
-#include "src/head/unitsmanager.h"
+#include "unitsmanager.h"
 
 UnitsManager::UnitsManager() {
     qDebug() << "UnitsManager::UnitsManager(); -- ";

@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "src/head/libs/astar.h"
+#include "astar.h"
 
 using namespace std::placeholders;
 

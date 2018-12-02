@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QIcon>
 
-#include "src/head/widgetcontroller.h"
+#include "widgetcontroller.h"
 
 int main(int argc, char *argv[])
 {

@@ -10,9 +10,10 @@
 #include "animatedtile.h"
 #include "tile.h"
 #include "layer.h"
+//#include "wave.h"
 //#include "wavemanager.h"
 
-//class WaveManager;
+class WaveManager;
 
 class MapLoader {
     int mapTileWidth;

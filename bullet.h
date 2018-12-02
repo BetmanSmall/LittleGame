@@ -3,9 +3,9 @@
 
 #include <QPixmap>
 
-#include "src/head/unit.h"
-#include "src/head/templatefortower.h"
-#include "src/head/direction.h"
+//#include "unit.h"
+//#include "templatefortower.h"
+//#include "direction.h"
 #include "vector2.h"
 #include "circle.h"
 #include "animation.h"

@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <QPixmap>
 
-#include "src/head/cell.h"
-#include "src/head/unit.h"
+#include "cell.h"
+#include "unit.h"
 
 class Unit;
 

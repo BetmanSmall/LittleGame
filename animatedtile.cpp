@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/animatedtile.h"
+#include "animatedtile.h"
 
 #include <QDebug>
 #include <QDateTime>

@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QPoint>
 
-#include "src/head/libs/astar.h"
+#include "astar.h"
 
 class Wave
 {

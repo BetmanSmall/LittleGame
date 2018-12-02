@@ -9,13 +9,13 @@
 #include <QString>
 #include <QDebug>
 
-#include "src/head/libs/astar.h"
-#include "src/head/gamefield.h"
-#include "src/head/underconstruction.h"
+#include "astar.h"
+#include "gamefield.h"
+#include "underconstruction.h"
 #include "cameracontroller.h"
 #include "ui_gamescreengl.h"
 
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
 namespace Ui {

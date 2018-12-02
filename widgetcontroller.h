@@ -12,11 +12,10 @@
 #include <QPaintEvent>
 #include <QString>
 
-#include "src/head/mainmenu.h"
-#include "src/head/optionmenu.h"
-//#include "src/head/gamewidget.h"
-#include "src/head/gamescreengl.h"
-#include "src/head/factionsmanager.h"
+#include "factionsmanager.h"
+#include "mainmenu.h"
+#include "optionmenu.h"
+#include "gamescreengl.h"
 
 class WidgetController : public QWidget
 {

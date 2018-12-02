@@ -1,4 +1,4 @@
-#include "src/head/bullet.h"
+#include "bullet.h"
 
 Bullet::Bullet(Vector2 *currentPoint, TemplateForTower* templateForTower, Vector2 *destPoint, CameraController *cameraController) {
 //    qDebug() << "Bullet::Bullet(); -- currentPoint:" << currentPoint;

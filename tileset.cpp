@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/tileset.h"
+#include "tileset.h"
 
 TileSet::TileSet() {
 //    firshgid = properties.value("firstgid").toInt();

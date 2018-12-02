@@ -1,4 +1,4 @@
-#include "src/head/towersmanager.h"
+#include "towersmanager.h"
 
 TowersManager::TowersManager() {
     qDebug() << "TowersManager::TowersManager(); -- ";

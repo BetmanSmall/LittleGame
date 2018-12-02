@@ -1,4 +1,4 @@
-#include "src/head/unit.h"
+#include "unit.h"
 
 Unit::Unit(AStar::CoordinateList route, TemplateForUnit *templateForUnit, int player, Cell *exitCell) {
     if (!route.empty()) {

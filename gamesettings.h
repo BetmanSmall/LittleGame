@@ -2,7 +2,7 @@
 #define GAMESETTINGS_H
 
 #include "gametype.h"
-#include "src/head/cell.h"
+#include "cell.h"
 
 class GameSettings
 {

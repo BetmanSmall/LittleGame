@@ -1,4 +1,4 @@
-#include "src/head/widgetcontroller.h"
+#include "widgetcontroller.h"
 
 WidgetController::WidgetController(QWidget *parent) :
     QWidget(parent)

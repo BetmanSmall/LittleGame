@@ -6,14 +6,14 @@
 #include <QtXml>
 
 #include "template.h"
-#include "src/head/direction.h"
-//#include "src/head/faction.h"
+#include "direction.h"
+//#include "faction.h"
 #include "towerattacktype.h"
 #include "towershelltype.h"
 #include "towershelleffect.h"
 #include "simpletemplate.h"
 
-class   TemplateForTower : public Template
+class TemplateForTower : public Template
 {
 public:
 //    Faction* faction;

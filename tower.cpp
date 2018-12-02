@@ -1,4 +1,4 @@
-#include "src/head/tower.h"
+#include "tower.h"
 
 Tower::Tower(Cell *cell, TemplateForTower *templateForTower, int player) {
 //    qDebug() << "Tower::Tower(); -- position:" << cell << " templateForTower:" << templateForTower << " player:" << player;

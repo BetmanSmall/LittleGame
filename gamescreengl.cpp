@@ -1,4 +1,4 @@
-#include "src/head/gamescreengl.h"
+#include "gamescreengl.h"
 
 GameScreenGL::GameScreenGL(QString mapPath, FactionsManager* factionsManager,
                        GameSettings *gameSettings,

@@ -1,4 +1,4 @@
-#include "src/head/mapEditor/tile.h"
+#include "tile.h"
 
 Tile::Tile() {
 //    qDebug() << "Tile::Tile();";

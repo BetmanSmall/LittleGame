@@ -4,11 +4,11 @@
 #include <QDebug>
 #include <QPixmap>
 
-#include "src/head/bullet.h"
-#include "src/head/templatefortower.h"
+#include "bullet.h"
+#include "templatefortower.h"
 #include "circle.h"
 #include "cameracontroller.h"
-#include "src/head/unit.h"
+#include "unit.h"
 
 class Cell;
 class Unit;
