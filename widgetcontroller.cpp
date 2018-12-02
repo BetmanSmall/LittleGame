@@ -192,9 +192,9 @@ void WidgetController::loadNextCampaingMaps() {
 //        campaingMaps.push_back("maps/old/arena3.tmx");
         campaingMaps.push_back("maps/arena2.tmx");
         campaingMaps.push_back("maps/arena1.tmx");
-        campaingMaps.push_back("maps/arena0.tmx");
         campaingMaps.push_back("maps/island.tmx");
         campaingMaps.push_back("maps/randomMap.tmx");
+        campaingMaps.push_back("maps/arena0.tmx");
 //        campaingMaps.push_back("maps/winter.tmx");
 //        campaingMaps.push_back("maps/summer.tmx");
 //        campaingMaps.push_back("maps/desert.tmx");

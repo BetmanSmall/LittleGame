@@ -92,7 +92,7 @@ public:
 
     Unit *spawnUnitFromUser(TemplateForUnit *templateForUnit);
     void spawnUnits(float delta);
-//    Unit *spawnUnit(WaveManager::TemplateNameAndPoints* templateNameAndPoints);
+    Unit *spawnUnit(TemplateNameAndPoints* templateNameAndPoints);
     Unit *spawnHeroInSpawnPoint();
     Unit *spawnHero(int cellX, int cellY);
     Unit *spawnCompUnitToRandomExit(int x, int y);

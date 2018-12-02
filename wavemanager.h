@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-#include "cell.h"
+//#include "cell.h"
 #include "wave.h"
 
 class Cell;

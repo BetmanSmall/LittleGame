@@ -1373,23 +1373,23 @@ Unit *GameField::spawnUnitFromUser(TemplateForUnit *templateForUnit) {
 void GameField::spawnUnits(float delta) {
     std::vector<TemplateNameAndPoints*> allUnitsForSpawn = waveManager->getAllUnitsForSpawn(delta);
     foreach (TemplateNameAndPoints* templateNameAndPoints, allUnitsForSpawn) {
-//        spawnUnit(templateNameAndPoints);
+        spawnUnit(templateNameAndPoints);
     }
 }
 
-//Unit *GameField::spawnUnit(TemplateNameAndPoints *templateNameAndPoints) {
-//    if (templateNameAndPoints != NULL) {
-//        TemplateForUnit* templateForUnit = factionsManager->getTemplateForUnitByName(templateNameAndPoints->templateName);
-//        if (templateForUnit != NULL) {
-//            Cell* spawnCell = getCell(templateNameAndPoints->spawnPoint->x(), templateNameAndPoints->spawnPoint->y());
-//            Cell* destExitCell = getCell(templateNameAndPoints->exitPoint->x(), templateNameAndPoints->exitPoint->y());
-//            return createUnit(spawnCell, destExitCell, templateForUnit, 0, destExitCell); // create Computer0 Unit
-//        } else {
-//            qDebug() << "GameField::spawnUnit(); -- templateForUnit == null | templateName:" << templateNameAndPoints->templateName;
-//        }
-//    }
-//    return NULL;
-//}
+Unit *GameField::spawnUnit(TemplateNameAndPoints *templateNameAndPoints) {
+    if (templateNameAndPoints != NULL) {
+        TemplateForUnit* templateForUnit = factionsManager->getTemplateForUnitByName(templateNameAndPoints->templateName);
+        if (templateForUnit != NULL) {
+            Cell* spawnCell = getCell(templateNameAndPoints->spawnPoint->x(), templateNameAndPoints->spawnPoint->y());
+            Cell* destExitCell = getCell(templateNameAndPoints->exitPoint->x(), templateNameAndPoints->exitPoint->y());
+            return createUnit(spawnCell, destExitCell, templateForUnit, 0, destExitCell); // create Computer0 Unit
+        } else {
+            qDebug() << "GameField::spawnUnit(); -- templateForUnit == null | templateName:" << templateNameAndPoints->templateName;
+        }
+    }
+    return NULL;
+}
 
 Unit *GameField::spawnHeroInSpawnPoint() {
     qDebug() << "GameField::spawnHeroInSpawnPoint(); -- gameSettings->cellSpawnHero:" << gameSettings->cellSpawnHero << " gameSettings->cellExitHero:" << gameSettings->cellExitHero;
