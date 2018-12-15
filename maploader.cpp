@@ -1,11 +1,11 @@
 #include "maploader.h"
 
-//MapLoader::MapLoader(WaveManager *waveManager) {
-//    this->waveManager = waveManager;
-//}
-
-MapLoader::MapLoader() {
+MapLoader::MapLoader(WaveManager *waveManager) {
+    this->waveManager = waveManager;
 }
+
+//MapLoader::MapLoader() {
+//}
 
 Map* MapLoader::load(QString mapPath) {
     QDomDocument *domDocument = loadDomDocument(mapPath);
@@ -188,7 +188,7 @@ Map *MapLoader::loadMap(QDomElement mapElement, QString mapPath, QMap<QString, Q
             QDomDocument *domDocument = loadDomDocument(tsx);
             if (domDocument != NULL) {
                 QDomElement rootwaves = domDocument->documentElement();
-//                wavesParser(rootwaves);
+                wavesParser(rootwaves);
 //            } catch (IOException e) {
 //                e.printStackTrace();
             }

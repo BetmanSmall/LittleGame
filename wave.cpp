@@ -15,21 +15,23 @@ QString Wave::getTemplateNameForSpawn(float delta) {
     if (elapsedTime >= intervalForSpawn) {
         elapsedTime = 0.0;
         action = actions.front();//pollFirst();
+        actions.erase(actions.begin());
         if (action == NULL) {
             return NULL;
         } else if (action.contains("delay")) {
-            intervalForSpawn = action.right(action.indexOf("=") + 1).toFloat();
-            return QString(("wait=%1") + QString::number(intervalForSpawn));
+            int ir = action.indexOf("=");
+            intervalForSpawn = action.right(ir + 1).toFloat();
+            return QString(("wait=") + QString::number(intervalForSpawn));
         } else if (action.contains("interval")) {
-            intervalForSpawn = action.right(action.indexOf("=") + 1).toFloat();
-            return QString(("wait=%1") + QString::number(intervalForSpawn));
+            int ir = action.indexOf("=");
+            intervalForSpawn = action.right(ir + 1).toFloat();
+            return QString(("wait=") + QString::number(intervalForSpawn));
         } else { // QString contain templateName.
             intervalForSpawn = 0.0;
             return action;
         }
-        actions.erase(actions.begin());
     }
-    return QString(("wait=%1") + QString::number(intervalForSpawn-elapsedTime));
+    return QString(("wait=") + QString::number(intervalForSpawn-elapsedTime));
 }
 
 void Wave::addAction(QString action) {

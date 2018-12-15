@@ -10,7 +10,7 @@ GameField::GameField(QString mapPath, FactionsManager *factionsManager, GameSett
     unitsManager = new UnitsManager();
     this->gameSettings = gameSettings;
 
-    map = (new MapLoader())->load(mapPath);
+    map = (new MapLoader(waveManager))->load(mapPath);
     qDebug() << "GameField::GameField(); -- map:" << map;
 
     underConstruction = NULL;
@@ -78,8 +78,8 @@ GameField::GameField(QString mapPath, FactionsManager *factionsManager, GameSett
                     if (exitCell != NULL && exitCell->isEmpty()) {
                         Wave* wave = new Wave(spawnPoint, exitPoint, 0.0);
                         for (int k = 0; k < 10; k++) {
-                            wave->addAction("interval=" + QString::number(1));
-                            wave->addAction(factionsManager->getRandomTemplateForUnitFromFirstFaction()->templateName);
+                            wave->addAction("interval=" + QString::number(200));
+                            wave->addAction(factionsManager->getRandomTemplateForUnitFromSecondFaction()->templateName);
                         }
                         waveManager->addWave(wave);
                     }

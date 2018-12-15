@@ -31,7 +31,7 @@ class MapLoader {
 
 public:
     MapLoader(WaveManager *waveManager);
-    MapLoader();
+//    MapLoader();
 
     Map *load(QString mapPath);
 //private:
