@@ -47,10 +47,11 @@ public: // we are friendly!
     QPixmap* greenCheckmark;
     QPixmap* redCross;
 
+    int gamerGold;
     float timeOfGame;
     float gameSpeed;
     bool gamePaused;
-    int gamerGold;
+    bool unitsSpawn;
 
 public:
     GameField(QString mapPath, FactionsManager *factionsManager, GameSettings *gameSettings);

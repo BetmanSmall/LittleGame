@@ -65,7 +65,7 @@ bool Tower::shotFireBall(CameraController *cameraController) {
                 radius = qRound(templateForTower->radiusDetection);
             }
             Cell* towerCell = cell;
-            qDebug() << "Tower::shotFireBall(); -- radius:" << radius << " towerCell:" << towerCell << " player:" << player;
+//            qDebug() << "Tower::shotFireBall(); -- radius:" << radius << " towerCell:" << towerCell << " player:" << player;
             for (int tmpX = -radius; tmpX <= radius; tmpX++) {
                 for (int tmpY = -radius; tmpY <= radius; tmpY++) {
                     Cell* cell = cameraController->gameField->getCell(tmpX + towerCell->cellX, tmpY + towerCell->cellY);
@@ -82,7 +82,7 @@ bool Tower::shotFireBall(CameraController *cameraController) {
 //                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.DOWN_LEFT));
 //                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.LEFT));
 //                bullets.add(new Bullet(centerGraphicCoord, templateForTower, cameraController, Direction.UP_LEFT));
-            qDebug() << "Tower::shotFireBall(); -- bullets:" << bullets.size() << " templateForTower:" << templateForTower->toString() << " player:" << player;
+//            qDebug() << "Tower::shotFireBall(); -- bullets:" << bullets.size() << " templateForTower:" << templateForTower->toString() << " player:" << player;
             return true;
         }
     }

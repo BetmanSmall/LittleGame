@@ -1,8 +1,12 @@
 #include "map.h"
 
 Map::Map(QString mapPath) {
+    qDebug() << "Map::Map(); -- ";
     this->mapPath = mapPath;
-//    properties.insert("key1", "value1");
+}
+
+Map::~Map() {
+    qDebug() << "Map::~Map(); -- ";
 }
 
 Layer *Map::addNewLayer() {

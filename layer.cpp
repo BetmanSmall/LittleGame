@@ -1,7 +1,7 @@
 #include "layer.h"
 
 Layer::Layer(int width, int height, int tileWidth, int tileHeight) {
-    opacity = 1.0f;
+    opacity = 1.0;
     visible = true;
     this->width = width;
     this->height = height;

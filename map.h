@@ -17,10 +17,11 @@ public:
 
 public:
     Map(QString mapPath);
+    ~Map();
     Layer* addNewLayer();
-    QMap<QString, QString> *getProperties();
     TileSets *getTileSets();
     MapLayers *getMapLayers();
+    QMap<QString, QString> *getProperties();
     void turnRight();
     void turnLeft();
     void flipX();

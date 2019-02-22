@@ -31,6 +31,12 @@ GameField::GameField(QString mapPath, FactionsManager *factionsManager, GameSett
     updatePathFinderWalls();
     qDebug() << "GameField::GameField(); -- pathFinder:" << pathFinder;
 
+    gamerGold = 100000;
+    timeOfGame = 0.0;
+    gameSpeed = 1.0;
+    gamePaused = false;
+    unitsSpawn = false;
+
     qDebug() << "GameField::GameField(); -- gameSettings:" << gameSettings;
     if (gameSettings->gameType == GameType::LittleGame) {
         int randomEnemyCount = gameSettings->enemyCount;
@@ -78,7 +84,7 @@ GameField::GameField(QString mapPath, FactionsManager *factionsManager, GameSett
                     if (exitCell != NULL && exitCell->isEmpty()) {
                         Wave* wave = new Wave(spawnPoint, exitPoint, 0.0);
                         for (int k = 0; k < 10; k++) {
-                            wave->addAction("interval=" + QString::number(200));
+                            wave->addAction("interval=1");
                             wave->addAction(factionsManager->getRandomTemplateForUnitFromSecondFaction()->templateName);
                         }
                         waveManager->addWave(wave);
@@ -90,28 +96,21 @@ GameField::GameField(QString mapPath, FactionsManager *factionsManager, GameSett
         waveManager->checkRoutes(pathFinder);
         QMap<QString, QString> *mapProperties = map->getProperties();
         qDebug() << "GameField::GameField(); -- mapProperties:" << mapProperties;
-        gamerGold = mapProperties->value("gamerGold", "10000").toInt();
-        gameSettings->maxOfMissedUnitsForComputer0 = (mapProperties->value("maxOfMissedUnitsForComputer0").toInt());
+        if (mapProperties->contains("gamerGold")) {
+            gamerGold = mapProperties->value("gamerGold").toInt(); // HARD GAME | one gold = one unit for computer!!!
+        }
+        gameSettings->maxOfMissedUnitsForComputer0 = (mapProperties->value("maxOfMissedUnitsForComputer0", QString::number(gamerGold)).toInt()); // Игрок может сразу выиграть если у него не будет голды. так как @ref2
         gameSettings->missedUnitsForComputer0 = 0;
         if (gameSettings->maxOfMissedUnitsForPlayer1 == 0) {
-            gameSettings->maxOfMissedUnitsForPlayer1 = (mapProperties->value("maxOfMissedUnitsForPlayer1").toInt());
+            gameSettings->maxOfMissedUnitsForPlayer1 = (mapProperties->value("maxOfMissedUnitsForPlayer1", QString::number(waveManager->getNumberOfActions()/8)).toInt()); // it is not true | need implement getNumberOfUnits()
         }
         gameSettings->missedUnitsForPlayer1 = 0;
         qDebug() << "GameField::GameField(); -- gamerGold:" << gamerGold;
         qDebug() << "GameField::GameField(); -- gameSettings->maxOfMissedUnitsForComputer0:" << gameSettings->maxOfMissedUnitsForComputer0;
         qDebug() << "GameField::GameField(); -- gameSettings->maxOfMissedUnitsForPlayer1:" << gameSettings->maxOfMissedUnitsForPlayer1;
-//    } else {
-//        qDebug() << "GameField::GameField(); -- gameSettings->gameType:" << gameSettings->gameType;
+    } else {
+        qDebug() << "GameField::GameField(); -- gameSettings->gameType:" << gameSettings->gameType;
     }
-
-    timeOfGame = 0.0;
-    gameSpeed = 1.0;
-    gamePaused = false;
-//    gamerGold = Integer.valueOf(mapProperties.get("gamerGold", "10000", String.class)); // HARD GAME | one gold = one unit for computer!!!
-    gamerGold = 100000;
-
-//    gameOverLimitUnits = 10;
-//    currentFinishedUnits = 0;
     qDebug() << "GameField::GameField(); -end- ";
 }
 
@@ -253,7 +252,6 @@ void GameField::updateTowersGraphicCoordinates(CameraController *cameraControlle
 }
 
 void GameField::render(float deltaTime, CameraController* cameraController) {
-//    qDebug() << "GameField::render(); -- deltaTime:" << deltaTime;
     deltaTime = deltaTime * gameSpeed;
     if (!gamePaused) {
         timeOfGame += deltaTime;
@@ -1371,9 +1369,28 @@ Unit *GameField::spawnUnitFromUser(TemplateForUnit *templateForUnit) {
 }
 
 void GameField::spawnUnits(float delta) {
-    std::vector<TemplateNameAndPoints*> allUnitsForSpawn = waveManager->getAllUnitsForSpawn(delta);
-    foreach (TemplateNameAndPoints* templateNameAndPoints, allUnitsForSpawn) {
-        spawnUnit(templateNameAndPoints);
+    if (unitsSpawn) {
+        if (waveManager->allTogether) {
+            std::vector<TemplateNameAndPoints*> allUnitsForSpawn = waveManager->getAllUnitsForSpawn(delta);
+            foreach (TemplateNameAndPoints* templateNameAndPoints, allUnitsForSpawn) {
+                spawnUnit(templateNameAndPoints);
+            }
+        } else {
+            if (waveManager->currentWave == NULL) {
+                if (unitsManager->units.size() == 0) {
+                    if (!waveManager->updateCurrentWave()) {
+                        unitsSpawn = false;
+                    }
+                } else {
+                    unitsSpawn = false;
+                }
+            } else {
+                TemplateNameAndPoints* templateNameAndPoints = waveManager->getUnitForSpawn(delta);
+                if (templateNameAndPoints != NULL) {
+                    spawnUnit(templateNameAndPoints);
+                }
+            }
+        }
     }
 }
 
@@ -1449,7 +1466,7 @@ Unit *GameField::createUnit(Cell *spawnCell, Cell *destCell, TemplateForUnit* te
         if (!path.empty()) {
             unit = unitsManager->createUnit(path, templateForUnit, player, exitCell);
             spawnCell->setUnit(unit);
-            qDebug() << "GameField::createUnit(); -- unit:" << unit;
+//            qDebug() << "GameField::createUnit(); -- unit:" << unit;
         } else {
             qDebug() << "GameField::createUnit(); -- Not found route for createUnit!";
 //            if(towersManager->towers.size() > 0) {
@@ -1761,27 +1778,37 @@ void GameField::stepAllUnits(float deltaTime, CameraController* cameraController
             AStar::Vec2i* newPosition = unit->move(deltaTime, cameraController);
             if (newPosition != NULL) {
                 if (!newPosition->operator ==(oldPosition)) {
-                    getCell(oldPosition.x, oldPosition.y)->removeUnit(unit);
-                    getCell(newPosition->x, newPosition->y)->setUnit(unit);
-//                    qDebug() << "GameField::stepAllUnits(); -- Unit move to X:" << newPosition->x << " Y:" << newPosition->y;
+                    Cell* oldCell = getCell(oldPosition.x, oldPosition.y);
+                    Cell* newCell = getCell(newPosition->x, newPosition->y);
+                    if (oldCell != NULL && newCell != NULL) {
+                        oldCell->removeUnit(unit);
+                        newCell->setUnit(unit);
+//                        qDebug() << "GameField::stepAllUnits(); -- Unit move to X:" << newPosition->x << " Y:" << newPosition->y;
+                    } else {
+                        qDebug() << "GameField::stepAllUnits(); -- Unit bad! Cells:old:" << oldCell << " new:" << newCell;
+                    }
                 }
             } else {
-//                Cell *cell = getCell(oldPosition.x, oldPosition.y);
+                Cell *cell = getCell(oldPosition.x, oldPosition.y);
                 if (unit->player == 1) {
                     gameSettings->missedUnitsForComputer0++;
                 } else if (unit->player == 0) {
-//                    if (unit->exitCell == cell) {
-//                    cell->removeUnit(unit);
-//                    unitsManager->removeUnit(unit);
-//                        missedUnitsForPlayer1++;
-//                    } else {
+                    if (unit->exitCell == cell) {
+                        gameSettings->missedUnitsForPlayer1++;
+                        cell->removeUnit(unit);
+                        unitsManager->removeUnit(unit);
+                    } else {
                         if (unit->route.empty()) {
                             int randomX = rand()%map->width;
                             int randomY = rand()%map->height;
                             unit->route = pathFinder->findPath({oldPosition.x, oldPosition.y}, {randomX, randomY});
+                            if (!unit->route.empty()) {
+                                unit->route.erase(unit->route.begin());
+//                                unit.route.removeLast();
+                            }
 //                            qDebug() << "GameField::stepAllUnits(); -reroute- randomX:" << randomX << " randomY:" << randomY << " unit:" << unit->toString().toStdString().c_str();
                         }
-//                    }
+                    }
 //                    Cell* cell = getCell(oldPosition.x, oldPosition.y);
 //                    if (cell->isTerrain()) {
 //                        cell->removeTerrain(true);
@@ -1794,11 +1821,12 @@ void GameField::stepAllUnits(float deltaTime, CameraController* cameraController
             if (!unit->changeDeathFrame(deltaTime)) {
                 getCell(oldPosition.x, oldPosition.y)->removeUnit(unit);
 //                GameField.gamerGold += unit.templateForUnit.bounty;
-//                unit.dispose();
+//                unit->dispose();
                 unitsManager->removeUnit(unit);
                 qDebug() << "GameField::stepAllUnits(); -- Unit death! and delete!";
             }
         }
+//        qDebug() << "GameField::stepAllUnits(); -- Unit:" << unit->toString();
     }
 }
 

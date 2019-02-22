@@ -187,6 +187,7 @@ void WidgetController::loadNextCampaingMaps() {
         campaingMaps.pop_back();
         loadMap(mapPath);
     } else {
+        campaingMaps.push_back("maps/sample.tmx");
         campaingMaps.push_back("maps/arena4_1.tmx");
         campaingMaps.push_back("maps/arena4.tmx");
 //        campaingMaps.push_back("maps/old/arena3.tmx");

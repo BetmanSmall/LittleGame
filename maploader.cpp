@@ -446,6 +446,7 @@ void MapLoader::loadTileLayer(Map *map, QDomElement element) {
 }
 
 void MapLoader::wavesParser(QDomElement waves) {
+    waveManager->allTogether = (waves.attribute("allTogether", "false") == "false") ? false : true;
     QDomNodeList waveElements = waves.elementsByTagName("wave");
     for (int w = 0; w < waveElements.length(); w++) {
         QDomElement waveElement = waveElements.item(w).toElement();

@@ -8,6 +8,10 @@ GameScreenGL::GameScreenGL(QString mapPath, FactionsManager* factionsManager,
 {
     ui->setupUi(this);
 
+    ui->loadMaps->setVisible(false);
+    ui->clearMap->setVisible(false);
+//    ui->loadMaps->setVisible(false);
+
     gameField = new GameField(mapPath, factionsManager, gameSettings);
 //    gameInterface = new GameInterface(gameField, bitmapFont);
 //    gameInterface.mapNameLabel.setText("MapName:" + mapName);
@@ -46,12 +50,12 @@ void GameScreenGL::paintGL() {
 
     lastTime = currentTime;
     currentTime = QTime::currentTime();
-//    elapsedTime = (currentTime.second()*1000 + currentTime.msec()) - (lastTime.second()*1000 + lastTime.msec()); // /!\ max = 59 seconds 999 ms
-//    this->fps = 1000 / elapsedTime;
-    elapsedTime = (currentTime.msecsSinceStartOfDay()) - (lastTime.msecsSinceStartOfDay());
-    this->fps = 1000 / elapsedTime;
+//    deltaTime = (currentTime.second()*1000 + currentTime.msec()) - (lastTime.second()*1000 + lastTime.msec()); // /!\ max = 59 seconds 999 ms
+    deltaTime = (currentTime.msecsSinceStartOfDay()) - (lastTime.msecsSinceStartOfDay());
+    this->fps = 1000 / deltaTime;
+    deltaTime = deltaTime / 1000;
 
-    cameraController->update(elapsedTime);
+    cameraController->update(deltaTime);
     cameraController->painter->begin(this);
     cameraController->painter->scale(cameraController->zoom, cameraController->zoom);
 //    cameraController->painter->setRenderHint(QPainter::Antialiasing);
@@ -59,7 +63,7 @@ void GameScreenGL::paintGL() {
     cameraController->painter->translate(cameraController->cameraX, cameraController->cameraY);
 //    cameraController->painter->rotate(fps);
 
-    gameField->render(elapsedTime/1000, cameraController);
+    gameField->render(deltaTime, cameraController);
     cameraController->painter->setPen(QColor(255, 0, 0));
     cameraController->painter->drawEllipse(QPoint(0, 0), 5, 5);
     cameraController->painter->end();
@@ -69,32 +73,30 @@ void GameScreenGL::paintGL() {
 //    cameraController->painter->translate(-cameraController->cameraX, -cameraController->cameraY);
     cameraController->painter->setPen(QColor(0, 255, 0));
     cameraController->painter->drawEllipse(QPoint(0, 0), 5, 5);
-    cameraController->painter->drawText(10, 10, "FPS:" + QString::number(fps));
-    cameraController->painter->drawText(10, 20, "lastTime:" + QString::number(lastTime.msecsSinceStartOfDay()));
-    cameraController->painter->drawText(10, 30, "currentTime:" + QString::number(currentTime.msecsSinceStartOfDay()));
-    cameraController->painter->drawText(10, 40, "elapsedTime:" + QString::number(elapsedTime));
-    cameraController->painter->drawText(10, 50, "cameraController->cameraX:" + QString::number(cameraController->cameraX));
-    cameraController->painter->drawText(10, 60, "cameraController->cameraY:" + QString::number(cameraController->cameraY));
-    cameraController->painter->drawText(10, 70, "cameraController->zoom:" + QString::number(cameraController->zoom));
-    cameraController->painter->drawText(10, 80, "cameraController->paning:" + QString::number(cameraController->paning));
-    cameraController->painter->drawText(10, 90, "cameraController->flinging:" + QString::number(cameraController->flinging));
-    cameraController->painter->drawText(10, 130, "cameraController->drawOrder:" + QString::number(cameraController->drawOrder));
-    cameraController->painter->drawText(10, 140, "cameraController->isDrawableGrid:" + QString::number(cameraController->isDrawableGrid));
-    cameraController->painter->drawText(10, 150, "cameraController->isDrawableUnits:" + QString::number(cameraController->isDrawableUnits));
-    cameraController->painter->drawText(10, 160, "cameraController->isDrawableTowers:" + QString::number(cameraController->isDrawableTowers));
-    cameraController->painter->drawText(10, 170, "cameraController->isDrawableBackground:" + QString::number(cameraController->isDrawableBackground));
-    cameraController->painter->drawText(10, 180, "cameraController->isDrawableGround:" + QString::number(cameraController->isDrawableGround));
-    cameraController->painter->drawText(10, 190, "cameraController->isDrawableForeground:" + QString::number(cameraController->isDrawableForeground));
-    cameraController->painter->drawText(10, 200, "cameraController->isDrawableGridNav:" + QString::number(cameraController->isDrawableGridNav));
-    cameraController->painter->drawText(10, 210, "cameraController->isDrawableRoutes:" + QString::number(cameraController->isDrawableRoutes));
-    if (gameField->getUnderConstruction() != NULL) {
-        cameraController->painter->drawText(10, 230, "gameField->underConstruction->endX:" + QString::number(gameField->underConstruction->endX) + " endY:" + QString::number(gameField->underConstruction->endY));
+    cameraController->painter->drawText(10, 10, "fps:" + QString::number(fps));
+    cameraController->painter->drawText(10, 20, "deltaTime:" + QString::number(deltaTime));
+    cameraController->painter->drawText(10, 30, "gameField->map->mapPath:" + gameField->map->mapPath);
+    cameraController->painter->drawText(10, 40, "gameField->gameSettings->gameType:" + QString(GameType::to_string(gameField->gameSettings->gameType).c_str()));
+    cameraController->painter->drawText(10, 50, "gameField->gameSettings->isometric:" + QString::number(gameField->gameSettings->isometric));
+    UnderConstruction* underConstruction = gameField->getUnderConstruction();
+    if (underConstruction != NULL) {
+        cameraController->painter->drawText(10, 60, "underConstrEndCoord:(" + QString::number(underConstruction->endX) + "," + QString::number(underConstruction->endY) + ")");
+        cameraController->painter->drawText(10, 70, "underConstrTemplateName:" + underConstruction->templateForTower->name);
+    } else {
+        cameraController->painter->drawText(10, 60, "underConstrEndCoord:(WTF,WTF)");
+        cameraController->painter->drawText(10, 70, "underConstrTemplateName:NULL");
     }
-    cameraController->painter->drawText(10, 240, "gameField->towersManager->towers.size():" + QString::number(gameField->towersManager->towers.size()));
-    cameraController->painter->drawText(10, 250, "gameField->unitsManager->units.size():" + QString::number(gameField->unitsManager->units.size()));
+    cameraController->painter->drawText(10, 80, "gameField->gamerGold:" + QString::number(gameField->gamerGold));
+    cameraController->painter->drawText(10, 90, "gameField->unitsManager->units.size():" + QString::number(gameField->unitsManager->units.size()));
+    cameraController->painter->drawText(10, 100, "gameField->towersManager->towers.size():" + QString::number(gameField->towersManager->towers.size()));
+    cameraController->painter->drawText(10, 110, "UnitsLimitPL1:" + QString::number(gameField->gameSettings->missedUnitsForPlayer1) + "/" + QString::number(gameField->gameSettings->maxOfMissedUnitsForPlayer1));
+    cameraController->painter->drawText(10, 120, "UnitsLimitComp0:" + QString::number(gameField->gameSettings->missedUnitsForComputer0) + "/" + QString::number(gameField->gameSettings->maxOfMissedUnitsForComputer0));
+    cameraController->painter->drawText(10, 130, "NextUnitSpawnAfter:" + ((gameField->waveManager->waitForNextSpawnUnit > 0.0) ? QString::number(gameField->waveManager->waitForNextSpawnUnit) + "sec" : "PRESS_PLAY_BUTTON"));
+    cameraController->painter->drawText(10, 140, "gameField->unitsSpawn:" + QString::number(gameField->unitsSpawn));
+    cameraController->painter->drawText(10, 150, "gameField->gamePaused:" + QString::number(gameField->gamePaused));
 
-    cameraController->painter->drawText(10, 260, "gameField->isometric:" + QString::number(gameField->gameSettings->isometric));
-    cameraController->painter->drawText(10, 270, "gameField->map->mapPath:" + gameField->map->mapPath);
+    ui->goUnits->setText( (gameField->gamePaused) ? "PLAY" : (gameField->unitsSpawn) ? "PAUSE" : (gameField->unitsManager->units.size()>0) ? "PAUSE" : "START NEXT WAVE");
+
     cameraController->painter->end();
 }
 
@@ -371,4 +373,12 @@ void GameScreenGL::keyPressEvent(QKeyEvent * event) {
 
 void GameScreenGL::on_closeWidget_clicked() {
     signal_closeWidget();
+}
+
+void GameScreenGL::on_goUnits_clicked() {
+    gameField->gamePaused = !gameField->gamePaused;
+    if (!gameField->unitsSpawn && gameField->unitsManager->units.size() == 0) {
+        gameField->unitsSpawn = true;
+        gameField->gamePaused = false;
+    }
 }

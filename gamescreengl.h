@@ -37,7 +37,7 @@ public:
 
     QTime currentTime;
     QTime lastTime;
-    float elapsedTime;
+    float deltaTime;
     float fps;
     QTimer* gameTimer;
 
@@ -68,6 +68,8 @@ private:
 
 private slots:
     void on_closeWidget_clicked();
+
+    void on_goUnits_clicked();
 
 signals:
 //    void clicked();

@@ -10,12 +10,13 @@ class Layer {
     bool visible;
 //    MapObjects objects = new MapObjects();
     QMap<QString, QString> properties;
+
     int width;
     int height;
-    QVector<TileLayerCell> cells;
-
     float tileWidth;
     float tileHeight;
+    QVector<TileLayerCell> cells;
+
 public:
     Layer(int width, int height, int tileWidth, int tileHeight);
 

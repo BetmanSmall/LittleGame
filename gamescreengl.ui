@@ -52,7 +52,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="drawBlackTiles_checkBox">
+      <widget class="QCheckBox" name="drawUnits_checkBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -60,15 +60,15 @@
         <string notr="true">background-color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>drawBlackTiles</string>
+        <string>drawUnits</string>
        </property>
        <property name="checked">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="drawPaths_checkBox">
+      <widget class="QCheckBox" name="drawTowersByTowers_checkBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -76,7 +76,7 @@
         <string notr="true">background-color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>drawPaths</string>
+        <string>drawTowers</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -132,7 +132,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="drawUnits_checkBox">
+      <widget class="QCheckBox" name="drawBlackTiles_checkBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -140,15 +140,15 @@
         <string notr="true">background-color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>drawUnits</string>
+        <string>drawBlackTiles</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="drawTowersByTowers_checkBox">
+      <widget class="QCheckBox" name="drawPaths_checkBox">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -156,7 +156,7 @@
         <string notr="true">background-color: rgb(0, 255, 0);</string>
        </property>
        <property name="text">
-        <string>drawTowersByTowers</string>
+        <string>drawPaths</string>
        </property>
        <property name="checked">
         <bool>true</bool>

@@ -24,8 +24,8 @@ public:
 class WaveManager
 {
 public:
-
-public:
+    bool allTogether;
+    Wave* currentWave;
     std::vector<Wave*> waves;
     std::vector<Wave*> wavesForUser;
     QPoint *lastExitPoint;
@@ -33,7 +33,10 @@ public:
 
 public:
     WaveManager();
+    ~WaveManager();
     void addWave(Wave *wave);
+    bool updateCurrentWave();
+    TemplateNameAndPoints* getUnitForSpawn(float delta);
     std::vector<TemplateNameAndPoints*> getAllUnitsForSpawn(float delta);
     std::vector<QPoint*> getAllSpawnPoint();
     std::vector<QPoint*> getAllExitPoint();

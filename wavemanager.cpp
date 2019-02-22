@@ -1,13 +1,53 @@
 #include "wavemanager.h"
 
 WaveManager::WaveManager() {
+    qDebug() << "WaveManager::WaveManager(); -- ";
+    this->allTogether = true;
+    this->currentWave = NULL;
 //    this->waves = new std::vector<Wave>();
 //    this->wavesForUser = new std::vector<Wave>();
     lastExitPoint = NULL;
+    waitForNextSpawnUnit = 0.0;
+}
+
+WaveManager::~WaveManager() {
+    qDebug() << "WaveManager::~WaveManager(); -- ";
 }
 
 void WaveManager::addWave(Wave* wave) {
     this->waves.push_back(wave);
+}
+
+bool WaveManager::updateCurrentWave() {
+    if (waves.size() != 0) {
+        Wave* newWave = waves.front();
+        if (newWave != NULL) {
+            waves.erase(std::find(waves.begin(), waves.end(), newWave));
+            currentWave = newWave;
+            return true;
+        }
+    }
+    return false;
+}
+
+TemplateNameAndPoints* WaveManager::getUnitForSpawn(float delta) {
+    waitForNextSpawnUnit -= delta;
+    if (currentWave != NULL) {
+        if (!currentWave->actions.empty()) {
+            QString templateName = currentWave->getTemplateNameForSpawn(delta);
+            if (templateName != NULL) {
+                if (templateName.contains("wait")) {
+//                    waitForNextSpawnUnit = Float.parseFloat(templateName.substring(templateName.indexOf("=") + 1, templateName.length()));// GOVNE GODE parseFloat3
+                    waitForNextSpawnUnit = templateName.right(templateName.indexOf("=") + 1).toFloat();
+                } else {
+                    return (new TemplateNameAndPoints(templateName, currentWave->spawnPoint, currentWave->exitPoint));
+                }
+            }
+        } else {
+            currentWave = NULL;
+        }
+    }
+    return NULL;
 }
 
 std::vector<TemplateNameAndPoints*> WaveManager::getAllUnitsForSpawn(float delta) {
@@ -69,6 +109,9 @@ int WaveManager::getNumberOfActions() {
     int actions = 0;
     foreach (Wave* wave, waves) {
         actions += wave->actions.size();
+    }
+    if (currentWave != NULL) {
+        actions += currentWave->actions.size();
     }
     return actions;
 }
